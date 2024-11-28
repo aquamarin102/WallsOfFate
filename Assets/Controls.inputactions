@@ -839,6 +839,17 @@
                 {
                     "name": "",
                     "id": "c3ea903b-5a74-4ae2-b403-498cb310d744",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "de33facb-216b-4ac7-9a11-142fc215d1b8",
                     "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
