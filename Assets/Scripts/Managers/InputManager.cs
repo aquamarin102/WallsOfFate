@@ -12,6 +12,17 @@ public class InputManager : MonoBehaviour
     private bool submitPressed = false;
 
     private static InputManager instance;
+    private Controls inputs;
+
+    private void OnEnable()
+    {
+        inputs.Enable();
+    }
+
+    private void OnDisable()
+    {
+        inputs.Disable();
+    }
 
     private void Awake()
     {
@@ -20,6 +31,7 @@ public class InputManager : MonoBehaviour
             Debug.LogError("Found more than one Input Manager in the scene.");
         }
         instance = this;
+        inputs = new Controls();
     }
 
     public static InputManager GetInstance()
@@ -27,28 +39,34 @@ public class InputManager : MonoBehaviour
         return instance;
     }
 
+    //Работает странно с двойными векторами (считывает только значение по одному направлению)
+    // Прищлось сделать отдельный метод MovePressedControls
     public void MovePressed(InputAction.CallbackContext context)
     {
         if (context.performed)
         {
             moveDirection = context.ReadValue<Vector2>();
+            //moveDirection = inputs.Player.Move.ReadValue<Vector2>();
+            //Debug.Log("moveDirection performed: " + moveDirection);
         }
         else if (context.canceled)
         {
             moveDirection = context.ReadValue<Vector2>();
+            //moveDirection = inputs.Player.Move.ReadValue<Vector2>();
+            //Debug.Log("moveDirection canceled: " + moveDirection);
         }
     }
 
-    public void JumpPressed(InputAction.CallbackContext context)
+    // Нормально обрабатывает двойные вектора    
+    public void MovePressedControls()
     {
-        if (context.performed)
-        {
-            jumpPressed = true;
-        }
-        else if (context.canceled)
-        {
-            jumpPressed = false;
-        }
+        moveDirection = inputs.Player.Move.ReadValue<Vector2>();
+    }
+
+    public Vector3 GetMoveDirection()
+    {
+        this.MovePressedControls();
+        return moveDirection;
     }
 
     public void InteractButtonPressed(InputAction.CallbackContext context)
@@ -75,11 +93,6 @@ public class InputManager : MonoBehaviour
         }
     }
 
-    public Vector3 GetMoveDirection()
-    {
-        return moveDirection;
-    }
-
     // for any of the below 'Get' methods, if we're getting it then we're also using it,
     // which means we should set it to false so that it can't be used again until actually
     // pressed again.
@@ -87,6 +100,7 @@ public class InputManager : MonoBehaviour
     public bool GetJumpPressed()
     {
         bool result = jumpPressed;
+        //Debug.Log("jump pressed");
         jumpPressed = false;
         return result;
     }
@@ -94,6 +108,7 @@ public class InputManager : MonoBehaviour
     public bool GetInteractPressed()
     {
         bool result = interactPressed;
+        //Debug.Log("interact pressed");
         interactPressed = false;
         return result;
     }
@@ -101,6 +116,7 @@ public class InputManager : MonoBehaviour
     public bool GetSubmitPressed()
     {
         bool result = submitPressed;
+        //Debug.Log("submit pressed");
         submitPressed = false;
         return result;
     }
