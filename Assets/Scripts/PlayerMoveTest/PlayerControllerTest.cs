@@ -48,5 +48,4 @@ public class PlayerControllerTest : MonoBehaviour
         Vector3 velocity = moveDirection * runSpeed;
         rb.velocity = new Vector3(velocity.x, rb.velocity.y, velocity.z);
     }
-
 }

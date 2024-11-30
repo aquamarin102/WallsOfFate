@@ -1,12 +1,14 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class Lever : MonoBehaviour, ITriggerable
+public class Box : MonoBehaviour, ITriggerable
 {
     public event Action OnActivated;
     public void Trrigered()
     {
-        //Debug.Log("Рычаг активирован!");
+        Debug.Log("Коробку можно двигать активирован!");
         // Логика активации рычага
 
         OnActivated?.Invoke();

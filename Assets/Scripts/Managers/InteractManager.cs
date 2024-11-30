@@ -9,11 +9,12 @@ public class InteractManager : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
+        currentTriggerable = null;
         currentTriggerable = collider.gameObject.GetComponent<ITriggerable>();
 
         if (currentTriggerable != null)
         {
-            Debug.Log("Игрок может взаимодействовать с объектом.");
+            //Debug.Log("Игрок может взаимодействовать с объектом.");
         }
     }
 
@@ -22,17 +23,16 @@ public class InteractManager : MonoBehaviour
         if (collider.gameObject.GetComponent<ITriggerable>() == currentTriggerable)
         {
             currentTriggerable = null;
-            Debug.Log("Игрок покинул зону взаимодействия.");
+            //Debug.Log("Игрок покинул зону взаимодействия.");
         }
     }
 
     private void Update()
     {        
-        if (currentTriggerable != null && InputManager.GetInstance().GetInteractPressed())
+        if (currentTriggerable != null)
         {
             Debug.Log("Игрок взаимодействует с объектом.");
             currentTriggerable.Trrigered();
-            currentTriggerable = null; 
         }
     }
 }
