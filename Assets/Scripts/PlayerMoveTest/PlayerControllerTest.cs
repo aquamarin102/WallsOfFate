@@ -37,7 +37,7 @@ public class PlayerControllerTest : MonoBehaviour
     private void HandleHorizontalMovement()
     {
         Vector2 moveInput = InputManager.GetInstance().GetMoveDirection();
-        Vector3 moveDirection = new Vector3(moveInput.y, 0, moveInput.x).normalized;
+        Vector3 moveDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
 
         if (moveDirection != Vector3.zero)
         {
