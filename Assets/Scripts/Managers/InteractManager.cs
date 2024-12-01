@@ -28,10 +28,19 @@ public class InteractManager : MonoBehaviour
     }
 
     private void Update()
-    {        
-        if (currentTriggerable != null)
+    {
+        bool isInteract = InputManager.GetInstance().GetInteractPressed();
+        //if (isInteract)
+        //{
+        //    Debug.Log("isInteract " + isInteract);
+        //}
+        //if (currentTriggerable != null)
+        //{
+        //    Debug.Log("currentTriggerable " + currentTriggerable);        
+        //}
+        if (currentTriggerable != null && isInteract)
         {
-            Debug.Log("Игрок взаимодействует с объектом.");
+            //Debug.Log("Игрок взаимодействует с объектом.");
             currentTriggerable.Trrigered();
         }
     }

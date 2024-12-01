@@ -3,7 +3,13 @@ using System.Collections.Generic;
 
 public class MovemtForMOvingObjects : MonoBehaviour
 {
-    [SerializeField] private Transform _platform;
+    [SerializeField] 
+    private Transform _platform;
+    public Transform Platform
+    {
+        get => _platform; 
+        private set => _platform = value; 
+    }
     [SerializeField] private Transform _pointsParent;        
     [SerializeField] private float _speed = 0.5f;
     [SerializeField] private float _rotationSpeed;
@@ -13,21 +19,12 @@ public class MovemtForMOvingObjects : MonoBehaviour
     private List<Quaternion> _rotations = new List<Quaternion>(); 
     private int _currentPointIndex = 0;                      
     private Vector3 _currentTarget;
-    private int targetIndex = 0;
+    private int _targetIndex = 0;
     private Quaternion _savedRotation;
+    private bool _needToMovie = false;
 
-    void Start()
+    void Awake()
     {
-        Box box = FindObjectOfType<Box>();
-        if (box != null)
-        {
-            box.OnActivated += Move;
-        }
-        else
-        {
-            Debug.LogWarning("Box не найден!");
-        }
-
         foreach (Transform point in _pointsParent)
         {
             _points.Add(point);
@@ -41,9 +38,13 @@ public class MovemtForMOvingObjects : MonoBehaviour
             _currentTarget = _platform.position;
         }
         _currentPointIndex = FindNearestPointIndex();
-        targetIndex = _currentPointIndex + 1;
+        _targetIndex = _currentPointIndex + 1;
     }
 
+    public void ChangeNeedToMovie()
+    {
+        _needToMovie = !_needToMovie;
+    }
     void Rotate()
     {
         Vector3 directionToTarget = (_currentTarget - _platform.position).normalized;
@@ -109,7 +110,7 @@ public class MovemtForMOvingObjects : MonoBehaviour
 
         if (moveInput.y == 1) 
         {
-            targetPoint = _points[targetIndex];
+            targetPoint = _points[_targetIndex];
             _currentTarget = targetPoint.position;
 
             Rotate();
@@ -133,8 +134,8 @@ public class MovemtForMOvingObjects : MonoBehaviour
                 _rotations[_currentPointIndex] = _platform.rotation;
 
                 _savedRotation = _platform.rotation;
-                _currentPointIndex = targetIndex;
-                targetIndex = DefinePosition(targetIndex, +1);
+                _currentPointIndex = _targetIndex;
+                _targetIndex = DefinePosition(_targetIndex, +1);
             }
             else if (moveInput.y == -1) 
             {
@@ -145,7 +146,7 @@ public class MovemtForMOvingObjects : MonoBehaviour
                 //    Time.deltaTime * _rotationSpeed
                 //);
 
-                targetIndex = _currentPointIndex;
+                _targetIndex = _currentPointIndex;
                 _currentPointIndex = DefinePosition(_currentPointIndex, -1);
                 _platform.rotation = _rotations[_currentPointIndex];
             }
@@ -156,8 +157,11 @@ public class MovemtForMOvingObjects : MonoBehaviour
         }
     }
 
-    void Update()
+    private void FixedUpdate()
     {
-        Move();
+        if (_needToMovie)
+        {
+            Move();
+        }
     }
 }
