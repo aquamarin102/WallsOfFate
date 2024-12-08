@@ -44,6 +44,7 @@ public class MovemtForMOvingObjects : MonoBehaviour
     public void ChangeNeedToMovie()
     {
         _needToMovie = !_needToMovie;
+        Debug.Log("Box:" + _needToMovie);
     }
     void Rotate()
     {

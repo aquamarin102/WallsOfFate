@@ -62,6 +62,7 @@ public class PlayerControllerTest : MonoBehaviour
                 //Debug.Log("Найден ближайший объект с компонентом MovemtForMOvingObjects: " + closestCollidedObject.name);
                 _movementComponent.ChangeNeedToMovie();
                 _stopMoving = !_stopMoving;
+                Debug.Log("Player:" + _stopMoving);
             }
         }
         else
@@ -102,7 +103,7 @@ public class PlayerControllerTest : MonoBehaviour
             Vector3 targetPosition = platform.position - platform.forward * interval;
             Vector3 changedTargetPosition = targetPosition;
 
-            Debug.Log("changedTargetPosition " + changedTargetPosition);
+            //Debug.Log("changedTargetPosition " + changedTargetPosition);
 
             // Просто меняем позицию т. к. тогда не возникает проблем с задержкой в движении игрока к позиции
             transform.position = changedTargetPosition /*Vector3.MoveTowards(transform.position, changedTargetPosition, step)*/;

@@ -27,17 +27,27 @@ public class InteractManager : MonoBehaviour
         }
     }
 
+    private void OnTriggerStay(Collider collider)
+    {
+        currentTriggerable = collider.gameObject.GetComponent<ITriggerable>();
+
+        if (currentTriggerable != null)
+        {
+            //Debug.Log("Игрок находится внутри триггера и может взаимодействовать.");
+        }
+    }
+
     private void Update()
     {
         bool isInteract = InputManager.GetInstance().GetInteractPressed();
-        //if (isInteract)
-        //{
-        //    Debug.Log("isInteract " + isInteract);
-        //}
-        //if (currentTriggerable != null)
-        //{
-        //    Debug.Log("currentTriggerable " + currentTriggerable);        
-        //}
+        if (isInteract)
+        {
+            Debug.Log("isInteract " + isInteract);
+        }
+        if (currentTriggerable != null)
+        {
+            Debug.Log("currentTriggerable " + currentTriggerable);
+        }
         if (currentTriggerable != null && isInteract)
         {
             //Debug.Log("Игрок взаимодействует с объектом.");
