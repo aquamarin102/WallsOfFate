@@ -54,34 +54,34 @@ public sealed class SaveLoadManager : MonoBehaviour
         Repository.SaveState();
     }
 
-    private void FixedUpdate()
-    {
-        bool isInteract = InputManager.GetInstance().GetInteractPressed();
-        bool isSumbit = InputManager.GetInstance().GetSubmitPressed();
+    //private void FixedUpdate()
+    //{
+    //    bool isInteract = InputManager.GetInstance().GetInteractPressed();
+    //    bool isSumbit = InputManager.GetInstance().GetSubmitPressed();
 
-        if (isSumbit)
-        {
-            _isSave++;
-            //Debug.Log("isInteract " + isInteract);
-        }
+    //    if (isSumbit)
+    //    {
+    //        _isSave++;
+    //        //Debug.Log("isInteract " + isInteract);
+    //    }
         
-        //if (isInteract)
-        //{
-        //    //_isSave++;
-        //    Debug.Log("isInteract " + isInteract);
-        //}
+    //    //if (isInteract)
+    //    //{
+    //    //    //_isSave++;
+    //    //    Debug.Log("isInteract " + isInteract);
+    //    //}
 
-        if (_isSave == 2 && isSumbit)
-        {
-            //Debug.Log("Данные загружаются.............");
-            LoadGame();
-            _isSave = 0;
+    //    if (_isSave == 2 && isSumbit)
+    //    {
+    //        //Debug.Log("Данные загружаются.............");
+    //        LoadGame();
+    //        _isSave = 0;
 
-        }
-        else if (_isSave == 1 && isSumbit)
-        {
-            //Debug.Log("Данные сохраняются.............");
-            SaveGame();
-        }
-    }
+    //    }
+    //    else if (_isSave == 1 && isSumbit)
+    //    {
+    //        //Debug.Log("Данные сохраняются.............");
+    //        SaveGame();
+    //    }
+    //}
 }
