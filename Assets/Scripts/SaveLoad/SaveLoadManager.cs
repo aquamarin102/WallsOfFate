@@ -6,7 +6,7 @@ public sealed class SaveLoadManager : MonoBehaviour
 
     private ISaveLoader[] saveLoaders;
 
-    private int _isSave = 0;
+    //private int _isSave = 0;
 
     private void Awake()
     {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider))]
 [RequireComponent(typeof(Rigidbody))]
-public class PlayerControllerTest : MonoBehaviour
+public class PlayerMoveController : MonoBehaviour
 {
     [Header("Movement Params")]
 
