@@ -11,6 +11,7 @@ public class PlayerMoveController : MonoBehaviour
     [SerializeField] private float _runSpeed = 6.0f;
     [SerializeField] private float _rotationSpeed = 20f;
     [SerializeField] private float _interval = 1f;
+    [SerializeField] private Transform _cameraPosition;
 
     private BoxCollider _coll;
     private Rigidbody _rb;
@@ -99,7 +100,7 @@ public class PlayerMoveController : MonoBehaviour
             Transform platform = _movementComponent.Platform;
             float step = _runSpeed * Time.deltaTime;
 
-            // Ѕерем интервал к forward так только так можно добитьс€ адекваетной дистанции от кобика
+            // Ѕерем интервал к forward так только так можно добитьс€ адекваетной дистанции от кубика
             Vector3 targetPosition = platform.position - platform.forward * interval;
             Vector3 changedTargetPosition = targetPosition;
 
@@ -122,7 +123,27 @@ public class PlayerMoveController : MonoBehaviour
     private void HandleHorizontalMovement()
     {
         Vector2 moveInput = InputManager.GetInstance().GetMoveDirection();
-        Vector3 moveDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
+        Vector3 movePlayerInputDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
+        Vector3 moveDirection = Vector3.zero;
+
+        // ѕолучение угла из ориентации камеры
+        float cameraAngle = _cameraPosition.eulerAngles.y * Mathf.Deg2Rad;
+
+        // ¬ычисление тригонометрических значений
+        float sinAngle = Mathf.Sin(cameraAngle);
+        float cosAngle = Mathf.Cos(cameraAngle);
+        float cotAngle = cosAngle / sinAngle; // ctg(x) = cos(x) / sin(x)
+        if (sinAngle != 0)
+        {
+            // ‘ормулы дл€ moveDirection
+            moveDirection.x = (movePlayerInputDirection.z + movePlayerInputDirection.x * cotAngle) / (sinAngle + cotAngle * cosAngle);
+            moveDirection.z = (moveDirection.x * cosAngle - movePlayerInputDirection.x) / sinAngle;
+            Debug.Log(moveDirection);
+        }
+        else
+        {
+            moveDirection = movePlayerInputDirection;
+        }
 
         if (moveDirection != Vector3.zero)
         {
