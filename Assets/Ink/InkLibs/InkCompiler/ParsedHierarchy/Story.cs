@@ -39,8 +39,6 @@ namespace Ink.Parsed
             // the ExportRuntime method is called.
 		}
 
-       
-
         // Before this function is called, we have IncludedFile objects interspersed
         // in our content wherever an include statement was.
         // So that the include statement can be added in a sensible place (e.g. the
@@ -505,7 +503,6 @@ namespace Ink.Parsed
         HashSet<Runtime.Container> _dontFlattenContainers = new HashSet<Runtime.Container>();
 
         Dictionary<string, Parsed.ListDefinition> _listDefs;
-        private string text;
-    }
+	}
 }
 
