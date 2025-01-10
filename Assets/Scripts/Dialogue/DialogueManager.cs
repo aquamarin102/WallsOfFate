@@ -11,6 +11,9 @@ public class DialogueManager : MonoBehaviour
     [Header("Params")]
     [SerializeField] private float _typingSpeed = 0.04f;
 
+    [Header("Load Global JSON")]
+    [SerializeField] private TextAsset _loadGlobalJSON;
+
     [Header("Dialogue UI")]
     [SerializeField] private GameObject _dialoguePanel;
 
@@ -42,6 +45,8 @@ public class DialogueManager : MonoBehaviour
     private const string PORTRAIT_TAG = "portrait";
     private const string LAYOUT_TAG = "layout";
 
+    private DialogueVariables _dialogueVariables;
+
     private void Awake()
     {
         if (_instance != null)
@@ -49,6 +54,8 @@ public class DialogueManager : MonoBehaviour
             Debug.Log("Found more than one Dialogue Manager in the scene");
         }
         _instance = this;
+
+        _dialogueVariables = new DialogueVariables(_loadGlobalJSON);
     }
 
     public static DialogueManager GetInstance()
@@ -92,6 +99,8 @@ public class DialogueManager : MonoBehaviour
         DialogueIsPlaying = true;
         _dialoguePanel.SetActive(true);
 
+        _dialogueVariables.StartListening(_currentStory);
+
         //reset portrait, layout and speaker
         _displayNameText.text = "?";
         _portraitAnimator.Play("default");
@@ -103,6 +112,8 @@ public class DialogueManager : MonoBehaviour
     private IEnumerator ExitDialogueMode()
     {
         yield return new WaitForSeconds(0.2f);
+
+        _dialogueVariables.StopListening(_currentStory);
 
         DialogueIsPlaying = false;
         _dialoguePanel.SetActive(false);
@@ -117,9 +128,17 @@ public class DialogueManager : MonoBehaviour
             {
                 StopCoroutine(_displayLineCoroutine);
             }
+            string nextLine = _currentStory.Continue();
 
-            _displayLineCoroutine = StartCoroutine(DisplayLine(_currentStory.Continue()));
-            HandleTags(_currentStory.currentTags);
+            if (nextLine.Equals("") && !_currentStory.canContinue)
+            {
+                StartCoroutine(ExitDialogueMode());
+            }
+            else
+            {
+                HandleTags(_currentStory.currentTags);
+                _displayLineCoroutine = StartCoroutine(DisplayLine(nextLine));
+            }
         }
         else
         {
@@ -129,23 +148,37 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator DisplayLine(string line)
     {
-        _dialogueText.text = "";
+        _dialogueText.text = line;
+        _dialogueText.maxVisibleCharacters = 0;
 
         _continueIcon.SetActive(false);
         HideChoices();
 
         _canContinueToNextLine = false;
 
+        bool _isAddingRichTextTag = false;
+
         foreach (char letter in line.ToCharArray())
         {
-            if(InputManager.GetInstance().GetSubmitPressed())
+            if (InputManager.GetInstance().GetSubmitPressed())
             {
-                _dialogueText.text = line;
+                _dialogueText.maxVisibleCharacters = line.Length;
                 break;
             }
 
-            _dialogueText.text += letter;
-            yield return new WaitForSeconds(_typingSpeed);
+            if (letter == '<' || _isAddingRichTextTag)
+            {
+                _isAddingRichTextTag = true;
+                if (letter == '>')
+                {
+                    _isAddingRichTextTag = false;
+                }
+            }
+            else
+            {
+                _dialogueText.maxVisibleCharacters++;
+                yield return new WaitForSeconds(_typingSpeed);
+            }
         }
 
         _continueIcon.SetActive(true);
@@ -227,8 +260,29 @@ public class DialogueManager : MonoBehaviour
         if (_canContinueToNextLine)
         {
             _currentStory.ChooseChoiceIndex(choiceIndex);
-            //InputManager.GetInstance().RegisterSubmitPressed();
-            //ContinueStory();
+            InputManager.GetInstance().RegisterSubmitPressed();//??
+            ContinueStory();
+        }
+    }
+
+    public Ink.Runtime.Object GetVariablesState(string variableName)
+    {
+        Ink.Runtime.Object variableValue = null;
+        _dialogueVariables.variables.TryGetValue(variableName, out variableValue);
+        if (variableValue == null)
+        {
+            Debug.LogWarning("Ink Var was found to be null: " + variableName);
+        }
+        return variableValue;
+    }
+
+    // This method will get called anytime the application exits.
+    // Depending on your game, you may want to save variable state in other places.
+    public void OnApplicationQuit()
+    {
+        if (_dialogueVariables != null)
+        {
+            _dialogueVariables.SaveVariables();
         }
     }
 }
