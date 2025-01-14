@@ -138,7 +138,7 @@ public class PlayerMoveController : MonoBehaviour
             // Формулы для moveDirection
             moveDirection.x = (movePlayerInputDirection.z + movePlayerInputDirection.x * cotAngle) / (sinAngle + cotAngle * cosAngle);
             moveDirection.z = (moveDirection.x * cosAngle - movePlayerInputDirection.x) / sinAngle;
-            Debug.Log(moveDirection);
+            //Debug.Log(moveDirection);
         }
         else
         {
