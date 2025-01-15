@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class DialogueTrigger : MonoBehaviour
 {
@@ -24,7 +25,12 @@ public class DialogueTrigger : MonoBehaviour
         {
             _visualCue.SetActive(true);
 
-            if (InputManager.GetInstance().GetInteractPressed())
+            //if (InputManager.GetInstance().GetInteractPressed())// bug build
+            //{
+            //    DialogueManager.GetInstance().EnterDialogueMode(_inkJSON);
+            //}
+
+            if (Input.GetKeyDown(KeyCode.F))
             {
                 DialogueManager.GetInstance().EnterDialogueMode(_inkJSON);
             }
@@ -50,4 +56,5 @@ public class DialogueTrigger : MonoBehaviour
             _playerInRange = false;
         }
     }
+
 }

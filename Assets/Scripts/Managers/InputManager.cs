@@ -7,7 +7,6 @@ using UnityEngine.InputSystem;
 public class InputManager : MonoBehaviour
 {
     private Vector2 moveDirection = Vector2.zero;
-    private bool jumpPressed = false;
     private bool interactPressed = false;
     private bool submitPressed = false;
 
@@ -46,13 +45,13 @@ public class InputManager : MonoBehaviour
         if (context.performed)
         {
             moveDirection = context.ReadValue<Vector2>();
-            //moveDirection = inputs.Player.Move.ReadValue<Vector2>();
+            //moveDirection = inputs.Game.Move.ReadValue<Vector2>();
             //Debug.Log("moveDirection performed: " + moveDirection);
         }
         else if (context.canceled)
         {
             moveDirection = context.ReadValue<Vector2>();
-            //moveDirection = inputs.Player.Move.ReadValue<Vector2>();
+            //moveDirection = inputs.Game.Move.ReadValue<Vector2>();
             //Debug.Log("moveDirection canceled: " + moveDirection);
         }
     }
@@ -60,7 +59,7 @@ public class InputManager : MonoBehaviour
     // Ќормально обрабатывает двойные вектора    
     public void MovePressedControls()
     {
-        moveDirection = inputs.Player.Move.ReadValue<Vector2>();
+        moveDirection = inputs.Game.Move.ReadValue<Vector2>();
     }
 
     public Vector3 GetMoveDirection()
@@ -74,10 +73,12 @@ public class InputManager : MonoBehaviour
         if (context.performed)
         {
             interactPressed = true;
+           // Debug.Log("press" + context);
         }
         else if (context.canceled)
         {
             interactPressed = false;
+           // Debug.Log("cancel press" + context);
         }
     }
 
@@ -97,18 +98,10 @@ public class InputManager : MonoBehaviour
     // which means we should set it to false so that it can't be used again until actually
     // pressed again.
 
-    public bool GetJumpPressed()
-    {
-        bool result = jumpPressed;
-        //Debug.Log("jump pressed");
-        jumpPressed = false;
-        return result;
-    }
-
     public bool GetInteractPressed()
     {
+        //Debug.Log("interact pressed" + interactPressed);
         bool result = interactPressed;
-        //Debug.Log("interact pressed");
         interactPressed = false;
         return result;
     }
