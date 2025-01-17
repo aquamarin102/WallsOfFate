@@ -14,27 +14,69 @@ public class MineList
         Minelist = new List<Mine>();
     }
 
-    // Инициализация списка с минами определенного типа
+    // Инициализация списка мин хила и дамага
     public void InitializeMines(GameObject prefab, float cooldown, System.Func<uint, float, GameObject, Mine> createMine)
     {
         for (int i = 0; i < Length; i++)
         {
             uint number = (uint)i;
             GameObject mineGameObject = Object.Instantiate(prefab);
+            mineGameObject.SetActive(false);
             Mine newMine = createMine(number, cooldown, mineGameObject);
             Minelist.Add(newMine);
         }
     }
 
-    // Инициализация списка с минами определенного типа
-    public void InitializeSpeedBuffMines(GameObject prefab, float cooldown, float speedbuff, float time)
+    // Инициализация списка мин с бафом к скорости
+    public void InitializeSpeedBuffMines(GameObject prefab, float cooldown, float speedbuff, float buffcooldown, int timebeforeexplosion, float radius)
     {
         for (int i = 0; i < Length; i++)
         {
             uint number = (uint)i;
             GameObject mineGameObject = Object.Instantiate(prefab);
-            Mine newMine = new BuffSpeedMine(number, cooldown, mineGameObject, speedbuff, time);
+            mineGameObject.SetActive(false);
+            Mine newMine = new BuffSpeedMine(number, cooldown, mineGameObject, speedbuff, buffcooldown, timebeforeexplosion, radius);
             Minelist.Add(newMine);
         }
+    }
+
+    public Mine AddMine(GameObject prefab, float cooldown, System.Func<uint, float, GameObject, Mine> createMine)
+    {
+        // Создать уникальный номер для новой мины
+        uint number = (uint)Minelist.Count;
+
+        // Создать новый игровой объект для мины
+        GameObject mineGameObject = Object.Instantiate(prefab);
+        mineGameObject.SetActive(false);
+
+        // Создать объект мины с помощью переданной функции
+        Mine newMine = createMine(number, cooldown, mineGameObject);
+
+        // Добавить новую мину в список
+        Minelist.Add(newMine);
+
+        // Увеличить длину списка
+        Length++;
+        return Minelist[Minelist.Count - 1];
+    }
+
+    public Mine AddMine(GameObject prefab, float cooldown, float speedbuff, float buffcooldown, int timebeforeexplosion, float radius, System.Func<uint, float, GameObject, float, float, int, float, Mine> createMine)
+    {
+        // Создать уникальный номер для новой мины
+        uint number = (uint)Minelist.Count;
+
+        // Создать новый игровой объект для мины
+        GameObject mineGameObject = Object.Instantiate(prefab);
+        mineGameObject.SetActive(false);
+
+        // Создать объект мины с помощью переданной функции
+        Mine newMine = createMine(number, cooldown, mineGameObject, speedbuff, buffcooldown, timebeforeexplosion, radius);
+
+        // Добавить новую мину в список
+        Minelist.Add(newMine);
+
+        // Увеличить длину списка
+        Length++;
+        return Minelist[Minelist.Count - 1];
     }
 }

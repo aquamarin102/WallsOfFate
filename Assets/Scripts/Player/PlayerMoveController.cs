@@ -11,7 +11,7 @@ public class PlayerMoveController : MonoBehaviour
     [SerializeField] private float _runSpeed = 6.0f;
     [SerializeField] private float _rotationSpeed = 20f;
     [SerializeField] private float _interval = 1f;
-    [SerializeField] private Transform _cameraPosition;
+    [SerializeField] private Transform _cameraTrnsform;
 
     private BoxCollider _coll;
     private Rigidbody _rb;
@@ -127,7 +127,7 @@ public class PlayerMoveController : MonoBehaviour
         Vector3 moveDirection = Vector3.zero;
 
         // ѕолучение угла из ориентации камеры
-        float cameraAngle = _cameraPosition.eulerAngles.y * Mathf.Deg2Rad;
+        float cameraAngle = _cameraTrnsform.eulerAngles.y * Mathf.Deg2Rad;
 
         // ¬ычисление тригонометрических значений
         float sinAngle = Mathf.Sin(cameraAngle);

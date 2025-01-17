@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Mine 
 {
-    private uint Number;
-    private float Ñooldown;
-    private GameObject MineGameObject;
+    protected uint Number;
+    protected float Ñooldown;
+    protected GameObject MineGameObject;
 
     public Mine(uint number, float ñooldown, GameObject mine)
     {
         Number = number;
-        Ñooldown = ñooldown;
+        Ñooldown = ñooldown;;
         MineGameObject = mine;
     }
 

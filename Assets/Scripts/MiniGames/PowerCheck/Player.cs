@@ -3,22 +3,31 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Player
+public class Player : MonoBehaviour 
 {
-    private uint MaxHealth;       // Максимальные Жизни
-    private uint Health;          // Жизни
-    private uint Damage;          // Урон
-    private float Speed;          // Скорость
-    private uint HealingAmount;   // Количество лечения
 
-    public Player(uint health, uint maxhealth, uint damage, float speed, uint healingAmount)
-    {
-        MaxHealth = maxhealth;
-        Health = health;
-        Damage = damage;
-        Speed = speed;
-        HealingAmount = healingAmount;
-    }
+
+    // ============================
+    // Настройки игровых параметров игрока
+    // ============================
+    [Header("Player Settings")]
+    [SerializeField] public string Name;           // Имя
+    [SerializeField] private uint MaxHealth;       // Максимальное здоровье
+    [SerializeField] private uint Health;          // Здоровье с которым он заспавниться
+    [SerializeField] private uint Damage;          // Урон
+    [SerializeField] private float Speed;          // Скорость
+    [SerializeField] private uint HealingAmount;   // Количество лечения
+
+
+    //public Player(uint maxhealth,  uint health,  uint damage, float speed, uint healingAmount, string name)
+    //{
+    //    Name = name;
+    //    MaxHealth = maxhealth;
+    //    Health = health;
+    //    Damage = damage;
+    //    Speed = speed;
+    //    HealingAmount = healingAmount;
+    //}
 
     public uint GetHealth()
     {
@@ -37,11 +46,13 @@ public class Player
 
     public void TakeDamage(uint damage)
     {
+        Debug.Log(this.Name + " получил домага");
         this.Damage += damage;
     }
 
     public void TakeHeal()
     {
+        Debug.Log(this.Name + " отхилился");
         this.Health += HealingAmount;
         if (this.Health > MaxHealth)
         {
@@ -51,6 +62,7 @@ public class Player
 
     public void TakeSpeedboost(float speed)
     {
+        Debug.Log(this.Name + " получил скоростной баф в " + speed);
         this.Speed *= speed;
     }
 }

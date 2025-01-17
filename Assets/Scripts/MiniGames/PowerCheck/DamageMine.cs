@@ -8,6 +8,7 @@ public class DamageMine : Mine
 
     public void Damage(Player player1, Player player2)
     {
+        //Debug.Log(player2.Name + " בüוע " + player1.Name);
         player1.TakeDamage(player2.GetDamage());
     }
 }
