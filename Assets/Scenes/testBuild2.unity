@@ -2366,6 +2366,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _typingSpeed: 0.04
+  _loadGlobalJSON: {fileID: 4900000, guid: f8a562a1e2580644bbdf5c45a58eec68, type: 3}
   _dialoguePanel: {fileID: 1453922}
   _continueIcon: {fileID: 1874655066}
   _dialogueText: {fileID: 1273254734}
@@ -5728,6 +5729,7 @@ MonoBehaviour:
   _runSpeed: 6
   _rotationSpeed: 20
   _interval: 2
+  _cameraTrnsform: {fileID: 196103642}
 --- !u!114 &1868989290
 MonoBehaviour:
   m_ObjectHideFlags: 0

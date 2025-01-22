@@ -8,6 +8,7 @@ public class PokemonNPC : MonoBehaviour
     [SerializeField] private Color charmanderColor = Color.red;
     [SerializeField] private Color bulbasaurColor = Color.green;
     [SerializeField] private Color squirtleColor = Color.blue;
+    [SerializeField] private GameObject _miniGame;
 
     private Renderer colorRenderer;
 
@@ -28,9 +29,11 @@ public class PokemonNPC : MonoBehaviour
                 colorRenderer.material.color = defaultColor;
                 break;
             case "Charmander":
+                _miniGame.SetActive(true);
                 colorRenderer.material.color = charmanderColor;
                 break;
             case "Bulbasaur":
+                _miniGame.SetActive(false);
                 colorRenderer.material.color = bulbasaurColor;
                 break;
             case "Squirtle":

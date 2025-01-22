@@ -27,12 +27,12 @@ public class GameProcess : MonoBehaviour
     IReadOnlyList<Mine> _debuffMines;
 
     private PlayerMove _playerMove;
-    private PlayerMove _enemyMove;
+    private EnemyMove _enemyMove;
 
     void Start()
     {
         _playerMove = player.GetComponent<PlayerMove>();
-        _enemyMove = enemy.GetComponent<PlayerMove>();
+        _enemyMove = enemy.GetComponent<EnemyMove>();
 
         MiniGamePlayer playerChar = player.GetComponent<MiniGamePlayer>();
         MiniGamePlayer enemyChar = enemy.GetComponent<MiniGamePlayer>();
