@@ -21,31 +21,52 @@ public class GameProcess : MonoBehaviour
     public GameObject speedBuffMine;
     public GameObject speedDebufMine;
 
-    IReadOnlyList<Mine> healMines;
-    IReadOnlyList<Mine> damageMines;
-    IReadOnlyList<Mine> buffMines;
-    IReadOnlyList<Mine> debuffMines;
+    IReadOnlyList<Mine> _healMines;
+    IReadOnlyList<Mine> _damageMines;
+    IReadOnlyList<Mine> _buffMines;
+    IReadOnlyList<Mine> _debuffMines;
+
+    private PlayerMove _playerMove;
+    private PlayerMove _enemyMove;
 
     void Start()
     {
+        _playerMove = player.GetComponent<PlayerMove>();
+        _enemyMove = enemy.GetComponent<PlayerMove>();
+
+        MiniGamePlayer playerChar = player.GetComponent<MiniGamePlayer>();
+        MiniGamePlayer enemyChar = enemy.GetComponent<MiniGamePlayer>();
+
+        playerChar.OnSpeedChanged += _playerMove.ChangeSpeed;
+        enemyChar.OnSpeedChanged += _enemyMove.ChangeSpeed;
+
         // Получаем список мин с MineSpawner
-        healMines = mineSpawner.HealMines;
-        damageMines = mineSpawner.DamageMines;
-        buffMines = mineSpawner.BuffMines;
-        debuffMines = mineSpawner.DebuffMines;
+        _healMines = mineSpawner.HealMines;
+        _damageMines = mineSpawner.DamageMines;
+        _buffMines = mineSpawner.BuffMines;
+        _debuffMines = mineSpawner.DebuffMines;
 
         // Для каждой мины подписываемся на событие
-        SubscribeToMineEvents(healMines);
-        SubscribeToMineEvents(damageMines);
-        SubscribeToMineEvents(buffMines);
-        SubscribeToMineEvents(debuffMines);
-        mineSpawner.SpawnMines();
+        SubscribeToMineEvents(_healMines);
+        SubscribeToMineEvents(_damageMines);
+        SubscribeToMineEvents(_buffMines);
+        SubscribeToMineEvents(_debuffMines);
+        //mineSpawner.SpawnMines();
     }
 
     private void FixedUpdate()
     {
         //StartCoroutine(mineSpawner.AddAndSpawnMines(numberOfMinesSpawnEveryTime, 3, delayBetweenMineSpawn));
-        //SubscribeToMineEvents(debuffMines);
+
+        //int debuffMinesLastIndex = _debuffMines.Count - 1;
+        //int numOfAddMines = mineSpawner.GetNumOfDebuffSpawnMines();
+        //List<Mine> spawnedMines = new List<Mine>(); 
+        //while (numOfAddMines >= 0 && (debuffMinesLastIndex - numOfAddMines) >= 0)
+        //{
+        //    Mine spawnedMine = _debuffMines[debuffMinesLastIndex - numOfAddMines];
+        //    if(_debuffMines[debuffMinesLastIndex - numOfAddMines] != null) spawnedMines.Add(spawnedMine);
+        //}
+        SubscribeToMineEvents(_debuffMines);
 
     }
 
@@ -54,7 +75,7 @@ public class GameProcess : MonoBehaviour
         foreach (Mine mine in mines)
         {
             // Получаем префаб и компонент TriggerHandler
-            GameObject minePrefab = mine.GetMine();
+            GameObject minePrefab = mine.MineGameObject;
             TriggerHandler mineTriggerHandler = minePrefab.GetComponent<TriggerHandler>();
 
             if (mineTriggerHandler != null)
@@ -87,28 +108,28 @@ public class GameProcess : MonoBehaviour
     private Mine FindMineByGameObject(GameObject triggeredObject)
     {
         // Проверяем во всех списках
-        Mine mine = FindMineInList(triggeredObject, healMines);
+        Mine mine = FindMineInList(triggeredObject, _healMines);
         if (mine != null)
         {
             //Debug.Log("это мина хила");
             return mine;
         }
 
-        mine = FindMineInList(triggeredObject, damageMines);
+        mine = FindMineInList(triggeredObject, _damageMines);
         if (mine != null)
         {
             //Debug.Log("это мина дамага");
             return mine;
         }
 
-        mine = FindMineInList(triggeredObject, buffMines);
+        mine = FindMineInList(triggeredObject, _buffMines);
         if (mine != null)
         {
             //Debug.Log("это мина ускорения");
             return mine;
         }
 
-        mine = FindMineInList(triggeredObject, debuffMines);
+        mine = FindMineInList(triggeredObject, _debuffMines);
         if (mine != null)
         {
             //Debug.Log("это мина замедления");
@@ -123,7 +144,7 @@ public class GameProcess : MonoBehaviour
     {
         foreach (Mine mine in mines)
         {
-            if (mine.GetMine() == triggeredObject)
+            if (mine.MineGameObject == triggeredObject)
             {
                 return mine;
             }
@@ -135,16 +156,18 @@ public class GameProcess : MonoBehaviour
 
     private void HandleMineTriggered(Mine givedMine, GameObject givedPlayer)
     {
-        Player givedPlayerChar = givedPlayer.GetComponent<Player>();
-        Player playerChar = player.GetComponent<Player>();
-        Player enemyChar = enemy.GetComponent<Player>();
+        MiniGamePlayer givedPlayerChar = givedPlayer.GetComponent<MiniGamePlayer>();
+        MiniGamePlayer playerChar = player.GetComponent<MiniGamePlayer>();
+        MiniGamePlayer enemyChar = enemy.GetComponent<MiniGamePlayer>();
+        
+
         if (givedMine is HealMine healMine)
         {
             healMine.Heal(givedPlayerChar);
         }
         else if (givedMine is DamageMine damageMine)
         {
-            if (givedPlayerChar.name == "Player")
+            if (givedPlayerChar.Name == "Player")
                 damageMine.Damage(enemyChar, playerChar);
             else
                 damageMine.Damage(playerChar, enemyChar);
@@ -152,42 +175,26 @@ public class GameProcess : MonoBehaviour
         else if (givedMine is BuffSpeedMine buffSpeedMine)
         {
             MineExplosion(buffSpeedMine, player, enemy);
+
         }
 
         givedMine.SetActive(false); 
-        mineSpawner.SpawnMine(givedMine);
+        //mineSpawner.SpawnMine(givedMine);
     }
 
-    private IEnumerator MineExplosion(BuffSpeedMine mine, params GameObject[] objects)
+    private async void MineExplosion(BuffSpeedMine mine, params GameObject[] objects)
     {
-        // Ждем паузу в заданное время
-        yield return new WaitForSeconds(mine.GetTimeBeforeExplosion() / 1000f);
+        Vector3 initialMinePosition = mine.MineGameObject.transform.position;
+        
+        // Ждем паузу в 3 секунды
+        await Task.Delay(mine.GetTimeBeforeExplosion());
 
         // Находим все объекты на определенном расстоянии от мины
-        List<Player> affectedPlayers = mine.FindDistanceToMine(objects);
+        List<MiniGamePlayer> affectedPlayers = mine.FindDistanceToMine(initialMinePosition, objects);
 
-        // Применяем бафф к найденным объектам
-        StartCoroutine(BuffSpeedListCoroutine(mine, affectedPlayers));
+        // Передаем найденные объекты в метод BuffSpeedList
+        await mine.BuffSpeedList(affectedPlayers);
 
-        Debug.Log("Mine explosion completed, buff applied to nearby players.");
-    }
-
-    private IEnumerator BuffSpeedListCoroutine(BuffSpeedMine mine, List<Player> players)
-    {
-        foreach (var player in players)
-        {
-            if (player != null)
-            {
-                StartCoroutine(BuffSpeedCoroutine(mine, player));
-                yield return null; // Ждем следующего кадра
-            }
-        }
-    }
-
-    private IEnumerator BuffSpeedCoroutine(BuffSpeedMine mine, Player player)
-    {
-        player.TakeSpeedboost(mine.GetSpeedBuff()); // Применяем начальный бафф
-        yield return new WaitForSeconds(mine.GetBuffCooldown());
-        player.TakeSpeedboost(1 / mine.GetSpeedBuff()); // Убираем бафф
+        //Debug.Log("Mine explosion completed, buff applied to nearby players.");
     }
 }

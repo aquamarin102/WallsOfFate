@@ -6,9 +6,9 @@ public class DamageMine : Mine
 {
     public DamageMine(uint number, float ñooldown, GameObject mine) : base(number, ñooldown, mine) {}
 
-    public void Damage(Player player1, Player player2)
+    public void Damage(MiniGamePlayer player1, MiniGamePlayer player2)
     {
         //Debug.Log(player2.Name + " áüåò " + player1.Name);
-        player1.TakeDamage(player2.GetDamage());
+        player1.TakeDamage(player2.Damage);
     }
 }

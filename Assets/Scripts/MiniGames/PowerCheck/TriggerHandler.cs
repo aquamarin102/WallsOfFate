@@ -6,6 +6,11 @@ public class TriggerHandler : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+
+        if (!gameObject.activeSelf || !other.gameObject.activeSelf)
+        {
+            return; 
+        }
         //Debug.Log($"־בתוךע {other.name} גמר¸כ ג ענטדדונ {gameObject.name}");
         OnObjectEnteredTrigger?.Invoke(gameObject, other.gameObject); // ֲûחמג סמבûעטÿ
     }

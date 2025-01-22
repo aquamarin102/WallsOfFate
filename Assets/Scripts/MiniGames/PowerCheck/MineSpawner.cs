@@ -46,23 +46,26 @@ public class MineSpawner : MonoBehaviour
     // Настройки для мины усиления скорости
     // ============================
     [Header("Speed Buff Mine Settings")]
-    [SerializeField] private float speedBufCooldown = 1.0f; // Время перезарядки мины усиления скорости
-    [SerializeField] private float speedBuf = 1.0f;         // Множитель усиления скорости
-    [SerializeField] private float buffTime = 2.0f;         // Время действия усиления скорости
-    [SerializeField] private int numberOfBuffMines = 5;     // Количество мин, которые будут спавниться сразу
+    [SerializeField] private float speedBufCooldown = 1.0f;       // Время перезарядки мины усиления скорости
+    [SerializeField] private float speedBuf = 1.0f;               // Множитель усиления скорости
+    [SerializeField] private float buffTime = 2.0f;               // Время действия усиления скорости
+    [SerializeField] private int numberOfBuffMines = 5;           // Количество мин, которые будут спавниться сразу
     [SerializeField] private int buffTimeBeforeExplosion = 5;     // Время до взрыва(активации эффектов)
     [SerializeField] private float buffRadiusOfExplosion = 5;     // Радиус взрыва
+    [SerializeField] private uint buffDamage = 5;                 // Урон
 
     // ============================
     // Настройки для мины ослабления скорости
     // ============================
     [Header("Speed Debuff Mine Settings")]
-    [SerializeField] private float speedDebufCooldown = 1.0f; // Время перезарядки мины ослабления скорости
-    [SerializeField] private float speedDebuf = 1.0f;         // Множитель ослабления скорости
-    [SerializeField] private float debuffTime = 5.0f;         // Время действия ослабления скорости
-    [SerializeField] private int numberOfDebuffMines = 5;     // Количество мин, которые будут спавниться сразу
+    [SerializeField] private float speedDebufCooldown = 1.0f;       // Время перезарядки мины ослабления скорости
+    [SerializeField] private float speedDebuf = 1.0f;               // Множитель ослабления скорости
+    [SerializeField] private float debuffTime = 5.0f;               // Время действия ослабления скорости
+    [SerializeField] private int numberOfDebuffMines = 5;           // Количество мин, которые будут спавниться сразу
+    [SerializeField] private float debufDelayOfSpawn = 5;           // Пауза между спавном мин
     [SerializeField] private int debuffTimeBeforeExplosion = 5;     // Время до взрыва(активации эффектов)
     [SerializeField] private float debuffRadiusOfExplosion = 5;     // Радиус взрыва
+    [SerializeField] private uint debuffDamage = 5;                 // Урон
 
     // ============================
     // Списки для каждого типа мин
@@ -71,6 +74,9 @@ public class MineSpawner : MonoBehaviour
     private MineList damageMineList;
     private MineList buffMineList;
     private MineList debuffMineList;
+
+    private bool _isSpawn = false;
+    private bool _isAdding = false;
 
     public IReadOnlyList<Mine> HealMines => healMineList.Minelist;
     public IReadOnlyList<Mine> DamageMines => damageMineList.Minelist;
@@ -83,18 +89,28 @@ public class MineSpawner : MonoBehaviour
         damageMineList = new MineList(numberOfDamageMines);
         buffMineList = new MineList(numberOfBuffMines);
         debuffMineList = new MineList(numberOfDebuffMines);
-       
+
         healMineList.InitializeMines(HealMinePrefab, healCooldown, (number, cooldown, mineGameObject) => new HealMine(number, cooldown, mineGameObject));
         damageMineList.InitializeMines(DamageMinePrefab, damageCooldown, (number, cooldown, mineGameObject) => new DamageMine(number, cooldown, mineGameObject));
-        buffMineList.InitializeSpeedBuffMines(BuffMinePrefab, speedBufCooldown, speedBuf, buffTime, buffTimeBeforeExplosion, buffRadiusOfExplosion);
-        debuffMineList.InitializeSpeedBuffMines(DebuffMinePrefab, speedDebufCooldown, speedDebuf, debuffTime, debuffTimeBeforeExplosion, debuffRadiusOfExplosion);
+        buffMineList.InitializeSpeedBuffMines(BuffMinePrefab, speedBufCooldown, speedBuf, buffTime, buffTimeBeforeExplosion, buffRadiusOfExplosion, buffDamage);
+        debuffMineList.InitializeSpeedBuffMines(DebuffMinePrefab, speedDebufCooldown, speedDebuf, debuffTime, debuffTimeBeforeExplosion, debuffRadiusOfExplosion, debuffDamage);
 
+        //SpawnMines();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if(onTestSpawn) SpawnMines();
-        if (onTestProgressionSpawn) StartCoroutine(AddAndSpawnMines(2, 3));
+        if (onTestSpawn)
+        {
+            Debug.Log("isSpawn = " + _isSpawn);
+            SpawnMines();
+        }
+        if (onTestProgressionSpawn && !_isAdding)
+        {
+            StartCoroutine(AddMinesToListWhithDalay(numberOfDebuffMines, 3, debufDelayOfSpawn));
+        }
+        //if (onTestProgressionSpawn) AddMinesToList(numberOfDebuffMines, 3, debufDelayOfSpawn);
+        //SpawnMinesFromList(debuffMineList);
     }
 
     // Добавляет трансформы переданных мин в список запрещенных точек спавна.
@@ -104,7 +120,7 @@ public class MineSpawner : MonoBehaviour
         {
             if (mine != null)
             {
-                Transform mineTransform = mine.GetMine().transform;
+                Transform mineTransform = mine.MineGameObject.transform;
                 if (!forbiddenSpawnPoints.Contains(mineTransform))
                 {
                     forbiddenSpawnPoints.Add(mineTransform);
@@ -112,13 +128,14 @@ public class MineSpawner : MonoBehaviour
             }
         }
     }
+
     private void AddForbiddenSpawnPoints(List<Mine> mines)
     {
         foreach (var mine in mines)
         {
             if (mine != null)
             {
-                Transform mineTransform = mine.GetMine().transform;
+                Transform mineTransform = mine.MineGameObject.transform;
                 if (!forbiddenSpawnPoints.Contains(mineTransform))
                 {
                     forbiddenSpawnPoints.Add(mineTransform);
@@ -140,68 +157,83 @@ public class MineSpawner : MonoBehaviour
 
     public void SpawnMinesFromList(MineList mineList)
     {
-        foreach (Mine mine in mineList.Minelist)
+        // Перебираем список с конца
+        for (int i = mineList.Minelist.Count - 1; i >= 0; i--)
         {
-            SpawnMine(mine);
+            Mine mine = mineList.Minelist[i];
+
+            // Проверяем, если мина не активирована (не задисейблена), то спавним
+            if (!mine.MineGameObject.activeSelf && !_isSpawn)
+            {
+                _isSpawn = true;
+                //Debug.Log("Заспавнены мины из одного списка!!!");
+                SpawnMine(mine, mine.Cooldown);
+            }
         }
     }
 
-    public IEnumerator AddAndSpawnMines(int numOfMines, uint typeOfMine, float delayBetweenSpawns = 0.5f)
+    public IEnumerator AddMinesToListWhithDalay(int numOfMines, uint typeOfMine, float delayBetweenSpawns = 0.5f)
     {
-        Mine newMine = null;
+        _isAdding = true;
+
         while (numOfMines > 0)
         {
-            switch (typeOfMine)
-            {
-                case 0:
-                    newMine = this.healMineList.AddMine(HealMinePrefab, healCooldown,
-                        (number, cooldown, mineGameObject) => new HealMine(number, cooldown, mineGameObject));
-                    this.SpawnMine(newMine);
-                    break;
-
-                case 1:
-                    newMine = this.damageMineList.AddMine(DamageMinePrefab, damageCooldown,
-                        (number, cooldown, mineGameObject) => new DamageMine(number, cooldown, mineGameObject));
-                    this.SpawnMine(newMine);
-                    break;
-
-                case 2:
-                    newMine = this.buffMineList.AddMine(BuffMinePrefab, speedBufCooldown, speedBuf, buffTime, buffTimeBeforeExplosion, buffRadiusOfExplosion,
-                        (number, cooldown, mineGameObject, speedbuff, buffcooldown, buffTimeBeforeExplosion, buffRadiusOfExplosion) => new BuffSpeedMine(number, cooldown, mineGameObject, speedbuff, buffcooldown, buffTimeBeforeExplosion, buffRadiusOfExplosion));
-                    this.SpawnMine(newMine);
-                    break;
-
-                case 3:
-                    newMine = this.debuffMineList.AddMine(DebuffMinePrefab, speedDebufCooldown, speedDebuf, debuffTime, buffTimeBeforeExplosion, buffRadiusOfExplosion,
-                        (number, cooldown, mineGameObject, speedbuff, buffcooldown, buffTimeBeforeExplosion, buffRadiusOfExplosion) => new BuffSpeedMine(number, cooldown, mineGameObject, speedbuff, buffcooldown, buffTimeBeforeExplosion, buffRadiusOfExplosion));
-                    this.SpawnMine(newMine);
-                    break;
-            }
+            AddMineByType(typeOfMine);
 
             numOfMines--;
 
-            // Задержка перед созданием следующей мины
-            if (delayBetweenSpawns > 0)
-                yield return new WaitForSeconds(delayBetweenSpawns);
-            else
-                yield return null;
+            yield return new WaitForSeconds(delayBetweenSpawns);
+        }
+
+        _isAdding = false;
+    }
+
+    private void AddMineByType(uint typeOfMine)
+    {
+        switch (typeOfMine)
+        {
+            case 0:
+                this.healMineList.AddMine(HealMinePrefab, healCooldown, (number, cooldown, mineGameObject) =>
+                    new HealMine(number, cooldown, mineGameObject));
+                break;
+            case 1:
+                this.damageMineList.AddMine(DamageMinePrefab, damageCooldown, (number, cooldown, mineGameObject) =>
+                    new DamageMine(number, cooldown, mineGameObject));
+                break;
+            case 2:
+                this.buffMineList.AddMine(BuffMinePrefab, speedBufCooldown, speedBuf, buffTime, buffTimeBeforeExplosion,
+                    buffRadiusOfExplosion, buffDamage, (number, cooldown, mineGameObject, speedbuff, buffcooldown,
+                        buffTimeBeforeExplosion, buffRadiusOfExplosion, buffDamage) =>
+                        new BuffSpeedMine(number, cooldown, mineGameObject, speedbuff, buffcooldown,
+                            buffTimeBeforeExplosion, buffRadiusOfExplosion, buffDamage));
+                break;
+            case 3:
+                this.debuffMineList.AddMine(DebuffMinePrefab, speedDebufCooldown, speedDebuf, debuffTime,
+                    buffTimeBeforeExplosion, buffRadiusOfExplosion, debuffDamage, (number, cooldown, mineGameObject,
+                        speedbuff, buffcooldown, buffTimeBeforeExplosion, buffRadiusOfExplosion, debuffDamage) =>
+                        new BuffSpeedMine(number, cooldown, mineGameObject, speedbuff, buffcooldown,
+                            buffTimeBeforeExplosion, buffRadiusOfExplosion, debuffDamage));
+                break;
         }
     }
 
 
-    public void SpawnMine(Mine mine)
+    public void SpawnMine(Mine mine, float cooldawn)
     {
-        StartCoroutine(SpawnMineWithDelay(mine));
+        StartCoroutine(SpawnMineWithDelay(mine, cooldawn));
     }
 
-    private IEnumerator SpawnMineWithDelay(Mine mine)
+    private IEnumerator SpawnMineWithDelay(Mine mine, float cooldawn)
     {
+        //Debug.Log("Спавним мину!!!");
+        //mine.SetActive(false);
         this.AddForbiddenSpawnPoints(healMineList.Minelist);
         this.AddForbiddenSpawnPoints(damageMineList.Minelist);
         this.AddForbiddenSpawnPoints(buffMineList.Minelist);
         this.AddForbiddenSpawnPoints(debuffMineList.Minelist);
 
-        yield return new WaitForSeconds(mine.GetCooldown());
+        float delay = mine.IsFirstSpawn ? 0f : cooldawn;
+        yield return new WaitForSeconds(delay);
 
         Vector3 randomPosition;
         bool positionValid;
@@ -209,8 +241,8 @@ public class MineSpawner : MonoBehaviour
 
         do
         {
-            float xPos = Random.Range(CenterPoint.position.x - spawnAreaSize.x / 2, CenterPoint.position.x + spawnAreaSize.x / 2);
-            float zPos = Random.Range(CenterPoint.position.z - spawnAreaSize.y / 2, CenterPoint.position.z + spawnAreaSize.y / 2);
+            int xPos = Mathf.RoundToInt(Random.Range(CenterPoint.position.x - spawnAreaSize.x / 2, CenterPoint.position.x + spawnAreaSize.x / 2));
+            int zPos = Mathf.RoundToInt(Random.Range(CenterPoint.position.z - spawnAreaSize.y / 2, CenterPoint.position.z + spawnAreaSize.y / 2));
 
             randomPosition = new Vector3(xPos, yPositionOfSpawnMine, zPos);
             positionValid = true;
@@ -218,7 +250,7 @@ public class MineSpawner : MonoBehaviour
             foreach (Transform forbiddenPoint in forbiddenSpawnPoints)
             {
                 numOfIterations++;
-                if (Vector3.Distance(randomPosition, forbiddenPoint.position) < allowedDistanseForForrbidenSpawnPoint) 
+                if (Vector3.Distance(randomPosition, forbiddenPoint.position) < allowedDistanseForForrbidenSpawnPoint)
                 {
                     positionValid = false;
                     break;
@@ -226,18 +258,16 @@ public class MineSpawner : MonoBehaviour
             }
         } while (!positionValid && numOfIterations < 1000000);
 
-        if (numOfIterations < 100000)
+
+        mine.MineGameObject.transform.position = randomPosition;
+
+        if (parentTransform != null)
         {
-            mine.GetMine().transform.position = randomPosition;
-
-            if (parentTransform != null)
-            {
-                mine.GetMine().transform.SetParent(parentTransform);
-            }
-
-            mine.SetActive(true);
+            mine.MineGameObject.transform.SetParent(parentTransform);
         }
 
-    }
+        mine.SetActive(true);
 
+        _isSpawn = false;
+    }
 }

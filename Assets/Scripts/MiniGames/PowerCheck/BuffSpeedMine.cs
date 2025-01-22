@@ -9,36 +9,57 @@ public class BuffSpeedMine : Mine
     private float BuffCooldown;
     private int TimeBeforeExplosion;
     private float MaxRadius;
+    private uint Damage;
 
-    public BuffSpeedMine(uint number, float сooldown, GameObject mine, float speedbuff, float buffcooldown, int timebeforeexplosion, float radius) : base(number, сooldown, mine)
+    // Словарь для отслеживания активных баффов
+    private Dictionary<MiniGamePlayer, bool> activeBuffs = new Dictionary<MiniGamePlayer, bool>();
+
+    public BuffSpeedMine(uint number, float сooldown, GameObject mine, float speedbuff, float buffcooldown, int timebeforeexplosion, float radius, uint damage)
+        : base(number, сooldown, mine)
     {
         this.SpeedBuff = speedbuff;
         this.BuffCooldown = buffcooldown;
-        this.TimeBeforeExplosion = timebeforeexplosion;
+        this.TimeBeforeExplosion = timebeforeexplosion * 1000;
         this.MaxRadius = radius;
+        this.Damage = damage;
     }
 
-    public float GetSpeedBuff()
+    public float GetSpeedBuff() => this.SpeedBuff;
+    public float GetBuffCooldown() => this.BuffCooldown;
+    public int GetTimeBeforeExplosion() => this.TimeBeforeExplosion;
+
+    public async Task BuffSpeed(MiniGamePlayer player)
     {
-        return this.SpeedBuff;
-    }
-    public float GetBuffCooldown()
-    {
-        return this.BuffCooldown;
-    }
-    public int GetTimeBeforeExplosion()
-    {
-        return this.TimeBeforeExplosion;
+        // Проверяем, есть ли активный бафф на данном объекте
+        if (activeBuffs.ContainsKey(player) && activeBuffs[player])
+        {
+            Debug.LogWarning($"Buff is already active for {player.name}");
+            return; // Не применяем бафф повторно
+        }
+
+        // Устанавливаем флаг выполнения
+        activeBuffs[player] = true;
+
+        try
+        {
+            // Применяем начальный бафф
+            player.TakeSpeedboost(this.SpeedBuff);
+            player.TakeDamage(this.Damage);
+
+            // Ждём указанное время
+            await Task.Delay((int)(this.BuffCooldown * 1000));
+
+            // Убираем бафф
+            player.TakeSpeedboost(1f);
+        }
+        finally
+        {
+            // Сбрасываем флаг выполнения
+            activeBuffs[player] = false;
+        }
     }
 
-   public async Task BuffSpeed(Player player)
-{
-    player.TakeSpeedboost(this.SpeedBuff); // Применяем начальный бафф
-    await Task.Delay((int)(this.BuffCooldown * 1000)); // Ждём указанное время (в миллисекундах)
-    player.TakeSpeedboost(1 / this.SpeedBuff); // Убираем бафф
-}
-
-    public async Task BuffSpeedList(List<Player> players)
+    public async Task BuffSpeedList(List<MiniGamePlayer> players)
     {
         foreach (var player in players)
         {
@@ -49,22 +70,20 @@ public class BuffSpeedMine : Mine
         }
     }
 
-    public List<Player> FindDistanceToMine(params GameObject[] positions)
+    public List<MiniGamePlayer> FindDistanceToMine(Vector3 minePosition, params GameObject[] playerspositions)
     {
-        Vector3 minePosition = this.MineGameObject.transform.position;
-        List<Player> closeObjects = new List<Player>();
+        List<MiniGamePlayer> closeObjects = new List<MiniGamePlayer>();
 
-        foreach (var obj in positions)
+        foreach (var obj in playerspositions)
         {
             if (obj != null) // Проверяем, что объект не null
             {
                 float distance = Vector3.Distance(minePosition, obj.transform.position);
                 if (distance <= this.MaxRadius)
                 {
-                    Player objChar = obj.GetComponent<Player>();
-                    if(objChar != null) closeObjects.Add(objChar);
+                    MiniGamePlayer objChar = obj.GetComponent<MiniGamePlayer>();
+                    if (objChar != null) closeObjects.Add(objChar);
                 }
-                Debug.Log($"Distance to {obj.name}: {distance}");
             }
             else
             {
@@ -73,6 +92,5 @@ public class BuffSpeedMine : Mine
         }
 
         return closeObjects;
-    }  
-
+    }
 }

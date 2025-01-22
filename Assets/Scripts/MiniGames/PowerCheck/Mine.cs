@@ -2,39 +2,46 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Mine 
+public class Mine
 {
-    protected uint Number;
-    protected float Сooldown;
-    protected GameObject MineGameObject;
+    private uint number;            // private поле
+    private float cooldown;         // private поле
+    private GameObject mineGameObject;  // private поле
+    private bool isFirst = true;    // private поле
 
-    public Mine(uint number, float сooldown, GameObject mine)
+    public Mine(uint number, float cooldown, GameObject mine)
     {
-        Number = number;
-        Сooldown = сooldown;;
-        MineGameObject = mine;
+        this.number = number;
+        this.cooldown = cooldown;
+        this.mineGameObject = mine;
     }
 
-    public uint GetNumber()
+    // Публичные свойства для доступа к полям
+    public uint Number
     {
-        return this.Number;
+        get { return this.number; }
     }
 
-    public float GetCooldown()
+    public float Cooldown
     {
-        return this.Сooldown;
+        get { return this.cooldown; }
     }
 
-    public GameObject GetMine()
+    public GameObject MineGameObject
     {
-        return this.MineGameObject;
+        get { return this.mineGameObject; }
+    }
+
+    public bool IsFirstSpawn
+    {
+        get { return this.isFirst; }
     }
 
     public void SetActive(bool isActive)
     {
-        if (MineGameObject != null)
+        if (mineGameObject != null)
         {
-            MineGameObject.SetActive(isActive);
+            mineGameObject.SetActive(isActive);
         }
         else
         {

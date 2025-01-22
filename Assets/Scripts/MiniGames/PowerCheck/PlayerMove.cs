@@ -6,11 +6,13 @@ public class PlayerMove : MonoBehaviour
 {
     [Header("Movement Params")]
 
+    [SerializeField] private float _runDefaultSpeed = 6.0f;
     [SerializeField] private float _runSpeed = 6.0f;
     [SerializeField] private float _rotationSpeed = 20f;
     [SerializeField] private Transform _cameraTrnsform;
 
     private Rigidbody _rb;
+    private MiniGamePlayer _playerChar;
 
     private void Awake()
     {
@@ -24,6 +26,10 @@ public class PlayerMove : MonoBehaviour
         HandleHorizontalMovement();
     }
 
+    public void ChangeSpeed(float speed)
+    {
+        _runSpeed = _runDefaultSpeed * speed;
+    }
     
     private void HandleHorizontalMovement()
     {
@@ -56,6 +62,7 @@ public class PlayerMove : MonoBehaviour
             Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
         }
+
 
         Vector3 velocity = moveDirection * _runSpeed;
         _rb.velocity = new Vector3(velocity.x, _rb.velocity.y, velocity.z);

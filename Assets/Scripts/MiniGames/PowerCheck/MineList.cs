@@ -28,14 +28,14 @@ public class MineList
     }
 
     // Инициализация списка мин с бафом к скорости
-    public void InitializeSpeedBuffMines(GameObject prefab, float cooldown, float speedbuff, float buffcooldown, int timebeforeexplosion, float radius)
+    public void InitializeSpeedBuffMines(GameObject prefab, float cooldown, float speedbuff, float buffcooldown, int timebeforeexplosion, float radius, uint damage)
     {
         for (int i = 0; i < Length; i++)
         {
             uint number = (uint)i;
             GameObject mineGameObject = Object.Instantiate(prefab);
             mineGameObject.SetActive(false);
-            Mine newMine = new BuffSpeedMine(number, cooldown, mineGameObject, speedbuff, buffcooldown, timebeforeexplosion, radius);
+            Mine newMine = new BuffSpeedMine(number, cooldown, mineGameObject, speedbuff, buffcooldown, timebeforeexplosion, radius, damage);
             Minelist.Add(newMine);
         }
     }
@@ -60,7 +60,7 @@ public class MineList
         return Minelist[Minelist.Count - 1];
     }
 
-    public Mine AddMine(GameObject prefab, float cooldown, float speedbuff, float buffcooldown, int timebeforeexplosion, float radius, System.Func<uint, float, GameObject, float, float, int, float, Mine> createMine)
+    public Mine AddMine(GameObject prefab, float cooldown, float speedbuff, float buffcooldown, int timebeforeexplosion, float radius, uint damage, System.Func<uint, float, GameObject, float, float, int, float, uint, Mine> createMine)
     {
         // Создать уникальный номер для новой мины
         uint number = (uint)Minelist.Count;
@@ -70,7 +70,7 @@ public class MineList
         mineGameObject.SetActive(false);
 
         // Создать объект мины с помощью переданной функции
-        Mine newMine = createMine(number, cooldown, mineGameObject, speedbuff, buffcooldown, timebeforeexplosion, radius);
+        Mine newMine = createMine(number, cooldown, mineGameObject, speedbuff, buffcooldown, timebeforeexplosion, radius, damage);
 
         // Добавить новую мину в список
         Minelist.Add(newMine);
