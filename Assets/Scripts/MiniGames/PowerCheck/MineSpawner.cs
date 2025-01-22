@@ -1,3 +1,4 @@
+using Assets.Scripts.MiniGames.PowerCheck.GridCoordinates;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,8 @@ public class MineSpawner : MonoBehaviour
     [Header("Spawn Settings")]
     [SerializeField] private Transform CenterPoint;                         // Центр спавна мин
     [SerializeField] private Vector2 spawnAreaSize = new Vector2(10, 10);   // Размер области спавна
+    public GridCordinates Coordinates;                    // Координаты
+
     [SerializeField] private Transform parentTransform;                     // Родительский объект для мин
     [SerializeField] private List<Transform> forbiddenSpawnPoints;          // Точки, где спавн запрещен
     [SerializeField] private float allowedDistanseForForrbidenSpawnPoint;   // Дистанция до точек где спавн запрещен
@@ -94,6 +97,7 @@ public class MineSpawner : MonoBehaviour
         damageMineList.InitializeMines(DamageMinePrefab, damageCooldown, (number, cooldown, mineGameObject) => new DamageMine(number, cooldown, mineGameObject));
         buffMineList.InitializeSpeedBuffMines(BuffMinePrefab, speedBufCooldown, speedBuf, buffTime, buffTimeBeforeExplosion, buffRadiusOfExplosion, buffDamage);
         debuffMineList.InitializeSpeedBuffMines(DebuffMinePrefab, speedDebufCooldown, speedDebuf, debuffTime, debuffTimeBeforeExplosion, debuffRadiusOfExplosion, debuffDamage);
+        //Coordinates.DrawMatrix();
 
         //SpawnMines();
     }
@@ -239,12 +243,23 @@ public class MineSpawner : MonoBehaviour
         bool positionValid;
         int numOfIterations = 0;
 
+        // Проверка на корректность размеров матрицы
+        if (Coordinates.MatrixHeight == 0 || Coordinates.MatrixWidth == 0 || Coordinates == null || Coordinates.CordMatrix.Count == 0)
+        {
+            Debug.LogError("Матрица координат пуста или имеет неверные размеры.");
+            yield break;
+        }
+
         do
         {
-            int xPos = Mathf.RoundToInt(Random.Range(CenterPoint.position.x - spawnAreaSize.x / 2, CenterPoint.position.x + spawnAreaSize.x / 2));
-            int zPos = Mathf.RoundToInt(Random.Range(CenterPoint.position.z - spawnAreaSize.y / 2, CenterPoint.position.z + spawnAreaSize.y / 2));
 
-            randomPosition = new Vector3(xPos, yPositionOfSpawnMine, zPos);
+            Random.InitState(System.DateTime.Now.Millisecond); // Инициализация случайного генератора с текущим временем
+            int randomRow = Mathf.RoundToInt(Random.Range(0, Coordinates.MatrixWidth));
+            int randomColumn = Mathf.RoundToInt(Random.Range(0, Coordinates.MatrixHeight));
+
+            Vector2 cellposition = Coordinates.CordMatrix[randomRow][randomColumn].Center /*new Vector2(randomRow, randomColumn)*/; 
+
+            randomPosition = new Vector3(cellposition.x, yPositionOfSpawnMine, cellposition.y);
             positionValid = true;
 
             foreach (Transform forbiddenPoint in forbiddenSpawnPoints)
