@@ -1084,7 +1084,7 @@ Transform:
   m_GameObject: {fileID: 196103639}
   serializedVersion: 2
   m_LocalRotation: {x: 0.3189593, y: 0, z: 0, w: 0.94776845}
-  m_LocalPosition: {x: 75.68, y: 21.5, z: -15.3}
+  m_LocalPosition: {x: 75.68, y: 32, z: -25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3460,7 +3460,7 @@ Rigidbody:
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
-  m_AngularDrag: 0.05
+  m_AngularDrag: 10000
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -4849,7 +4849,7 @@ Transform:
   m_GameObject: {fileID: 1247231989}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 74.5, y: 0, z: 5.4}
+  m_LocalPosition: {x: 74.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5302,7 +5302,7 @@ Transform:
   m_GameObject: {fileID: 1323262235}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.3, y: 0, z: 5.4}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5774,7 +5774,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CenterPoint: {fileID: 1102451508}
   spawnAreaSize: {x: 18, y: 18}
-  Coordinates: {fileID: 1324929175}
+  CoordinatesGameObject: {fileID: 1324929173}
   parentTransform: {fileID: 1247231990}
   forbiddenSpawnPoints:
   - {fileID: 356526401}

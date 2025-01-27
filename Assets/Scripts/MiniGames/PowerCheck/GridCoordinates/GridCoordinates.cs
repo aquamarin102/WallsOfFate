@@ -18,24 +18,26 @@ namespace Assets.Scripts.MiniGames.PowerCheck.GridCoordinates
         {
             InitializeMatrix();
             DrawMatrix();
+
+            GridCordEl gridCordEl = FindCellsByPosition(new Vector3(9.4f, 0, 9.4f));
+            Debug.Log(gridCordEl.Center);
         }
 
         /// <summary>
         /// Инициализация матрицы координат
         /// </summary>
-        private void InitializeMatrix()
+        public void InitializeMatrix()
         {
             CordMatrix = new List<List<GridCordEl>>();
-
-            Vector2 pos = Vector2.zero;
-            GridCordEl gridel = new GridCordEl(pos, CellWidth, CellWidth, TypeOfCordEl.NotOccupied);
 
             for (int i = 0; i < MatrixHeight; i++)
             {
                 var row = new List<GridCordEl>();
                 for (int j = 0; j < MatrixWidth; j++)
                 {
-                    row.Add(gridel); // По умолчанию все клетки незаняты
+                    Vector2 pos = Vector2.zero;
+                    GridCordEl gridel = new GridCordEl(CellWidth, CellHeight, TypeOfCordEl.NotOccupied, i, j);
+                    row.Add(gridel); 
                 }
                 CordMatrix.Add(row);
             }
@@ -68,10 +70,117 @@ namespace Assets.Scripts.MiniGames.PowerCheck.GridCoordinates
                         i * CellHeight + CellHeight / 2f);
                     
                     DrawCell(cellPosition, i, j, ParentForAllCells);
+                    CordMatrix[i][j].SetGlobalCenter(cellPosition);
 
-                    CordMatrix[i][j].SetCenter(cellPosition);
+                    Vector3 localPosition = ParentForAllCells.InverseTransformPoint(cellPosition);
+                    CordMatrix[i][j].SetCenter(localPosition);
                 }
             }
+        }
+
+        private GridCordEl FindCellsByPosition(Vector3 position)
+        {
+            Vector2 position2d = new Vector2(position.x, position.z);
+
+            int maxRow = Mathf.RoundToInt(Mathf.Log(CordMatrix.Count) / Mathf.Log(2));
+
+            int rowIndex = CordMatrix.Count / 2, ifincell = -1;
+            int colIndex = 0;
+            BinaryCycle(position2d, CordMatrix.Count, ref rowIndex, ref colIndex, ref ifincell, false);
+
+            if (ifincell == 1) return CordMatrix[rowIndex][colIndex];
+            else if (ifincell == 0)
+            {
+                colIndex = CordMatrix[rowIndex].Count / 2;
+                int maxCol = Mathf.RoundToInt(Mathf.Log(CordMatrix[rowIndex].Count) / Mathf.Log(2));
+                BinaryCycle(position2d, CordMatrix[rowIndex].Count, ref colIndex, ref rowIndex, ref ifincell, true);
+                if (ifincell == 1) return CordMatrix[rowIndex][colIndex];
+            }
+
+            return null;
+        }
+
+        private void BinaryCycle(Vector2 position2d, int limit, ref int index, ref int secondaryIndex,
+            ref int ifInCell, bool searchByX)
+        {
+            if (ifInCell == 0 || ifInCell == 1) ifInCell = -1; 
+            int prevIndex = 0, numOfSteps = 0;
+            while (index >= 0 && index < limit /*numOfSteps <= limit + 1*/)
+            {
+                if (ifInCell == 0 || ifInCell == 1) break;
+
+                int step = Mathf.RoundToInt(Mathf.Abs(index - prevIndex) / 2);
+                if(step == 0) step = 1;
+                prevIndex = index;
+                if (searchByX)
+                {
+                    float comparisonValue = CordMatrix[secondaryIndex][index].Center.x;
+                    index += comparisonValue < position2d.x ? step : -step;
+                    ifInCell = IfPointInCell(position2d, secondaryIndex, index, searchByX);
+                }
+                else
+                {
+                    float comparisonValue = CordMatrix[index][secondaryIndex].Center.y;
+                    index += comparisonValue < position2d.y ? step : -step;
+                    ifInCell = IfPointInCell(position2d, index, secondaryIndex, searchByX);
+                }
+                numOfSteps++;
+            }
+        }
+
+        // возвращает 3 состояния
+        // если обе координаты попали в область клетки то 1
+        // если только одна координата поппала в область то 0
+        // иначе -1
+        private int IfPointInCell(Vector2 pointPosition, int rowIndex, int colIndex,  bool findRow)
+        {
+            if (IsOutOfBounds(rowIndex, colIndex)) return -1;
+
+            float leftBorder = CordMatrix[rowIndex][colIndex].Center.x - CordMatrix[rowIndex][colIndex].Width / 2;
+            float rightBorder = CordMatrix[rowIndex][colIndex].Center.x + CordMatrix[rowIndex][colIndex].Width / 2;
+            float topBorder = CordMatrix[rowIndex][colIndex].Center.y - CordMatrix[rowIndex][colIndex].Height / 2;
+            float bottomBorder = CordMatrix[rowIndex][colIndex].Center.y + CordMatrix[rowIndex][colIndex].Height / 2;
+
+            bool xInRange = leftBorder <= pointPosition.x && pointPosition.x <= rightBorder;
+            bool yInRange =  topBorder <= pointPosition.y && pointPosition.y <= bottomBorder;
+
+            if (xInRange && yInRange && findRow) return 1;
+            if ((xInRange || yInRange) && !findRow) return 0;
+
+            return -1;
+        }
+
+        //public HashSet<GridCordEl> GetAdjacentCells(Vector2 pointPosition, float width, float height, int row, int col)
+        //{
+        //    HashSet<GridCordEl> adjacentCells = new HashSet<GridCordEl>();
+        //    RecursivelyFindCells(pointPosition, width, height, row, col, adjacentCells);
+        //    return adjacentCells;
+        //}
+
+        //private void RecursivelyFindCells(Vector2 pointPosition, float width, float height, int row, int col, HashSet<GridCordEl> adjacentCells)
+        //{
+        //    // Проверка выхода за границы
+        //    if (row < 0 || row >= CordMatrix.Count || col < 0 || col >= CordMatrix[row].Count)
+        //        return;
+
+        //    GridCordEl currentCell = CordMatrix[row][col];
+
+        //    // Проверка на пересечение
+        //    if (IfPointInCell(pointPosition, width, height, true))
+        //    {
+        //        adjacentCells.Add(currentCell);
+        //    }
+
+        //    // Рекурсивный вызов для соседних клеток
+        //    RecursivelyFindCells(pointPosition, width, height, row - 1, col, adjacentCells); // Верхняя клетка
+        //    RecursivelyFindCells(pointPosition, width, height, row + 1, col, adjacentCells); // Нижняя клетка
+        //    RecursivelyFindCells(pointPosition, width, height, row, col - 1, adjacentCells); // Левую клетка
+        //    RecursivelyFindCells(pointPosition, width, height, row, col + 1, adjacentCells); // Правую клетка
+        //}
+
+        private bool IsOutOfBounds(int row, int col)
+        {
+            return row < 0 || row >= CordMatrix.Count || col < 0 || col >= CordMatrix[row].Count;
         }
 
         private void DrawCell(Vector3 cellPosition, int i, int j, Transform parent)

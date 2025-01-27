@@ -33,18 +33,30 @@ public class EnemyMove : MonoBehaviour
 
     private void HandleHorizontalMovement()
     {
+        // Обработка нажатия клавиш
+        //if (Input.GetKeyDown(KeyCode.O)) isMovingUp = true;
+        //if (Input.GetKeyDown(KeyCode.K)) isMovingLeft = true;
+        //if (Input.GetKeyDown(KeyCode.L)) isMovingDown = true;
+        //if (Input.GetKeyDown(KeyCode.Semicolon)) isMovingRight = true;
+
+        //// Обработка отпускания клавиш
+        //if (Input.GetKeyUp(KeyCode.O)) isMovingUp = false;
+        //if (Input.GetKeyUp(KeyCode.K)) isMovingLeft = false;
+        //if (Input.GetKeyUp(KeyCode.L)) isMovingDown = false;
+        //if (Input.GetKeyUp(KeyCode.Semicolon)) isMovingRight = false;
+
+        // Построение вектора направления
         Vector2 moveInput = Vector2.zero;
 
-        // Handling explicit key inputs
-        if (Input.GetKey(KeyCode.P)) moveInput.y = 1;  // Up
-        else if (Input.GetKey(KeyCode.K)) moveInput.x = -1; // Left
-        else if (Input.GetKey(KeyCode.L)) moveInput.y = -1; // Down
-        else if (Input.GetKey(KeyCode.Semicolon)) moveInput.x = 1; // Right
-        else moveInput = Vector2.zero;
-        
+        // Обработка нажатия клавиш (удержание)
+        if (Input.GetKey(KeyCode.O)) moveInput.y += 1;     // Вверх
+        if (Input.GetKey(KeyCode.K)) moveInput.x -= 1;     // Влево
+        if (Input.GetKey(KeyCode.L)) moveInput.y -= 1;     // Вниз
+        if (Input.GetKey(KeyCode.Semicolon)) moveInput.x += 1; // Вправо
+
         if (moveInput == Vector2.zero) return;
 
-        Vector3 movePlayerInputDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
+        Vector3 movePlayerInputDirection = new Vector3(moveInput.x, this.GetComponent<Transform>().position.y, moveInput.y).normalized;
         Vector3 moveDirection = Vector3.zero;
 
         // Получение угла из ориентации камеры
