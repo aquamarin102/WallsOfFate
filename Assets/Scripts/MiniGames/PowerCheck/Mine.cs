@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Mine
 {
-    private uint number;            // private поле
-    private float cooldown;         // private поле
-    private GameObject mineGameObject;  // private поле
-    private bool isFirst = true;    // private поле
+    private uint number;           
+    private float cooldown;         
+    private GameObject mineGameObject;  
+    private bool isFirst = true;    
 
     public Mine(uint number, float cooldown, GameObject mine)
     {
@@ -35,6 +35,7 @@ public class Mine
     public bool IsFirstSpawn
     {
         get { return this.isFirst; }
+        set { this.isFirst = value; }
     }
 
     public void SetActive(bool isActive)

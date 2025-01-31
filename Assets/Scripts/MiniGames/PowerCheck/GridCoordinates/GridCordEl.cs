@@ -17,6 +17,7 @@ namespace Assets.Scripts.MiniGames.PowerCheck.GridCoordinates
         public int Column { get; private set; }
         public TypeOfCordEl TypeOfEl { get; private set; }
         public GridCordEl PreviousEl = null;
+        public GameObject GridElGameObject = null;
 
         public GridCordEl (float width, float height, TypeOfCordEl typeofel, int row, int column)
         {
@@ -34,6 +35,20 @@ namespace Assets.Scripts.MiniGames.PowerCheck.GridCoordinates
         public void SetGlobalCenter(Vector3 center)
         {
             GlobalCenter = new Vector2(center.x, center.z); // Переводим из Vector3 в Vector2
+        }
+        public void ChangeColour(Color colour)
+        {
+            var cellGameObjectRenderer = this.GridElGameObject.GetComponent<Renderer>();
+            if (cellGameObjectRenderer != null)
+            {
+                // Создаем экземпляр материала
+                cellGameObjectRenderer.material = new Material(cellGameObjectRenderer.material);
+                cellGameObjectRenderer.material.color = colour;
+            }
+            else
+            {
+                Debug.LogWarning("cellGameObjectRenderer is null");
+            }
         }
     }
 }

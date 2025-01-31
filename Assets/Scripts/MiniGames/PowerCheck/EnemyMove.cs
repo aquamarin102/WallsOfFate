@@ -1,90 +1,127 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.AI;
 
+
+[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(MiniGamePlayer))]
 public class EnemyMove : MonoBehaviour
 {
     [Header("Movement Params")]
+    [SerializeField] private MineSpawner _mineSpawner;
+    [SerializeField] private MiniGamePlayer _characteristics;
 
-    [SerializeField] private float _runDefaultSpeed = 6.0f;
-    [SerializeField] private float _runSpeed = 6.0f;
-    [SerializeField] private float _rotationSpeed = 20f;
-    [SerializeField] private Transform _cameraTrnsform;
+    private Queue<Vector3> _targetsQueue = new Queue<Vector3>(); // Очередь целей
 
     private Rigidbody _rb;
     private MiniGamePlayer _playerChar;
+    private NavMeshAgent _Agent;
+    private float _baseAgentSpeed;
+    private bool _underDebuff;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
 
         _rb.useGravity = false;
+        _Agent = GetComponent<NavMeshAgent>();
+
+        _characteristics = this.GetComponent<MiniGamePlayer>();
+        _baseAgentSpeed = _characteristics.Speed;
+    }
+
+    private void Start()
+    {
+        if (!HasTargetQueue())
+        {
+            UpdateTargetPoints();
+        }
     }
 
     private void FixedUpdate()
     {
-        HandleHorizontalMovement();
+
+        UpdateTargetPoints();
+        if (!_Agent.pathPending && HasTargetQueue())
+        {
+            SetNextDestination();
+        }
+
+        Vector3 pos = _Agent.transform.position;
+        pos.y = 0; // Принудительно фиксируем Y
+        _Agent.transform.position = pos;
     }
 
-    public void ChangeSpeed(float speed)
+    private void UpdateTargetPoints()
     {
-        _runSpeed = _runDefaultSpeed * speed;
+        List<Mine> allMines = new List<Mine>();
+
+        // Добавляем ближайшую мину из каждой категории
+        if (_mineSpawner.HealMines.Count > 0) allMines.Add(FindClosestMine(_mineSpawner.HealMines));
+        if (_mineSpawner.DamageMines.Count > 0) allMines.Add(FindClosestMine(_mineSpawner.DamageMines));
+        if (_mineSpawner.BuffMines.Count > 0) allMines.Add(FindClosestMine(_mineSpawner.BuffMines));
+
+
+        // Сортируем точки по расстоянию от агента
+        var sortedMines = allMines
+            .Where(m => m != null)
+            .OrderBy(m => Vector3.Distance(transform.position, m.MineGameObject.transform.position));
+        _targetsQueue.Clear(); // Очищаем старые цели
+        foreach (var mine in sortedMines)
+        {
+            _targetsQueue.Enqueue(mine.MineGameObject.transform.position);
+        }
+
+        //SetNextDestination();
     }
 
-    private void HandleHorizontalMovement()
+    private Mine FindClosestMine(IReadOnlyList<Mine> mines)
     {
-        // Обработка нажатия клавиш
-        //if (Input.GetKeyDown(KeyCode.O)) isMovingUp = true;
-        //if (Input.GetKeyDown(KeyCode.K)) isMovingLeft = true;
-        //if (Input.GetKeyDown(KeyCode.L)) isMovingDown = true;
-        //if (Input.GetKeyDown(KeyCode.Semicolon)) isMovingRight = true;
+        return mines
+            .Where(m => m.MineGameObject.activeSelf)
+            .OrderBy(m => Vector3.Distance(transform.position, m.MineGameObject.transform.position))
+            .FirstOrDefault();
+    }
 
-        //// Обработка отпускания клавиш
-        //if (Input.GetKeyUp(KeyCode.O)) isMovingUp = false;
-        //if (Input.GetKeyUp(KeyCode.K)) isMovingLeft = false;
-        //if (Input.GetKeyUp(KeyCode.L)) isMovingDown = false;
-        //if (Input.GetKeyUp(KeyCode.Semicolon)) isMovingRight = false;
-
-        // Построение вектора направления
-        Vector2 moveInput = Vector2.zero;
-
-        // Обработка нажатия клавиш (удержание)
-        if (Input.GetKey(KeyCode.O)) moveInput.y += 1;     // Вверх
-        if (Input.GetKey(KeyCode.K)) moveInput.x -= 1;     // Влево
-        if (Input.GetKey(KeyCode.L)) moveInput.y -= 1;     // Вниз
-        if (Input.GetKey(KeyCode.Semicolon)) moveInput.x += 1; // Вправо
-
-        if (moveInput == Vector2.zero) return;
-
-        Vector3 movePlayerInputDirection = new Vector3(moveInput.x, this.GetComponent<Transform>().position.y, moveInput.y).normalized;
-        Vector3 moveDirection = Vector3.zero;
-
-        // Получение угла из ориентации камеры
-        float cameraAngle = _cameraTrnsform.eulerAngles.y * Mathf.Deg2Rad;
-
-        // Вычисление тригонометрических значений
-        float sinAngle = Mathf.Sin(cameraAngle);
-        float cosAngle = Mathf.Cos(cameraAngle);
-        float cotAngle = cosAngle / sinAngle; // ctg(x) = cos(x) / sin(x)
-        if (sinAngle != 0)
+    private void SetNextDestination()
+    {
+        if (_targetsQueue.Count > 0)
         {
-            // Формулы для moveDirection
-            moveDirection.x = (movePlayerInputDirection.z + movePlayerInputDirection.x * cotAngle) / (sinAngle + cotAngle * cosAngle);
-            moveDirection.z = (moveDirection.x * cosAngle - movePlayerInputDirection.x) / sinAngle;
+            Vector3 nextTarget = _targetsQueue.Dequeue();
+            _Agent.SetDestination(nextTarget);
         }
-        else
-        {
-            moveDirection = movePlayerInputDirection;
-        }
+    }
 
-        if (moveDirection != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
-        }
+    private bool HasMines()
+    {
+        return _mineSpawner.HealMines.Any(m => m.MineGameObject.activeSelf) ||
+               _mineSpawner.DamageMines.Any(m => m.MineGameObject.activeSelf) ||
+               _mineSpawner.BuffMines.Any(m => m.MineGameObject.activeSelf);
+    }
 
-        Vector3 velocity = moveDirection * _runSpeed;
-        _rb.velocity = new Vector3(velocity.x, _rb.velocity.y, velocity.z);
+    private bool HasTargetQueue()
+    {
+        return _targetsQueue.Count > 0 && _targetsQueue.Any(target => target != Vector3.zero);
+    }
+
+    public void ChangeSpeed(float speed, bool isDebuff)
+    {
+        if(_underDebuff && isDebuff)
+        {
+            _underDebuff = false;
+            _Agent.speed = _baseAgentSpeed * speed;
+        }
+        else if(!_underDebuff && isDebuff)
+        {
+            _underDebuff = true;
+            _Agent.speed = _baseAgentSpeed * speed;
+        }
+        else if(!_underDebuff && !isDebuff)
+        {
+            _Agent.speed = _baseAgentSpeed * speed;
+        }
     }
 
 }

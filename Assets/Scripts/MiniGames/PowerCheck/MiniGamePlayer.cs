@@ -11,7 +11,10 @@ public class MiniGamePlayer : MonoBehaviour
     [SerializeField] private uint health;        // Текущее здоровье
     [SerializeField] private uint damage;        // Урон
     [SerializeField] private float speed;        // Скорость
+    [SerializeField] private float speedModifier;// Скорость
     [SerializeField] private uint healingAmount; // Количество лечения
+
+    private bool underDebufff;
 
     public string Name
     {
@@ -23,23 +26,25 @@ public class MiniGamePlayer : MonoBehaviour
     public uint Health => health;
     public uint Damage => damage;
 
-    public float Speed
+    public float SpeedModifier
     {
-        get => speed;
+        get => speedModifier;
         set
         {
             //Debug.Log($"Setting speed: {value}, current speed: {speed}");
-            if (Math.Abs(speed - value) > 0.01f)
-            {
-                speed = value;
-                OnSpeedChanged?.Invoke(speed); // Вызываем событие при изменении скорости
-            }
+            speedModifier = value;
+            OnSpeedChanged?.Invoke(speedModifier, underDebufff); // Вызываем событие при изменении скорости
         }
+    }
+
+    public float Speed
+    {
+        get => speed;
     }
 
     public uint HealingAmount => healingAmount;
 
-    public event Action<float> OnSpeedChanged;
+    public event Action<float, bool> OnSpeedChanged;
 
     // Unity-метод для начальной инициализации
     private void Start()
@@ -53,14 +58,14 @@ public class MiniGamePlayer : MonoBehaviour
         maxHealth = maxHp;
         health = startHealth;
         damage = dmg;
-        speed = initialSpeed;
+        speedModifier = initialSpeed;
         healingAmount = healAmount;
     }
 
     public void TakeDamage(uint damage)
     {
         health = health >= damage ? health - damage : 0;
-        Debug.Log($"{Name} получил урон. Здоровье: {health}");
+        //Debug.Log($"{Name} получил урон. Здоровье: {health}");
     }
 
     public void TakeHeal()
@@ -70,10 +75,11 @@ public class MiniGamePlayer : MonoBehaviour
         //Debug.Log($"{Name} отхилился. Здоровье: {health}");
     }
 
-    public void TakeSpeedboost(float speedMultiplier)
+    public void TakeSpeedboost(float speedMultiplier, bool isDebuff)
     {
+        underDebufff = isDebuff;
         //Debug.Log($"{Name} получил скоростной баф {speedMultiplier}");
-        Speed = (float)speedMultiplier; // Изменяем скорость, вызывая событие
+        SpeedModifier = (float)speedMultiplier; // Изменяем скорость, вызывая событие
         //Debug.Log($"{Name} новая скорость {Speed}");
     }
 }

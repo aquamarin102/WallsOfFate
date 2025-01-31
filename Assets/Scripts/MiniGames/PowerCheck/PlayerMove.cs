@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(MiniGamePlayer))]
 public class PlayerMove : MonoBehaviour
 {
     [Header("Movement Params")]
@@ -10,15 +11,20 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private float _runSpeed = 6.0f;
     [SerializeField] private float _rotationSpeed = 20f;
     [SerializeField] private Transform _cameraTrnsform;
+    [SerializeField] private MiniGamePlayer _characteristics;
 
     private Rigidbody _rb;
     private MiniGamePlayer _playerChar;
+    private bool _underDebuff;
 
     private void Awake()
     {
         _rb = GetComponent<Rigidbody>();
 
         _rb.useGravity = false;
+
+        _characteristics = this.GetComponent<MiniGamePlayer>();
+        _runDefaultSpeed = _characteristics.Speed;
     }
 
     private void FixedUpdate()
@@ -26,9 +32,22 @@ public class PlayerMove : MonoBehaviour
         HandleHorizontalMovement();
     }
 
-    public void ChangeSpeed(float speed)
+    public void ChangeSpeed(float speed, bool isDebuff)
     {
-        _runSpeed = _runDefaultSpeed * speed;
+        if (_underDebuff && isDebuff)
+        {
+            _underDebuff = false;
+            _runSpeed = _runDefaultSpeed * speed;
+        }
+        else if (!_underDebuff && isDebuff)
+        {
+            _underDebuff = true;
+            _runSpeed = _runDefaultSpeed * speed;
+        }
+        else if (!_underDebuff && !isDebuff)
+        {
+            _runSpeed = _runDefaultSpeed * speed;
+        }
     }
     
     private void HandleHorizontalMovement()

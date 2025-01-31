@@ -28,14 +28,15 @@ public class MineList
     }
 
     // Инициализация списка мин с бафом к скорости
-    public void InitializeSpeedBuffMines(GameObject prefab, float cooldown, float speedbuff, float buffcooldown, int timebeforeexplosion, float radius, uint damage)
+    public void InitializeSpeedBuffMines(GameObject prefab, float cooldown, float speedbuff, float buffcooldown,
+        int timebeforeexplosion, float radius, uint damage, bool isDebuff)
     {
         for (int i = 0; i < Length; i++)
         {
             uint number = (uint)i;
             GameObject mineGameObject = Object.Instantiate(prefab);
             mineGameObject.SetActive(false);
-            Mine newMine = new BuffSpeedMine(number, cooldown, mineGameObject, speedbuff, buffcooldown, timebeforeexplosion, radius, damage);
+            Mine newMine = new BuffSpeedMine(number, cooldown, mineGameObject, speedbuff, buffcooldown, timebeforeexplosion, radius, damage, isDebuff);
             Minelist.Add(newMine);
         }
     }

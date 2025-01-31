@@ -27,12 +27,12 @@ public class GameProcess : MonoBehaviour
     IReadOnlyList<Mine> _debuffMines;
 
     private PlayerMove _playerMove;
-    private EnemyMove _enemyMove;
+    private AIController _enemyMove;
 
     void Start()
     {
         _playerMove = player.GetComponent<PlayerMove>();
-        _enemyMove = enemy.GetComponent<EnemyMove>();
+        _enemyMove = enemy.GetComponent<AIController>();
 
         MiniGamePlayer playerChar = player.GetComponent<MiniGamePlayer>();
         MiniGamePlayer enemyChar = enemy.GetComponent<MiniGamePlayer>();
@@ -175,7 +175,6 @@ public class GameProcess : MonoBehaviour
         else if (givedMine is BuffSpeedMine buffSpeedMine)
         {
             MineExplosion(buffSpeedMine, player, enemy);
-
         }
 
         givedMine.SetActive(false); 

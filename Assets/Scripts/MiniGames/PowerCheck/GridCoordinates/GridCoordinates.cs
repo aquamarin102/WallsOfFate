@@ -13,14 +13,79 @@ namespace Assets.Scripts.MiniGames.PowerCheck.GridCoordinates
         public Transform ParentForAllCells; // Родительский объект для всех клеток
 
         public List<List<GridCordEl>> CordMatrix { get; private set; } // Матрица координат
+        public List<Transform> ObjectsToCheck; // Список трансформов объектов для проверки
+
+
+        private GridCellFinder finder;
 
         private void Awake()
         {
             InitializeMatrix();
             DrawMatrix();
 
-            GridCordEl gridCordEl = FindCellsByPosition(new Vector3(9.4f, 0, 9.4f));
-            Debug.Log(gridCordEl.Center);
+            Vector3 vector2 = new Vector2(4.75f, -3.25f);
+
+            finder = new GridCellFinder(this.GetComponent<GridCordinates>());
+
+            //GridCordEl gridCordEl = finder.FindCellsByPosition(vector2);
+            //Debug.Log(gridCordEl.Center);
+
+            //HashSet<GridCordEl> allelms = finder.GetAdjacentCells(vector2, 0.5f, 0.5f, gridCordEl.Row, gridCordEl.Column);
+            //foreach(GridCordEl cell in allelms)
+            //{
+            //    cell.ChangeColour(Color.grey);
+            //    //ChanegeCellColor(cell);
+            //    Debug.Log(cell.Column + " " + cell.Row);
+            //}
+            //Debug.Log(gridCordEl.Center);
+        }
+
+        //private void FixedUpdate()
+        //{
+
+        //    Vector2 gridCenterPosition = new Vector2(GridCenter.localPosition.x, GridCenter.localPosition.z);
+
+
+        //    foreach (Transform obj in ObjectsToCheck)
+        //    {
+        //        Vector2 objLocPOsition = new Vector2(obj.localPosition.x, obj.localPosition.z);
+        //        Vector2 objGlobPOsition = new Vector2(obj.position.x, obj.position.z);
+        //        float distance = Vector2.Distance(gridCenterPosition, objGlobPOsition);
+
+        //        // Проверяем условия расстояния
+        //        if (distance <= MatrixWidth / 2 && distance <= MatrixHeight / 2)
+        //        {
+        //            GridCordEl gridCordEl = finder.FindCellsByPosition(objLocPOsition);
+        //            if (gridCordEl != null)
+        //            {
+        //                HashSet<GridCordEl> allelms = finder.GetAdjacentCells(objLocPOsition, obj.localScale.x / 2, obj.localScale.z / 2, gridCordEl.Row, gridCordEl.Column);
+
+        //                if (allelms.Count > 0)
+        //                {
+        //                    Debug.Log('\n');
+        //                }
+        //                foreach (GridCordEl cell in allelms)
+        //                {
+        //                    cell.ChangeColour(Color.grey);
+        //                    Debug.Log(cell.Column + " " + cell.Row);
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+
+        private static void ChanegeCellColor(GridCordEl cell)
+        {
+            if(cell.TypeOfEl == TypeOfCordEl.Border)
+                cell.ChangeColour(Color.grey);
+            else if(cell.TypeOfEl == TypeOfCordEl.Heal)
+                cell.ChangeColour(Color.green);
+            else if(cell.TypeOfEl == TypeOfCordEl.Damage)
+                cell.ChangeColour(Color.red);
+            else if(cell.TypeOfEl == TypeOfCordEl.SpeedBuff)
+                cell.ChangeColour(Color.yellow);
+            else if(cell.TypeOfEl == TypeOfCordEl.Path)
+                cell.ChangeColour(Color.blue);
         }
 
         /// <summary>
@@ -68,122 +133,19 @@ namespace Assets.Scripts.MiniGames.PowerCheck.GridCoordinates
                         j * CellWidth + CellWidth / 2f,
                         -0.1f,
                         i * CellHeight + CellHeight / 2f);
-                    
-                    DrawCell(cellPosition, i, j, ParentForAllCells);
-                    CordMatrix[i][j].SetGlobalCenter(cellPosition);
 
+                    //GameObject cellGameObject = DrawCell(cellPosition, i, j, ParentForAllCells);
+                    //CordMatrix[i][j].GridElGameObject = cellGameObject;
+
+
+                    CordMatrix[i][j].SetGlobalCenter(cellPosition);
                     Vector3 localPosition = ParentForAllCells.InverseTransformPoint(cellPosition);
                     CordMatrix[i][j].SetCenter(localPosition);
                 }
             }
         }
-
-        private GridCordEl FindCellsByPosition(Vector3 position)
-        {
-            Vector2 position2d = new Vector2(position.x, position.z);
-
-            int maxRow = Mathf.RoundToInt(Mathf.Log(CordMatrix.Count) / Mathf.Log(2));
-
-            int rowIndex = CordMatrix.Count / 2, ifincell = -1;
-            int colIndex = 0;
-            BinaryCycle(position2d, CordMatrix.Count, ref rowIndex, ref colIndex, ref ifincell, false);
-
-            if (ifincell == 1) return CordMatrix[rowIndex][colIndex];
-            else if (ifincell == 0)
-            {
-                colIndex = CordMatrix[rowIndex].Count / 2;
-                int maxCol = Mathf.RoundToInt(Mathf.Log(CordMatrix[rowIndex].Count) / Mathf.Log(2));
-                BinaryCycle(position2d, CordMatrix[rowIndex].Count, ref colIndex, ref rowIndex, ref ifincell, true);
-                if (ifincell == 1) return CordMatrix[rowIndex][colIndex];
-            }
-
-            return null;
-        }
-
-        private void BinaryCycle(Vector2 position2d, int limit, ref int index, ref int secondaryIndex,
-            ref int ifInCell, bool searchByX)
-        {
-            if (ifInCell == 0 || ifInCell == 1) ifInCell = -1; 
-            int prevIndex = 0, numOfSteps = 0;
-            while (index >= 0 && index < limit /*numOfSteps <= limit + 1*/)
-            {
-                if (ifInCell == 0 || ifInCell == 1) break;
-
-                int step = Mathf.RoundToInt(Mathf.Abs(index - prevIndex) / 2);
-                if(step == 0) step = 1;
-                prevIndex = index;
-                if (searchByX)
-                {
-                    float comparisonValue = CordMatrix[secondaryIndex][index].Center.x;
-                    index += comparisonValue < position2d.x ? step : -step;
-                    ifInCell = IfPointInCell(position2d, secondaryIndex, index, searchByX);
-                }
-                else
-                {
-                    float comparisonValue = CordMatrix[index][secondaryIndex].Center.y;
-                    index += comparisonValue < position2d.y ? step : -step;
-                    ifInCell = IfPointInCell(position2d, index, secondaryIndex, searchByX);
-                }
-                numOfSteps++;
-            }
-        }
-
-        // возвращает 3 состояния
-        // если обе координаты попали в область клетки то 1
-        // если только одна координата поппала в область то 0
-        // иначе -1
-        private int IfPointInCell(Vector2 pointPosition, int rowIndex, int colIndex,  bool findRow)
-        {
-            if (IsOutOfBounds(rowIndex, colIndex)) return -1;
-
-            float leftBorder = CordMatrix[rowIndex][colIndex].Center.x - CordMatrix[rowIndex][colIndex].Width / 2;
-            float rightBorder = CordMatrix[rowIndex][colIndex].Center.x + CordMatrix[rowIndex][colIndex].Width / 2;
-            float topBorder = CordMatrix[rowIndex][colIndex].Center.y - CordMatrix[rowIndex][colIndex].Height / 2;
-            float bottomBorder = CordMatrix[rowIndex][colIndex].Center.y + CordMatrix[rowIndex][colIndex].Height / 2;
-
-            bool xInRange = leftBorder <= pointPosition.x && pointPosition.x <= rightBorder;
-            bool yInRange =  topBorder <= pointPosition.y && pointPosition.y <= bottomBorder;
-
-            if (xInRange && yInRange && findRow) return 1;
-            if ((xInRange || yInRange) && !findRow) return 0;
-
-            return -1;
-        }
-
-        //public HashSet<GridCordEl> GetAdjacentCells(Vector2 pointPosition, float width, float height, int row, int col)
-        //{
-        //    HashSet<GridCordEl> adjacentCells = new HashSet<GridCordEl>();
-        //    RecursivelyFindCells(pointPosition, width, height, row, col, adjacentCells);
-        //    return adjacentCells;
-        //}
-
-        //private void RecursivelyFindCells(Vector2 pointPosition, float width, float height, int row, int col, HashSet<GridCordEl> adjacentCells)
-        //{
-        //    // Проверка выхода за границы
-        //    if (row < 0 || row >= CordMatrix.Count || col < 0 || col >= CordMatrix[row].Count)
-        //        return;
-
-        //    GridCordEl currentCell = CordMatrix[row][col];
-
-        //    // Проверка на пересечение
-        //    if (IfPointInCell(pointPosition, width, height, true))
-        //    {
-        //        adjacentCells.Add(currentCell);
-        //    }
-
-        //    // Рекурсивный вызов для соседних клеток
-        //    RecursivelyFindCells(pointPosition, width, height, row - 1, col, adjacentCells); // Верхняя клетка
-        //    RecursivelyFindCells(pointPosition, width, height, row + 1, col, adjacentCells); // Нижняя клетка
-        //    RecursivelyFindCells(pointPosition, width, height, row, col - 1, adjacentCells); // Левую клетка
-        //    RecursivelyFindCells(pointPosition, width, height, row, col + 1, adjacentCells); // Правую клетка
-        //}
-
-        private bool IsOutOfBounds(int row, int col)
-        {
-            return row < 0 || row >= CordMatrix.Count || col < 0 || col >= CordMatrix[row].Count;
-        }
-
-        private void DrawCell(Vector3 cellPosition, int i, int j, Transform parent)
+         
+        private GameObject DrawCell(Vector3 cellPosition, int i, int j, Transform parent)
         {
             // Отрисовка клетки (например, создаем визуальный объект)
             GameObject cell = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -251,7 +213,7 @@ namespace Assets.Scripts.MiniGames.PowerCheck.GridCoordinates
             var rightBorderRenderer = rightBorder.GetComponent<Renderer>();
             if (rightBorderRenderer != null)
                 rightBorderRenderer.material.color = borderColor;
+            return cell;
         }
-
     }
 }

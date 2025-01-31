@@ -10,11 +10,12 @@ public class BuffSpeedMine : Mine
     private int TimeBeforeExplosion;
     private float MaxRadius;
     private uint Damage;
+    private bool IsDebuff;
 
     // Словарь для отслеживания активных баффов
     private Dictionary<MiniGamePlayer, bool> activeBuffs = new Dictionary<MiniGamePlayer, bool>();
 
-    public BuffSpeedMine(uint number, float сooldown, GameObject mine, float speedbuff, float buffcooldown, int timebeforeexplosion, float radius, uint damage)
+    public BuffSpeedMine(uint number, float сooldown, GameObject mine, float speedbuff, float buffcooldown, int timebeforeexplosion, float radius, uint damage, bool isDebuff)
         : base(number, сooldown, mine)
     {
         this.SpeedBuff = speedbuff;
@@ -22,6 +23,7 @@ public class BuffSpeedMine : Mine
         this.TimeBeforeExplosion = timebeforeexplosion * 1000;
         this.MaxRadius = radius;
         this.Damage = damage;
+        this.IsDebuff = isDebuff;
     }
 
     public float GetSpeedBuff() => this.SpeedBuff;
@@ -37,24 +39,21 @@ public class BuffSpeedMine : Mine
             return; // Не применяем бафф повторно
         }
 
-        // Устанавливаем флаг выполнения
         activeBuffs[player] = true;
 
         try
         {
             // Применяем начальный бафф
-            player.TakeSpeedboost(this.SpeedBuff);
+            player.TakeSpeedboost(this.SpeedBuff, IsDebuff);
             player.TakeDamage(this.Damage);
 
-            // Ждём указанное время
             await Task.Delay((int)(this.BuffCooldown * 1000));
 
             // Убираем бафф
-            player.TakeSpeedboost(1f);
+            player.TakeSpeedboost(1f, IsDebuff);
         }
         finally
         {
-            // Сбрасываем флаг выполнения
             activeBuffs[player] = false;
         }
     }
