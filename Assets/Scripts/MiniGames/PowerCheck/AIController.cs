@@ -143,7 +143,7 @@ public class AIController : MonoBehaviour
             if (NavMesh.SamplePosition(nextTarget, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
             {
                 _agent.SetDestination(hit.position);
-                Debug.Log(nextTarget);
+                //Debug.Log(nextTarget);
             }
             else
             {
