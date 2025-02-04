@@ -23,6 +23,8 @@ public class HealthBarManager : MonoBehaviour
         healthBar = Instantiate(healthBarPrefab, healthBarParent);
         healthBar.gameObject.SetActive(true);
 
+        player.OnPlayerDeath += RemoveHealthBar;
+
         // Инициализируем полоску здоровья
         UpdateHealthBar();
     }
@@ -35,7 +37,7 @@ public class HealthBarManager : MonoBehaviour
             UpdateHealthBar();
             if (player.Health == 0)
             {
-                RemoveHealthBar(); // Убираем полоску здоровья, если здоровье = 0
+                //RemoveHealthBar(); // Убираем полоску здоровья, если здоровье = 0
                 this.gameObject.SetActive(false); // Деактивируем текущий объект (на котором висит скрипт)
             }
         }
@@ -61,7 +63,7 @@ public class HealthBarManager : MonoBehaviour
         }
     }
 
-    public void RemoveHealthBar()
+    public void RemoveHealthBar(string playerName)
     {
         if (healthBar != null)
         {
