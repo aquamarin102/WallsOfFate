@@ -2,7 +2,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
+
+[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(MiniGamePlayer))]
 public class AIController : MonoBehaviour
 {
     [Header("References")]
@@ -25,6 +29,12 @@ public class AIController : MonoBehaviour
     private Queue<Vector3> _targetsQueue = new Queue<Vector3>();
     private float _baseAgentSpeed;
     private bool _underDebuff;
+    private float _lockedY;
+    private Vector3 _currentTarget;
+
+    private int _currentNumOfDamage = 0;
+    private int _currentNumOfHeal = 0;
+    private int _currentNumOfBuff = 0;
 
     private void Start()
     {
@@ -32,15 +42,31 @@ public class AIController : MonoBehaviour
         if (_thisCharacteristics == null) _thisCharacteristics = GetComponent<MiniGamePlayer>();
 
         _baseAgentSpeed = _thisCharacteristics.Speed;
+        _lockedY = transform.position.y;
+        if (!HasTargetQueue())
+            SelectNextTarget();
     }
 
     private void Update()
     {
-        if (!HasTargetQueue()) SelectNextTarget();
-        if (!_agent.pathPending && HasTargetQueue() && (_agent.remainingDistance < 0.5f || !MineExist(_agent.destination)))
+        if (!HasTargetQueue() || CheckIsPickUpsUpdate())
+            SelectNextTarget();
+        //(_agent.remainingDistance <= _agent.stoppingDistance || !MineExist(_agent.destination /*&& _agent.velocity.magnitude < 0.1f*/) /*&& _agent.pathStatus == NavMeshPathStatus.PathPartial*/)
+            string allTargets = "";
+            bool dist = _agent.remainingDistance <= _agent.stoppingDistance;
+            bool mine = !MineExist(_currentTarget);
+            bool hashQueue = HasTargetQueue();
+            allTargets += "_agent.dist " + dist + " ";
+            allTargets += "mine not exist " + mine  + " ";
+            allTargets += "queue exist " + hashQueue + " ";
+            //Debug.Log(allTargets);
+
+        if (!_agent.pathPending && HasTargetQueue() && (!MineExist(_currentTarget) || _agent.remainingDistance <= _agent.stoppingDistance) ) 
         {
             SetNextDestination();
         }
+
+        transform.position = new Vector3(transform.position.x, _lockedY, transform.position.z);
     }
 
     private void SelectNextTarget()
@@ -81,7 +107,7 @@ public class AIController : MonoBehaviour
         float distance = Vector3.Distance(transform.position, mine.MineGameObject.transform.position);
         float riskPenalty = CalculateRiskPenalty(mine);
 
-        return (evaluation - riskPenalty) /*/ distance*/;
+        return (evaluation - riskPenalty) / (distance / 10);
     }
 
     private float EvaluationBuffPickUp(BuffSpeedMine buffMine)
@@ -89,7 +115,11 @@ public class AIController : MonoBehaviour
         float modifier = 1;
         float evaluatin;
         int numOfMines = _mineSpawner.DebuffMines.Count;
-        float mineSquare = _mineSpawner.DebuffMines[0].MineGameObject.transform.localScale.x * _mineSpawner.DebuffMines[0].MineGameObject.transform.localScale.z;
+        float mineSquare = 0;
+        if (_mineSpawner.DebuffMines.Count > 0)
+        {
+            mineSquare = _mineSpawner.DebuffMines[0].MineGameObject.transform.localScale.x * _mineSpawner.DebuffMines[0].MineGameObject.transform.localScale.z;
+        }
         float ariaSize = _mineSpawner.spawnAreaSize.x * _mineSpawner.spawnAreaSize.y;
         float squareOfAllMines = ariaSize / (numOfMines * mineSquare);
 
@@ -140,6 +170,7 @@ public class AIController : MonoBehaviour
         if (_targetsQueue.Count > 0)
         {
             Vector3 nextTarget = _targetsQueue.Dequeue();
+            _currentTarget = nextTarget;
             if (NavMesh.SamplePosition(nextTarget, out NavMeshHit hit, 1.0f, NavMesh.AllAreas))
             {
                 _agent.SetDestination(hit.position);
@@ -154,16 +185,34 @@ public class AIController : MonoBehaviour
 
     private bool HasTargetQueue()
     {
-        return _targetsQueue.Count > 0 && _targetsQueue.Any(target => target != Vector3.zero); 
+        return _targetsQueue.Count > 0 && _targetsQueue.All(target => target != Vector3.zero); 
     }
 
     private bool MineExist(Vector3 position)
     {
-        return _mineSpawner.HealMines.Any(m => Vector3.Distance(m.MineGameObject.transform.position, position) < 0.1) ||
-               _mineSpawner.DamageMines.Any(m => Vector3.Distance(m.MineGameObject.transform.position, position) < 0.1) ||
-               _mineSpawner.BuffMines.Any(m => Vector3.Distance(m.MineGameObject.transform.position, position) < 0.1);
+        return _mineSpawner.HealMines.Any(m => Vector3.Distance(m.MineGameObject.transform.position, position) <= 0.1) ||
+               _mineSpawner.DamageMines.Any(m => Vector3.Distance(m.MineGameObject.transform.position, position) <= 0.1) ||
+               _mineSpawner.BuffMines.Any(m => Vector3.Distance(m.MineGameObject.transform.position, position) <= 0.1);
     }
-    
+
+    private bool CheckIsPickUpsUpdate()
+    {
+        int activeDamageCount = _mineSpawner.DamageMines.Count(mine => mine.MineGameObject.activeSelf);
+        int activeHealCount = _mineSpawner.HealMines.Count(mine => mine.MineGameObject.activeSelf);
+        int activeBuffCount = _mineSpawner.BuffMines.Count(mine => mine.MineGameObject.activeSelf);
+
+        int deltaDamage = activeDamageCount - _currentNumOfDamage;
+        int deltaHeal = activeHealCount - _currentNumOfHeal;
+        int deltaBuff = activeBuffCount - _currentNumOfBuff;
+
+        _currentNumOfDamage = activeDamageCount;
+        _currentNumOfHeal = activeHealCount;
+        _currentNumOfBuff = activeBuffCount;
+
+        return deltaDamage > 0 || deltaBuff > 0 || deltaHeal > 0;
+    }
+
+
     public void ChangeSpeed(float speed, bool isDebuff)
     {
         if (_underDebuff && isDebuff)
