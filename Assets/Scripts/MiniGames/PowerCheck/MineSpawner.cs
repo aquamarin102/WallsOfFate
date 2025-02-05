@@ -238,7 +238,7 @@ public class MineSpawner : MonoBehaviour
 
             //Vector2 cellposition = _gridCordinates.CordMatrix[randomRow][randomColumn].GlobalCenter; 
 
-            randomPosition = new Vector3(randomRow, CenterPoint.position.y, randomColumn);
+            randomPosition = new Vector3(randomRow, yPositionOfSpawnMine, randomColumn);
             positionValid = true;
 
             foreach (Transform forbiddenPoint in forbiddenSpawnPoints)
