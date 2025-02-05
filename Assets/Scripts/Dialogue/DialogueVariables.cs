@@ -14,11 +14,11 @@ public class DialogueVariables
     {
         _globalVariablesStory = new Story(loadGlobalJSON.text);
         //if we have saved data, load it
-        if(PlayerPrefs.HasKey(_saveVariablesKey))
-        {
-            string jsonState = PlayerPrefs.GetString(_saveVariablesKey);
-            _globalVariablesStory.state.LoadJson(jsonState);
-        }
+        //if(PlayerPrefs.HasKey(_saveVariablesKey))
+        //{
+        //    string jsonState = PlayerPrefs.GetString(_saveVariablesKey);
+        //    _globalVariablesStory.state.LoadJson(jsonState);
+        //}
 
         // initialize the dictionary
         variables = new Dictionary<string, Ink.Runtime.Object>();
@@ -30,16 +30,17 @@ public class DialogueVariables
         }
     }
 
-    public void SaveVariables()
-    {
-        if (_globalVariablesStory != null)
-        {
-            VariablesToStory(_globalVariablesStory);
-            // NOTE: eventually, you'd want to replace this with an actual save/load method
-            // rather than using PlayerPrefs.
-            PlayerPrefs.SetString(_saveVariablesKey, _globalVariablesStory.state.ToJson());
-        }
-    }
+    //public void SaveVariables()
+    //{
+    //    if (_globalVariablesStory != null)
+    //    {
+    //        VariablesToStory(_globalVariablesStory);
+
+    //        // NOTE: eventually, you'd want to replace this with an actual save/load method
+    //        // rather than using PlayerPrefs.
+    //        //PlayerPrefs.SetString(_saveVariablesKey, _globalVariablesStory.state.ToJson());
+    //    }
+    //}
 
     public void StartListening(Story story)
     {

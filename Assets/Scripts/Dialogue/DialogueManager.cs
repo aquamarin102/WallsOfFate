@@ -17,7 +17,7 @@ public class DialogueManager : MonoBehaviour
     [Header("Dialogue UI")]
     [SerializeField] private GameObject _dialoguePanel;
 
-    [SerializeField] private GameObject _continueIcon;
+    //[SerializeField] private GameObject _continueIcon;
 
     [SerializeField] private TextMeshProUGUI _dialogueText;
 
@@ -151,7 +151,7 @@ public class DialogueManager : MonoBehaviour
         _dialogueText.text = line;
         _dialogueText.maxVisibleCharacters = 0;
 
-        _continueIcon.SetActive(false);
+        //_continueIcon.SetActive(false);
         HideChoices();
 
         _canContinueToNextLine = false;
@@ -181,7 +181,7 @@ public class DialogueManager : MonoBehaviour
             }
         }
 
-        _continueIcon.SetActive(true);
+        //_continueIcon.SetActive(true);
         DisplayChoices();
 
         _canContinueToNextLine = true;
@@ -278,11 +278,12 @@ public class DialogueManager : MonoBehaviour
 
     // This method will get called anytime the application exits.
     // Depending on your game, you may want to save variable state in other places.
-    public void OnApplicationQuit()
-    {
-        if (_dialogueVariables != null)
-        {
-            _dialogueVariables.SaveVariables();
-        }
-    }
+
+    //public void OnApplicationQuit()
+    //{
+    //    if (_dialogueVariables != null)
+    //    {
+    //        _dialogueVariables.SaveVariables();
+    //    }
+    //}
 }

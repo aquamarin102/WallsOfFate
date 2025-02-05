@@ -26,21 +26,17 @@ public class PokemonNPC : MonoBehaviour
         switch(pokemonName)
         {
             case "":
-                colorRenderer.material.color = defaultColor;
+                //colorRenderer.material.color = defaultColor;
                 break;
             case "Charmander":
-                _miniGame.SetActive(true);
-                colorRenderer.material.color = charmanderColor;
+                _miniGame.SetActive(false);
+                //colorRenderer.material.color = charmanderColor;
                 break;
             case "Bulbasaur":
-                _miniGame.SetActive(false);
-                colorRenderer.material.color = bulbasaurColor;
+                //colorRenderer.material.color = bulbasaurColor;
                 break;
             case "Squirtle":
-                colorRenderer.material.color = squirtleColor;
-                break;
-                default:
-                Debug.LogWarning("Pokemon name not handled ny swith statement: " + pokemonName);
+                //colorRenderer.material.color = squirtleColor;
                 break;
         }
     }
