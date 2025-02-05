@@ -142,7 +142,7 @@ public class GameProcess : MonoBehaviour
         MiniGamePlayer givedPlayerChar = givedPlayer.GetComponent<MiniGamePlayer>();
         MiniGamePlayer playerChar = player.GetComponent<MiniGamePlayer>();
         MiniGamePlayer enemyChar = enemy.GetComponent<MiniGamePlayer>();
-        
+
 
         if (givedMine is HealMine healMine)
         {
@@ -160,14 +160,14 @@ public class GameProcess : MonoBehaviour
             MineExplosion(buffSpeedMine, player, enemy);
         }
 
-        givedMine.SetActive(false); 
+        givedMine.SetActive(false);
         //mineSpawner.SpawnMine(givedMine);
     }
 
     private async void MineExplosion(BuffSpeedMine mine, params GameObject[] objects)
     {
         Vector3 initialMinePosition = mine.MineGameObject.transform.position;
-        
+
         // ∆дем паузу в 3 секунды
         await Task.Delay(mine.GetTimeBeforeExplosion());
 

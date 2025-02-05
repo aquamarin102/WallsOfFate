@@ -39,6 +39,11 @@ public class AIController : MonoBehaviour
     private void Start()
     {
         if (_agent == null) _agent = GetComponent<NavMeshAgent>();
+        if (_agent != null)
+        {
+            // Включаем агента
+            _agent.enabled = true;
+        }
         if (_thisCharacteristics == null) _thisCharacteristics = GetComponent<MiniGamePlayer>();
 
         _baseAgentSpeed = _thisCharacteristics.Speed;
@@ -52,16 +57,16 @@ public class AIController : MonoBehaviour
         if (!HasTargetQueue() || CheckIsPickUpsUpdate())
             SelectNextTarget();
         //(_agent.remainingDistance <= _agent.stoppingDistance || !MineExist(_agent.destination /*&& _agent.velocity.magnitude < 0.1f*/) /*&& _agent.pathStatus == NavMeshPathStatus.PathPartial*/)
-            string allTargets = "";
-            bool dist = _agent.remainingDistance <= _agent.stoppingDistance;
-            bool mine = !MineExist(_currentTarget);
-            bool hashQueue = HasTargetQueue();
-            allTargets += "_agent.dist " + dist + " ";
-            allTargets += "mine not exist " + mine  + " ";
-            allTargets += "queue exist " + hashQueue + " ";
-            //Debug.Log(allTargets);
+        //string allTargets = "";
+        //bool dist = _agent.remainingDistance <= _agent.stoppingDistance;
+        //bool mine = !MineExist(_currentTarget);
+        //bool hashQueue = HasTargetQueue();
+        //allTargets += "_agent.dist " + dist + " ";
+        //allTargets += "mine not exist " + mine + " ";
+        //allTargets += "queue exist " + hashQueue + " ";
+        //Debug.Log(allTargets);
 
-        if (!_agent.pathPending && HasTargetQueue() && (!MineExist(_currentTarget) || _agent.remainingDistance <= _agent.stoppingDistance) ) 
+        if (!_agent.pathPending && HasTargetQueue() && (!MineExist(_currentTarget) || _agent.remainingDistance <= _agent.stoppingDistance))
         {
             SetNextDestination();
         }
@@ -185,7 +190,7 @@ public class AIController : MonoBehaviour
 
     private bool HasTargetQueue()
     {
-        return _targetsQueue.Count > 0 && _targetsQueue.All(target => target != Vector3.zero); 
+        return _targetsQueue.Count > 0 && _targetsQueue.All(target => target != Vector3.zero);
     }
 
     private bool MineExist(Vector3 position)

@@ -66,7 +66,7 @@ public class MiniGamePlayer : MonoBehaviour
     public void TakeDamage(uint damage)
     {
         health = health >= damage ? health - damage : 0;
-        if(health <= 0)
+        if (health <= 0)
         {
             OnPlayerDeath?.Invoke(playerName);
         }
