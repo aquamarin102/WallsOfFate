@@ -45,6 +45,7 @@ public class MiniGamePlayer : MonoBehaviour
     public uint HealingAmount => healingAmount;
 
     public event Action<float, bool> OnSpeedChanged;
+    public event Action<string> OnPlayerDeath;
 
     // Unity-метод для начальной инициализации
     private void Start()
@@ -65,6 +66,10 @@ public class MiniGamePlayer : MonoBehaviour
     public void TakeDamage(uint damage)
     {
         health = health >= damage ? health - damage : 0;
+        if(health <= 0)
+        {
+            OnPlayerDeath?.Invoke(playerName);
+        }
         //Debug.Log($"{Name} получил урон. Здоровье: {health}");
     }
 
