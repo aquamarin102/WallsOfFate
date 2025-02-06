@@ -4,40 +4,42 @@ using UnityEngine;
 
 public class PokemonNPC : MonoBehaviour
 {
-    [SerializeField] private Color defaultColor = Color.white;
-    [SerializeField] private Color charmanderColor = Color.red;
-    [SerializeField] private Color bulbasaurColor = Color.green;
-    [SerializeField] private Color squirtleColor = Color.blue;
     [SerializeField] private GameObject _miniGame;
+    [SerializeField] private GameObject _castle;
+    [SerializeField] private CameraSwitch _switch;
+    [SerializeField] private MiniGamePlayer _enemy;
+    [SerializeField] private MiniGamePlayer _player;
 
-    private Renderer colorRenderer;
+    private bool _cheakCamera = false;
 
     private void Start()
     {
-        colorRenderer = GetComponentInChildren<Renderer>();
+        _switch = GetComponentInChildren<CameraSwitch>();
+        _player.OnPlayerDeath += EndMiniGame;
+        _enemy.OnPlayerDeath += EndMiniGame;
     }
 
     private void Update()
     {
-        string pokemonName = ((Ink.Runtime.StringValue) DialogueManager
+        string pokemonName = ((Ink.Runtime.StringValue)DialogueManager
             .GetInstance()
             .GetVariablesState("pokemon_name")).value;
 
-        switch(pokemonName)
+
+        if (pokemonName == "Charmander" && !_cheakCamera)
         {
-            case "":
-                //colorRenderer.material.color = defaultColor;
-                break;
-            case "Charmander":
-                _miniGame.SetActive(false);
-                //colorRenderer.material.color = charmanderColor;
-                break;
-            case "Bulbasaur":
-                //colorRenderer.material.color = bulbasaurColor;
-                break;
-            case "Squirtle":
-                //colorRenderer.material.color = squirtleColor;
-                break;
+            _miniGame.SetActive(true);
+            _switch.SwitchCamera();
+            _castle.SetActive(false);
+            _cheakCamera = true;
         }
     }
+
+    public void EndMiniGame(string playerName)
+    {
+        _miniGame.SetActive(false);
+        _castle.SetActive(true);
+        _switch.SwitchCamera();
+    }
+    
 }

@@ -14,8 +14,11 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/testBuild1.unity
     guid: 31f22df27f84069449e2ce6da1b18a90
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/PrevDiv1.unity
     guid: ae1fcbdb6712baa41852463590599952
+  - enabled: 1
+    path: Assets/Scenes/PrevDi1Dublicate.unity
+    guid: 04a39da90ed152a4082ce1084c3f3d02
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 816a726db77b14b479f83b905ee881e8, type: 2}
