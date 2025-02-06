@@ -28,8 +28,8 @@ public class PokemonNPC : MonoBehaviour
 
         if (pokemonName == "Charmander" && !_cheakCamera)
         {
-            _miniGame.SetActive(true);
             _switch.SwitchCamera();
+            _miniGame.SetActive(true);
             _castle.SetActive(false);
             _cheakCamera = true;
         }
@@ -37,9 +37,10 @@ public class PokemonNPC : MonoBehaviour
 
     public void EndMiniGame(string playerName)
     {
+        _cheakCamera = false;
         _miniGame.SetActive(false);
         _castle.SetActive(true);
         _switch.SwitchCamera();
     }
-    
+
 }
