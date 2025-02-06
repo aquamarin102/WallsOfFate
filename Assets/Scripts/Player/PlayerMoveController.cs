@@ -17,6 +17,9 @@ public class PlayerMoveController : MonoBehaviour
     private Rigidbody _rb;
     private bool _stopMoving = false;
     private MovemtForMOvingObjects _movementComponent;
+    private Transform _thisTransform;
+
+    public bool IsMove = false;
 
 
     private void Awake()
@@ -32,6 +35,7 @@ public class PlayerMoveController : MonoBehaviour
         }
         _coll = GetComponent<BoxCollider>();
         _rb = GetComponent<Rigidbody>();
+        _thisTransform = GetComponent<Transform>();
 
         _rb.useGravity = false;
     }
@@ -40,6 +44,7 @@ public class PlayerMoveController : MonoBehaviour
     {
         if(DialogueManager.GetInstance().DialogueIsPlaying)
         {
+            IsMove = false;
             return;
         }
 
@@ -49,6 +54,7 @@ public class PlayerMoveController : MonoBehaviour
         }
         else if (_stopMoving)
         {
+            IsMove = false;
             MoveToPlatform(_interval);
         }
     }
@@ -123,8 +129,9 @@ public class PlayerMoveController : MonoBehaviour
 
     private void HandleHorizontalMovement()
     {
+        IsMove = true;
         Vector2 moveInput = InputManager.GetInstance().GetMoveDirection();
-        Vector3 movePlayerInputDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
+        Vector3 movePlayerInputDirection = new Vector3(moveInput.x, _thisTransform.position.y, moveInput.y).normalized;
         Vector3 moveDirection = Vector3.zero;
 
         // Получение угла из ориентации камеры

@@ -1,46 +1,73 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PokemonNPC : MonoBehaviour
 {
     [SerializeField] private GameObject _miniGame;
     [SerializeField] private GameObject _castle;
+    [SerializeField] private GameObject _dialogPanel;
     [SerializeField] private CameraSwitch _switch;
-    [SerializeField] private MiniGamePlayer _enemy;
-    [SerializeField] private MiniGamePlayer _player;
+    [SerializeField] private GameProcess _miniGameProcessor;
 
-    private bool _cheakCamera = false;
+    private bool _isMiniGameActive = false; // Отвечает за старт мини-игры
+    private bool _isMiniGameFinished = false; // Отвечает за конец мини-игры
+    private bool _isWaitingForMiniGame = false; // Флаг ожидания перед стартом мини-игры
 
     private void Start()
     {
         _switch = GetComponentInChildren<CameraSwitch>();
-        _player.OnPlayerDeath += EndMiniGame;
-        _enemy.OnPlayerDeath += EndMiniGame;
+        _miniGameProcessor.OnEndGame += EndMiniGame;
     }
 
     private void Update()
     {
+        if (_isMiniGameActive || _isMiniGameFinished || _isWaitingForMiniGame)
+            return; // Не запускаем мини-игру повторно
+
         string pokemonName = ((Ink.Runtime.StringValue)DialogueManager
             .GetInstance()
             .GetVariablesState("pokemon_name")).value;
 
-
-        if (pokemonName == "Charmander" && !_cheakCamera)
+        if (pokemonName == "Charmander")
         {
-            _switch.SwitchCamera();
-            _miniGame.SetActive(true);
-            _castle.SetActive(false);
-            _cheakCamera = true;
+            StartCoroutine(StartMiniGameWithDelay(5f)); // Запуск мини-игры с задержкой
         }
     }
 
-    public void EndMiniGame(string playerName)
+    private IEnumerator StartMiniGameWithDelay(float delay)
     {
-        _cheakCamera = false;
-        _miniGame.SetActive(false);
-        _castle.SetActive(true);
-        _switch.SwitchCamera();
+        _isWaitingForMiniGame = true; // Устанавливаем флаг ожидания
+        yield return new WaitForSeconds(delay);
+
+        StartMiniGame();
+        _isWaitingForMiniGame = false; // Сбрасываем флаг после старта мини-игры
     }
 
+    private void StartMiniGame()
+    {
+        _switch.SwitchCamera();
+        _miniGame.SetActive(true);
+        _castle.SetActive(false);
+        _isMiniGameActive = true;
+    }
+
+    public void EndMiniGame(string winnerName, string loserName)
+    {
+        if (_isMiniGameFinished) return; // Не вызываем повторно
+
+        Debug.LogWarning("Activate end game");
+        _switch.SwitchCamera();
+        _castle.SetActive(true);
+        _miniGame.SetActive(false);
+        _isMiniGameFinished = true;
+
+        //StartCoroutine(ResetMiniGameState());
+    }
+
+    private IEnumerator ResetMiniGameState()
+    {
+        yield return new WaitForSeconds(15f);
+        _isMiniGameActive = false;
+        _isMiniGameFinished = false;
+    }
 }

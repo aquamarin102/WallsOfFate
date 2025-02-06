@@ -13,6 +13,7 @@ public class MiniGamePlayer : MonoBehaviour
     [SerializeField] private float speed;        // Скорость
     [SerializeField] private float speedModifier;// Скорость
     [SerializeField] private uint healingAmount; // Количество лечения
+    /*[SerializeField] private*/public bool isDead = false;// Количество лечения
 
     private bool underDebufff;
 
@@ -23,7 +24,11 @@ public class MiniGamePlayer : MonoBehaviour
     }
 
     public uint MaxHealth => maxHealth;
-    public uint Health => health;
+    public uint Health
+    {
+        get => health;
+        set => health = value;
+    }
     public uint Damage => damage;
 
     public float SpeedModifier
@@ -45,11 +50,16 @@ public class MiniGamePlayer : MonoBehaviour
     public uint HealingAmount => healingAmount;
 
     public event Action<float, bool> OnSpeedChanged;
-    public event Action<string> OnPlayerDeath;
+
+    private void OnEnable()
+    {
+        ResetHealth();
+    }
 
     // Unity-метод для начальной инициализации
     private void Start()
     {
+        //this.health = this.maxHealth;
         //Debug.Log($"{Name} создан с {health} здоровья и скоростью {speed}");
     }
 
@@ -66,10 +76,6 @@ public class MiniGamePlayer : MonoBehaviour
     public void TakeDamage(uint damage)
     {
         health = health >= damage ? health - damage : 0;
-        if (health <= 0)
-        {
-            OnPlayerDeath?.Invoke(playerName);
-        }
         //Debug.Log($"{Name} получил урон. Здоровье: {health}");
     }
 
@@ -86,5 +92,11 @@ public class MiniGamePlayer : MonoBehaviour
         //Debug.Log($"{Name} получил скоростной баф {speedMultiplier}");
         SpeedModifier = (float)speedMultiplier; // Изменяем скорость, вызывая событие
         //Debug.Log($"{Name} новая скорость {Speed}");
+    }
+
+    private void ResetHealth()
+    {
+        health = maxHealth;
+        isDead = false;
     }
 }

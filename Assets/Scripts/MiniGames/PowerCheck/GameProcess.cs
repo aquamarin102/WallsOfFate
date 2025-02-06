@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,13 +23,17 @@ public class GameProcess : MonoBehaviour
     private PlayerMove _playerMove;
     private AIController _enemyMove;
 
+    private MiniGamePlayer playerChar;
+    private MiniGamePlayer enemyChar;
+
+    public event Action<string, string> OnEndGame;
     void Start()
     {
         _playerMove = player.GetComponent<PlayerMove>();
         _enemyMove = enemy.GetComponent<AIController>();
 
-        MiniGamePlayer playerChar = player.GetComponent<MiniGamePlayer>();
-        MiniGamePlayer enemyChar = enemy.GetComponent<MiniGamePlayer>();
+        playerChar = player.GetComponent<MiniGamePlayer>();
+        enemyChar = enemy.GetComponent<MiniGamePlayer>();
 
         playerChar.OnSpeedChanged += _playerMove.ChangeSpeed;
         enemyChar.OnSpeedChanged += _enemyMove.ChangeSpeed;
@@ -50,6 +55,27 @@ public class GameProcess : MonoBehaviour
     private void FixedUpdate()
     {
         SubscribeToMineEvents(_debuffMines);
+        if ((playerChar.Health <= 0 && !playerChar.isDead) || (enemyChar.Health <= 0 && !enemyChar.isDead))
+        {
+            string winer, loser;
+            if (playerChar.Health > 0)
+            {
+                winer = playerChar.Name;
+                loser = enemyChar.Name;
+            }
+            else
+            {
+                winer = enemyChar.Name;
+                loser = playerChar.Name;
+            }
+
+            playerChar.Health = 0;
+            enemyChar.Health = 0;
+            playerChar.isDead = true;
+            enemyChar.isDead = true;
+
+            OnEndGame?.Invoke(winer,loser);
+        } 
 
     }
 

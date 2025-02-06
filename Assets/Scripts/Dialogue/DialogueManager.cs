@@ -33,7 +33,7 @@ public class DialogueManager : MonoBehaviour
     private TextMeshProUGUI[] _choicesText;
 
     private Story _currentStory;
-    public bool DialogueIsPlaying { get; private set; }
+    public  bool DialogueIsPlaying { get; private set; }
 
     private bool _canContinueToNextLine = false;
 
