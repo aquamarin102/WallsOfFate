@@ -25,10 +25,11 @@ INCLUDE global.ink
 ===gate2===
 Твои слёзы мне противны. Вставай. Или я сделаю из тебя половик.#speaker:Петро #portrait:ms_yellow_neutral #layout:left
  (сквозь хрип): Хоть зарежь. Расскажешь всем, как геройствовал!#speaker:Бродяга #portrait:brodiga #layout:right
- 
--> chosen("Charmander")
+ +[Давай давай, нападай]
+ ->chosen("Charmander")
 
 ===chosen(pokemon)===
 ~ pokemon_name = pokemon
 
 ->END
+

@@ -30,17 +30,8 @@ public class PokemonNPC : MonoBehaviour
 
         if (pokemonName == "Charmander")
         {
-            StartCoroutine(StartMiniGameWithDelay(5f)); // Запуск мини-игры с задержкой
+            StartMiniGame();
         }
-    }
-
-    private IEnumerator StartMiniGameWithDelay(float delay)
-    {
-        _isWaitingForMiniGame = true; // Устанавливаем флаг ожидания
-        yield return new WaitForSeconds(delay);
-
-        StartMiniGame();
-        _isWaitingForMiniGame = false; // Сбрасываем флаг после старта мини-игры
     }
 
     private void StartMiniGame()
@@ -62,12 +53,5 @@ public class PokemonNPC : MonoBehaviour
         _isMiniGameFinished = true;
 
         //StartCoroutine(ResetMiniGameState());
-    }
-
-    private IEnumerator ResetMiniGameState()
-    {
-        yield return new WaitForSeconds(15f);
-        _isMiniGameActive = false;
-        _isMiniGameFinished = false;
     }
 }
