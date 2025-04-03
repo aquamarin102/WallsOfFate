@@ -1,0 +1,62 @@
+[
+  {
+    "Name": "Conc1",
+    "Type": "Type",
+    "Description": "Conc1",
+    "HideDescription": "Пахнет лесом...",
+    "Picture": "UI\\UIPrefabs\\ItemsImages\\forest",
+    "Rendered": false,
+    "RenderedOnScreen": false,
+    "SimpleDict": {},
+    "NestedDict": {},
+    "NestedList": []
+  },
+  {
+    "Name": "Conc2",
+    "Type": "Type",
+    "Description": "Conc2",
+    "HideDescription": "Пахнет лесом...",
+    "Picture": "UI\\UIPrefabs\\ItemsImages\\forest",
+    "Rendered": false,
+    "RenderedOnScreen": false,
+    "SimpleDict": {},
+    "NestedDict": {},
+    "NestedList": []
+  },
+  {
+    "Name": "Conc3",
+    "Type": "Type",
+    "Description": "Conc3",
+    "HideDescription": "Пахнет лесом...",
+    "Picture": "UI\\UIPrefabs\\ItemsImages\\forest",
+    "Rendered": false,
+    "RenderedOnScreen": false,
+    "SimpleDict": {},
+    "NestedDict": {},
+    "NestedList": []
+  },
+  {
+    "Name": "Conc4",
+    "Type": "Type", 
+    "Description": "Conc4",
+    "HideDescription": "Пахнет лесом...",
+    "Picture": "UI\\UIPrefabs\\ItemsImages\\forest",
+    "Rendered": false,
+    "RenderedOnScreen": false,
+    "SimpleDict": {},
+    "NestedDict": {},
+    "NestedList": []
+  },
+  {
+    "Name": "Conc5",
+    "Type": "Type",
+    "Description": "Conc5",
+    "HideDescription": "Пахнет лесом...",
+    "Picture": "UI\\UIPrefabs\\ItemsImages\\forestt",
+    "Rendered": false,
+    "RenderedOnScreen": false,
+    "SimpleDict": {},
+    "NestedDict": {},
+    "NestedList": []
+  }
+]
