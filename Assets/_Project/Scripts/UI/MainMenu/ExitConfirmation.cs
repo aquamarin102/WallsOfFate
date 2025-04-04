@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ExitConfirmation : MonoBehaviour
 {
@@ -24,12 +25,15 @@ public class ExitConfirmation : MonoBehaviour
 
     public void HideExitPanel()
     {
-        exitPanel.SetActive(false); 
+        exitPanel.SetActive(false);
     }
 
+    public void QuitToMenuGame()
+    {
+        SceneManager.LoadScene(0);
+    }
     public void QuitGame()
     {
-        Debug.Log("Выход из игры...");
         Application.Quit();
     }
 }

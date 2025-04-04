@@ -7388,7 +7388,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   StartPoint: {fileID: 1603920906}
-  Prefab: {fileID: 1025207163794879203, guid: 96e2899ba76152b4f9ee45c2b53e1ddb, type: 3}
+  Prefab: {fileID: 1025207163794879203, guid: 335512161fc9fc443aef5775c0cb3257, type: 3}
   Parent: {fileID: 1903880863}
   CameraTransform: {fileID: 2052933544}
 --- !u!1001 &293607015
@@ -18143,7 +18143,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u0412\u044B\u0439\u0442\u0438 \u0438\u0437 \u0438\u0433\u0440\u044B?"
+  m_text: "\u0412\u044B\u0439\u0442\u0438 \u0432 \u0433\u043B\u0430\u0432\u043D\u043E\u0435
+    \u043C\u0435\u043D\u044E?"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d899f02ab6b1d2446b5934db22365142, type: 2}
   m_sharedMaterial: {fileID: 6341344959473378160, guid: d899f02ab6b1d2446b5934db22365142, type: 2}
@@ -21060,7 +21061,6 @@ GameObject:
   - component: {fileID: 971552205}
   - component: {fileID: 971552208}
   - component: {fileID: 971552207}
-  - component: {fileID: 971552206}
   - component: {fileID: 971552209}
   m_Layer: 0
   m_Name: ButtonsManager
@@ -21088,18 +21088,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &971552206
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 971552204}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71d2acf30b14b694981462033b216238, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &971552207
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22018,7 +22006,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 971552207}
         m_TargetAssemblyTypeName: ExitConfirmation, Assembly-CSharp
-        m_MethodName: QuitGame
+        m_MethodName: QuitToMenuGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -44128,11 +44116,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d6c08a0534734d44a2d4b537b5720b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offset: {x: 0, y: 15, z: 0.1}
+  offset: {x: 0, y: 15, z: 0}
   smoothSpeed: 0.125
   angleX: 90
   angleY: 180
-  verticalBias: 1
+  verticalBias: 0
   zoomSpeed: 10
   minFOV: 20
   maxFOV: 40
