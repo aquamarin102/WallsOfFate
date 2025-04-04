@@ -3,170 +3,214 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
-[RequireComponent(typeof(BoxCollider))]
-[RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(CharacterController))]
 public class PlayerMoveController : MonoBehaviour
 {
     [Header("Movement Params")]
+    [SerializeField] private float _moveSpeed = 6.0f;
+    [SerializeField] private float _rotationSpeed = 10.0f;
+    [SerializeField] private float _gravity = 9.81f;
+    [SerializeField] private float _interval = 1f; // расстояние от платформы при захвате
+    [SerializeField] private Transform _cameraTransform;
 
-    [SerializeField] private float _runSpeed = 6.0f;
-    [SerializeField] private float _rotationSpeed = 20f;
-    [SerializeField] private float _interval = 1f;
+    private CharacterController _controller;
+    private Vector3 _moveDirection;
+    private float _verticalVelocity;
 
-    [SerializeField] private Transform _cameraTrnsform;
-    private BoxCollider _coll;
-    private Rigidbody _rb;
+    // Захват движущегося объекта
     private bool _catchPlatform = false;
     private MovemtForMOvingObjects _movementComponent;
-    private Transform _thisTransform;
 
     public bool IsMove = false;
+
+    // Состояние нажатия клавиши E, обновляемое в Update
+    private bool _grabButtonPressed = false;
 
     [Inject]
     private void Construct(Transform cameraTransform)
     {
-        _cameraTrnsform = cameraTransform;
+        _cameraTransform = cameraTransform;
     }
 
     private void Awake()
     {
-        Box[] boxes = FindObjectsOfType<Box>();
-        foreach(Box box in boxes)
+        _controller = GetComponent<CharacterController>();
+        if (_controller == null)
         {
-            if (box != null)
-            {
-                box.OnActivated += CollidedWithMovingObject;
-            }
+            Debug.LogError("PlayerController требует наличия CharacterController!");
         }
-        
-        
-        _coll = GetComponent<BoxCollider>();
-        _rb = GetComponent<Rigidbody>();
-        _thisTransform = GetComponent<Transform>();
+    }
 
-        _rb.useGravity = false;
+    private void Update()
+    {
+        // Если идёт диалог, пропускаем обработку ввода
+        if (DialogueManager.GetInstance() != null && DialogueManager.GetInstance().DialogueIsPlaying)
+        {
+            return;
+        }
+
+        // Обработка нажатия кнопки E в Update
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            _grabButtonPressed = true;
+        }
     }
 
     private void FixedUpdate()
     {
-        if(DialogueManager.GetInstance() != null && DialogueManager.GetInstance().DialogueIsPlaying)
+        // Если идёт диалог, движение не обрабатывается
+        if (DialogueManager.GetInstance() != null && DialogueManager.GetInstance().DialogueIsPlaying)
         {
             IsMove = false;
             return;
         }
 
+        // Сначала обрабатываем захват/отпуск объекта, если кнопка нажата
+        if (_grabButtonPressed)
+        {
+            if (!_catchPlatform)
+            {
+                TryGrab();
+            }
+            else
+            {
+                ReleaseGrab();
+            }
+            _grabButtonPressed = false;
+        }
+
+        // Если объект захвачен — перемещаем вместе с ним, иначе — свободное перемещение
         if (!_catchPlatform)
         {
-            HandleHorizontalMovement();
+            HandleMovement();
         }
-        else if (_catchPlatform)
+        else
         {
             IsMove = false;
             MoveToPlatform(_interval);
         }
     }
 
-    public void CollidedWithMovingObject()
+    private void HandleMovement()
     {
-        GameObject closestCollidedObject = FindClosestMovingObject(); 
-        if (closestCollidedObject != null)
+        IsMove = true;
+
+        // Получаем "сырые" значения ввода
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+
+        // Если ввода почти нет – обнуляем движение
+        if (Mathf.Abs(horizontal) < 0.1f && Mathf.Abs(vertical) < 0.1f)
         {
-            _movementComponent = closestCollidedObject.GetComponent<MovemtForMOvingObjects>(); 
+            _moveDirection = Vector3.zero;
+        }
+        else
+        {
+            // Вычисляем векторы направления камеры по горизонтали
+            Vector3 camForward = _cameraTransform.forward;
+            camForward.y = 0;
+            camForward.Normalize();
+            Vector3 camRight = _cameraTransform.right;
+            camRight.y = 0;
+            camRight.Normalize();
+
+            // Формируем итоговый вектор движения: вертикальный (вперёд/назад) и горизонтальный (влево/вправо)
+            Vector3 desiredMove = (camForward * vertical + camRight * horizontal);
+            desiredMove.Normalize();
+
+            // Поворот персонажа в направлении движения (без задержки, можно добавить Slerp для плавности)
+            if (desiredMove != Vector3.zero)
+            {
+                Quaternion targetRotation = Quaternion.LookRotation(desiredMove);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
+            }
+
+            _moveDirection = desiredMove * _moveSpeed;
+        }
+
+        // Обработка гравитации
+        if (_controller.isGrounded)
+        {
+            _verticalVelocity = -1f; // немного опускаем, чтобы CharacterController оставался на земле
+        }
+        else
+        {
+            _verticalVelocity -= _gravity * Time.fixedDeltaTime;
+        }
+        _moveDirection.y = _verticalVelocity;
+
+        // Перемещаем персонажа
+        _controller.Move(_moveDirection * Time.fixedDeltaTime);
+    }
+
+
+    // Поиск ближайшего объекта с компонентом MovemtForMOvingObjects и захват его
+    private void TryGrab()
+    {
+        GameObject closestObject = FindClosestMovingObject();
+        if (closestObject != null)
+        {
+            _movementComponent = closestObject.GetComponent<MovemtForMOvingObjects>();
             if (_movementComponent != null)
             {
-                //Debug.Log("������ ��������� ������ � ����������� MovemtForMOvingObjects: " + closestCollidedObject.name);
                 _movementComponent.ChangeNeedToMovie();
-                _catchPlatform = !_catchPlatform;
-                Debug.Log("Player:" + _catchPlatform);
+                _catchPlatform = true;
+                Debug.Log("Player grabbed: " + closestObject.name);
             }
         }
         else
         {
-            Debug.Log("��������� ������ � ����������� MovemtForMOvingObjects �� ������.");
+            Debug.Log("No moving object found to grab.");
         }
     }
 
-    // ��������, ����� �������� �������� ������
+    // Отпускаем захваченный объект
+    private void ReleaseGrab()
+    {
+        if (_movementComponent != null)
+        {
+            _movementComponent.ChangeNeedToMovie();
+            _movementComponent = null;
+        }
+        _catchPlatform = false;
+        Debug.Log("Player released object.");
+    }
+
+    // Поиск ближайшего движущегося объекта
     private GameObject FindClosestMovingObject()
     {
-        MovemtForMOvingObjects[] movingComponents = FindObjectsOfType<MovemtForMOvingObjects>(); 
+        MovemtForMOvingObjects[] movingComponents = FindObjectsOfType<MovemtForMOvingObjects>();
         GameObject closestObject = null;
-        float closestDistance = Mathf.Infinity; 
-        Vector3 currentPosition = transform.position; 
+        float closestDistance = Mathf.Infinity;
+        Vector3 currentPosition = transform.position;
 
         foreach (MovemtForMOvingObjects component in movingComponents)
         {
-            float distance = Vector3.Distance(currentPosition, component.transform.position); 
-            if (distance < closestDistance) 
+            float distance = Vector3.Distance(currentPosition, component.transform.position);
+            if (distance < closestDistance)
             {
-                closestDistance = distance; 
-                closestObject = component.gameObject; 
+                closestDistance = distance;
+                closestObject = component.gameObject;
             }
         }
-
-        return closestObject; 
+        return closestObject;
     }
 
+    // Перемещение игрока вместе с захваченным объектом
     public void MoveToPlatform(float interval)
     {
         if (_movementComponent != null && _movementComponent.Platform != null)
         {
             Transform platform = _movementComponent.Platform;
-            float step = _runSpeed * Time.deltaTime;
-
-            // ����� �������� � forward ��� ������ ��� ����� �������� ����������� ��������� �� ������
             Vector3 targetPosition = platform.position - platform.forward * interval;
-            Vector3 changedTargetPosition = targetPosition;
-
-            //Debug.Log("changedTargetPosition " + changedTargetPosition);
-
-            // ������ ������ ������� �. �. ����� �� ��������� ������� � ��������� � �������� ������ � �������
-            transform.position = changedTargetPosition /*Vector3.MoveTowards(transform.position, changedTargetPosition, step)*/;
-
-            // ��� ��� �������� �� �������� �������� �������
+            Vector3 delta = targetPosition - transform.position;
+            _controller.Move(delta);
             Quaternion targetRotation = platform.rotation;
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
-            //transform.rotation = platform.rotation;
         }
         else
         {
-            Debug.LogWarning("Platform ��� _movementComponent �� ����������!");
+            Debug.LogWarning("Platform or movement component is missing!");
         }
-    }
-
-    private void HandleHorizontalMovement()
-    {
-        IsMove = true;
-        Vector2 moveInput = InputManager.GetInstance().GetMoveDirection();
-        Vector3 movePlayerInputDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
-        Vector3 moveDirection = Vector3.zero;
-
-        // ��������� ���� �� ���������� ������
-        float cameraAngle = _cameraTrnsform.eulerAngles.y * Mathf.Deg2Rad;
-
-        // ���������� ������������������ ��������
-        float sinAngle = Mathf.Sin(cameraAngle);
-        float cosAngle = Mathf.Cos(cameraAngle);
-        float cotAngle = cosAngle / sinAngle; // ctg(x) = cos(x) / sin(x)
-        if (sinAngle != 0)
-        {
-            // ������� ��� moveDirection
-            moveDirection.x = (movePlayerInputDirection.z + movePlayerInputDirection.x * cotAngle) / (sinAngle + cotAngle * cosAngle);
-            moveDirection.z = (moveDirection.x * cosAngle - movePlayerInputDirection.x) / sinAngle;
-            //Debug.Log(moveDirection);
-        }
-        else
-        {
-            moveDirection = movePlayerInputDirection;
-        }
-
-        if (moveDirection != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
-        }
-
-        Vector3 velocity = moveDirection * _runSpeed;
-        _rb.linearVelocity = new Vector3(velocity.x, _rb.linearVelocity.y, velocity.z);
     }
 }
