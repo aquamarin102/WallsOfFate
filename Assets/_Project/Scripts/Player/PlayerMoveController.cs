@@ -10,7 +10,7 @@ using Zenject;
 public class PlayerMoveController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 6f;         // Базовая скорость
+    [SerializeField] private float moveSpeed = 3f;         // Базовая скорость
     [SerializeField] private float runMultiplier = 1.5f;     // Множитель скорости при беге (Shift)
     [SerializeField] private float rotationSpeed = 10f;      // Скорость поворота
     [SerializeField] private float gravity = 9.81f;          // Гравитация (если уровень плоский – можно уменьшить)
