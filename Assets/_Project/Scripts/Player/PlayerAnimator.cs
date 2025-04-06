@@ -61,52 +61,52 @@ public class PlayerAnimator : MonoBehaviour
 
     private void FixedUpdate()
     {
-
         // Вычисляем скорость как длину перемещения за кадр
         float speed = (transform.position - lastPosition).magnitude / Time.deltaTime;
         // Нормализуем скорость (значение от 0 до 1)
         float normalizedSpeed = Mathf.Clamp01(speed / maxSpeed);
 
-        // Проверяем, цепляется ли персонаж за ящик
+        // Проверяем, держится ли игрок за ящик
         bool isPushing = (transform.parent != null && transform.parent.CompareTag("Box"));
-
-        if (normalizedSpeed < 0.1f)
-        {
-
-        }
-        else if (normalizedSpeed > 0.1f)
-        {
-            animator.speed = 1;
-        }
 
         if (!isPushing)
         {
-            // Обычное движение: обновляем параметр "Speed"
+            // Обычное движение: стандартная анимация передвижения
+            animator.speed = 1f; // нормальная скорость анимации
             animator.SetFloat("Speed", normalizedSpeed, speedDampTime, Time.deltaTime);
             animator.SetBool("IsPushing", false);
             animator.SetFloat("PushSpeed", 0f);
         }
         else
         {
-            // Режим толкания: отключаем обычное движение и задаем параметры толкания
+            // Режим толкания ящика:
             animator.SetBool("IsPushing", true);
-            animator.SetFloat("PushSpeed", normalizedSpeed);
-            animator.SetFloat("Speed", 0f);
+            animator.SetFloat("Speed", 0f); // отключаем стандартную анимацию передвижения
+
+            if (normalizedSpeed > 0.1f)
+            {
+                // Если игрок двигается, запускаем анимацию толкания с постоянной скоростью
+                animator.SetFloat("PushSpeed", 1f);
+                animator.speed = 2f;
+            }
+            else
+            {
+                // Если игрок не двигается, анимация толкания не проигрывается
+                animator.SetFloat("PushSpeed", 0f);
+                animator.speed = 0f;
+            }
         }
 
-        
-
-        // Регулируем pitch звука шагов в зависимости от скорости (чем быстрее — тем выше)
+        // Обновляем pitch звука шагов в зависимости от скорости (чем быстрее — тем выше)
         if (footstepSource != null)
         {
             footstepSource.pitch = Mathf.Lerp(minPitch, maxPitch, normalizedSpeed);
         }
 
-        // Интерполируем текущий интервал между шагами:
-        // При низкой скорости используем baseFootstepInterval, при максимальной — runFootstepInterval
+        // Интерполируем интервал между шагами
         float currentFootstepInterval = Mathf.Lerp(baseFootstepInterval, runFootstepInterval, normalizedSpeed);
 
-        // Обработка звука шагов: увеличиваем таймер и, если игрок движется, воспроизводим шаг по истечении интервала
+        // Обработка звука шагов
         footstepTimer += Time.deltaTime;
         if (normalizedSpeed > 0.1f && footstepTimer >= currentFootstepInterval)
         {

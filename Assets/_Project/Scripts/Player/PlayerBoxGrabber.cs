@@ -17,7 +17,9 @@ public class PlayerBoxGrabber : MonoBehaviour
     private float turnSpeed = 100f;
 
     // Ссылка на ящик, за который цепляемся
-    private Transform attachedBox = null;
+    public Transform attachedBox = null;
+    // Сохраняем исходный слой ящика, чтобы вернуть его при отпускании
+    private int originalBoxLayer;
     // Локальный offset между позицией ящика и игрока в момент захвата
     private Vector3 localGrabOffset = Vector3.zero;
     // Текущая скорость движения ящика (положительная – вперёд, отрицательная – назад)
@@ -54,7 +56,7 @@ public class PlayerBoxGrabber : MonoBehaviour
             if (Mathf.Abs(currentSpeed) > 0.1f)
             {
                 float turnAmount = horizontal * turnSpeed * Time.deltaTime;
-                // Если движение назад, инвертируем поворот для интуитивного управления
+                // Если движение идет назад, инвертируем поворот для интуитивного управления
                 if (vertical < 0)
                     turnAmount = -turnAmount;
                 attachedBox.Rotate(0, turnAmount, 0);
@@ -63,17 +65,14 @@ public class PlayerBoxGrabber : MonoBehaviour
             // Перемещаем ящик: он движется в направлении, куда смотрит игрок
             attachedBox.position += transform.forward * currentSpeed * Time.deltaTime;
 
-            // Поскольку игрок теперь является дочерним объектом ящика, его позиция сохраняется относительно ящика.
-            // Но для надежного обновления можно ещё и принудительно обновлять позицию:
+            // Обновляем позицию игрока, чтобы сохранить исходный локальный offset относительно ящика
             transform.position = attachedBox.TransformPoint(localGrabOffset);
 
             // Игрок всегда смотрит на ящик (по горизонтали)
             Vector3 dirToBox = attachedBox.position - transform.position;
             dirToBox.y = 0;
             if (dirToBox != Vector3.zero)
-            {
                 transform.rotation = Quaternion.LookRotation(dirToBox);
-            }
         }
     }
 
@@ -86,10 +85,15 @@ public class PlayerBoxGrabber : MonoBehaviour
             if (col.CompareTag("Box"))
             {
                 attachedBox = col.transform;
-                // Вычисляем локальный offset: позиция игрока в локальной системе координат ящика
+                // Сохраняем исходный слой ящика
+                originalBoxLayer = attachedBox.gameObject.layer;
+                // Меняем слой удерживаемого ящика на "HeldBox"
+                attachedBox.gameObject.layer = LayerMask.NameToLayer("HeldBox");
+
+                // Вычисляем локальный offset: положение игрока в локальной системе координат ящика
                 localGrabOffset = attachedBox.InverseTransformPoint(transform.position);
                 currentSpeed = 0f;
-                // Делаем игрока дочерним объектом ящика, чтобы сохранить относительное положение
+                // Делаем игрока дочерним объектом ящика
                 transform.SetParent(attachedBox);
                 Debug.Log("Цепление: Игрок захватил ящик " + attachedBox.name);
                 return;
@@ -104,7 +108,9 @@ public class PlayerBoxGrabber : MonoBehaviour
         if (attachedBox != null)
         {
             Debug.Log("Цепление снято с ящика " + attachedBox.name);
-            // Отцепляем игрока (удаляем родителя)
+            // Возвращаем исходный слой ящика
+            attachedBox.gameObject.layer = originalBoxLayer;
+            // Отсоединяем игрока от ящика
             transform.SetParent(null);
             attachedBox = null;
             currentSpeed = 0f;

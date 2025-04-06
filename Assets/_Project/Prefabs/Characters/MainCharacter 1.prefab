@@ -174,7 +174,6 @@ MonoBehaviour:
   rotationSpeed: 20
   gravity: 9.81
   cameraTransform: {fileID: 0}
-  defaultFootsteps: []
 --- !u!114 &3382583244008469319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -352,7 +351,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcca926d9c972d4596bc2eba7022fa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grabRange: 1
+  grabRange: 0.8
   grabKey: 101
   maxSpeed: 2
   turnSpeed: 50

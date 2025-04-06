@@ -171,7 +171,6 @@ MonoBehaviour:
   rotationSpeed: 20
   gravity: 9.81
   cameraTransform: {fileID: 0}
-  defaultFootsteps: []
 --- !u!114 &3382583244008469319
 MonoBehaviour:
   m_ObjectHideFlags: 0
