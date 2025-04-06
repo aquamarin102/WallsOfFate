@@ -12,7 +12,6 @@ public class PlayerAnimator : MonoBehaviour
     [Header("Speed Normalization Settings")]
     [Tooltip("Максимальная скорость игрока для нормализации параметра Speed (например, скорость бега)")]
     [SerializeField] private float maxSpeed = 4.5f;
-
     [Tooltip("Время затухания для интерполяции параметра Speed")]
     [SerializeField] private float speedDampTime = 0.1f;
 
@@ -29,6 +28,10 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private float minPitch = 1.0f;
     [SerializeField] private float maxPitch = 1.3f;
 
+    // Параметры для анимации толкания ящика:
+    // В Animator персонажа должны быть параметры: 
+    // - IsPushing (bool)
+    // - PushSpeed (float)
     private float footstepTimer = 0f;
     private Dictionary<string, List<AudioClip>> sceneFootstepSounds = new Dictionary<string, List<AudioClip>>();
 
@@ -56,15 +59,42 @@ public class PlayerAnimator : MonoBehaviour
         UpdateFootstepSounds(SceneManager.GetActiveScene().name);
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
+
         // Вычисляем скорость как длину перемещения за кадр
         float speed = (transform.position - lastPosition).magnitude / Time.deltaTime;
         // Нормализуем скорость (значение от 0 до 1)
         float normalizedSpeed = Mathf.Clamp01(speed / maxSpeed);
 
-        // Обновляем параметр "Speed" в Animator с затуханием
-        animator.SetFloat("Speed", normalizedSpeed, speedDampTime, Time.deltaTime);
+        // Проверяем, цепляется ли персонаж за ящик
+        bool isPushing = (transform.parent != null && transform.parent.CompareTag("Box"));
+
+        if (normalizedSpeed < 0.1f)
+        {
+
+        }
+        else if (normalizedSpeed > 0.1f)
+        {
+            animator.speed = 1;
+        }
+
+        if (!isPushing)
+        {
+            // Обычное движение: обновляем параметр "Speed"
+            animator.SetFloat("Speed", normalizedSpeed, speedDampTime, Time.deltaTime);
+            animator.SetBool("IsPushing", false);
+            animator.SetFloat("PushSpeed", 0f);
+        }
+        else
+        {
+            // Режим толкания: отключаем обычное движение и задаем параметры толкания
+            animator.SetBool("IsPushing", true);
+            animator.SetFloat("PushSpeed", normalizedSpeed);
+            animator.SetFloat("Speed", 0f);
+        }
+
+        
 
         // Регулируем pitch звука шагов в зависимости от скорости (чем быстрее — тем выше)
         if (footstepSource != null)
@@ -121,7 +151,6 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (sceneFootstepSounds.ContainsKey(sceneName))
         {
-            // Можно установить текущий клип для теста или обновлять список звуков
             footstepSource.clip = sceneFootstepSounds[sceneName][0];
         }
         else if (defaultFootsteps.Count > 0)

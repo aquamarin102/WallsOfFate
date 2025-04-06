@@ -126,7 +126,6 @@ public class PlayerMoveController : MonoBehaviour
         // Если позиция изменилась, считаем, что игрок ходит
         if (Vector3.Distance(transform.position, lastPosition) > 0.001f)
         {
-            animator.SetBool("IsWalk", true);
 
             // Если звук шагов не воспроизводится – проигрываем его
             if (!footstepSource.isPlaying)
@@ -134,10 +133,7 @@ public class PlayerMoveController : MonoBehaviour
                 PlayFootstep();
             }
         }
-        else
-        {
-            animator.SetBool("IsWalk", false);
-        }
+
     }
 
     private void PlayFootstep()
