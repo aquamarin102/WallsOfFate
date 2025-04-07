@@ -31,6 +31,7 @@ public class AIController : MonoBehaviour
     private bool _underDebuff;
     private float _lockedY;
     private Vector3 _currentTarget;
+    private Rigidbody _rb;
 
     private int _currentNumOfDamage = 0;
     private int _currentNumOfHeal = 0;
@@ -50,6 +51,7 @@ public class AIController : MonoBehaviour
         _lockedY = transform.position.y;
         if (!HasTargetQueue())
             SelectNextTarget();
+        //_rb = this.GetComponent<Rigidbody>();
     }
 
     private void Update()
@@ -71,7 +73,12 @@ public class AIController : MonoBehaviour
             SetNextDestination();
         }
 
+
         transform.position = new Vector3(transform.position.x, _lockedY, transform.position.z);
+        if (_agent.speed == 0)
+        {
+            transform.position = transform.position;
+        }
     }
 
     private void SelectNextTarget()
