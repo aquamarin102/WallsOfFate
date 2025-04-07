@@ -1,216 +1,173 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 [RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(AudioSource))]
 public class PlayerMoveController : MonoBehaviour
 {
-    [Header("Movement Params")]
-    [SerializeField] private float _moveSpeed = 6.0f;
-    [SerializeField] private float _rotationSpeed = 10.0f;
-    [SerializeField] private float _gravity = 9.81f;
-    [SerializeField] private float _interval = 1f; // расстояние от платформы при захвате
-    [SerializeField] private Transform _cameraTransform;
+    [Header("Movement Settings")]
+    [SerializeField] private float moveSpeed = 3f;         // Базовая скорость
+    [SerializeField] private float runMultiplier = 1.5f;     // Множитель скорости при беге (Shift)
+    [SerializeField] private float rotationSpeed = 10f;      // Скорость поворота
+    [SerializeField] private float gravity = 9.81f;          // Гравитация (если уровень плоский – можно уменьшить)
+    [SerializeField] private Transform cameraTransform;      // Ссылка на камеру (обычно Main Camera)
 
-    private CharacterController _controller;
-    private Vector3 _moveDirection;
-    private float _verticalVelocity;
+    [Header("Footstep Settings")]
+    [SerializeField] private List<AudioClip> defaultFootsteps;  // Базовые звуки шагов
+    // Звуки для конкретных сцен (заполняются из Resources)
+    private Dictionary<string, List<AudioClip>> sceneFootstepSounds = new Dictionary<string, List<AudioClip>>();
 
-    // Захват движущегося объекта
-    private bool _catchPlatform = false;
-    private MovemtForMOvingObjects _movementComponent;
+    private CharacterController characterController;
+    private Animator animator;
+    private AudioSource footstepSource;
 
-    public bool IsMove = false;
+    private Vector3 moveDirection;
+    private float verticalVelocity;
 
-    // Состояние нажатия клавиши E, обновляемое в Update
-    private bool _grabButtonPressed = false;
+    // Для определения движения (используем разницу позиций)
+    private Vector3 lastPosition;
 
     [Inject]
-    private void Construct(Transform cameraTransform)
+    private void Construct(Transform camTransform)
     {
-        _cameraTransform = cameraTransform;
+        cameraTransform = camTransform;
     }
 
-    private void Awake()
+    private void Start()
     {
-        _controller = GetComponent<CharacterController>();
-        if (_controller == null)
-        {
-            Debug.LogError("PlayerController требует наличия CharacterController!");
-        }
+        characterController = GetComponent<CharacterController>();
+        animator = GetComponent<Animator>();
+        footstepSource = GetComponent<AudioSource>();
+        lastPosition = transform.position;
+
+        // Инициализация звуков шагов для разных сцен
+        sceneFootstepSounds.Add("MainRoom", new List<AudioClip>() { Resources.Load<AudioClip>("Footsteps/Wood") });
+        sceneFootstepSounds.Add("Forge", new List<AudioClip>() { Resources.Load<AudioClip>("Footsteps/Grass") });
+        sceneFootstepSounds.Add("Storage", new List<AudioClip>() { Resources.Load<AudioClip>("Footsteps/Stone") });
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        UpdateFootstepSounds(SceneManager.GetActiveScene().name);
+    }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     private void Update()
     {
-        // Если идёт диалог, пропускаем обработку ввода
-        if (DialogueManager.GetInstance() != null && DialogueManager.GetInstance().DialogueIsPlaying)
-        {
-            return;
-        }
+        // Обработка движения и анимации выполняется в Update для максимальной отзывчивости
 
-        // Обработка нажатия кнопки E в Update
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            _grabButtonPressed = true;
-        }
-    }
+        HandleMovement();
+        UpdateAnimator();
 
-    private void FixedUpdate()
-    {
-        // Если идёт диалог, движение не обрабатывается
-        if (DialogueManager.GetInstance() != null && DialogueManager.GetInstance().DialogueIsPlaying)
-        {
-            IsMove = false;
-            return;
-        }
-
-        // Сначала обрабатываем захват/отпуск объекта, если кнопка нажата
-        if (_grabButtonPressed)
-        {
-            if (!_catchPlatform)
-            {
-                TryGrab();
-            }
-            else
-            {
-                ReleaseGrab();
-            }
-            _grabButtonPressed = false;
-        }
-
-        // Если объект захвачен — перемещаем вместе с ним, иначе — свободное перемещение
-        if (!_catchPlatform)
-        {
-            HandleMovement();
-        }
-        else
-        {
-            IsMove = false;
-            MoveToPlatform(_interval);
-        }
+        lastPosition = transform.position;
     }
 
     private void HandleMovement()
     {
-        IsMove = true;
-
-        // Получаем "сырые" значения ввода
+        // Получаем сырой ввод для мгновенной реакции
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
+        Vector3 input = new Vector3(horizontal, 0, vertical);
 
-        // Если ввода почти нет – обнуляем движение
-        if (Mathf.Abs(horizontal) < 0.1f && Mathf.Abs(vertical) < 0.1f)
+        // Определяем текущую скорость (если зажат Shift – бег)
+        float currentSpeed = moveSpeed;
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
-            _moveDirection = Vector3.zero;
+            currentSpeed *= runMultiplier;
         }
-        else
+
+        Vector3 desiredMove = Vector3.zero;
+        if (input.sqrMagnitude > 0.01f)
         {
-            // Вычисляем векторы направления камеры по горизонтали
-            Vector3 camForward = _cameraTransform.forward;
+            // Получаем векторы направления камеры (без вертикали)
+            Vector3 camForward = cameraTransform.forward;
             camForward.y = 0;
             camForward.Normalize();
-            Vector3 camRight = _cameraTransform.right;
+            Vector3 camRight = cameraTransform.right;
             camRight.y = 0;
             camRight.Normalize();
 
-            // Формируем итоговый вектор движения: вертикальный (вперёд/назад) и горизонтальный (влево/вправо)
-            Vector3 desiredMove = (camForward * vertical + camRight * horizontal);
-            desiredMove.Normalize();
+            // Итоговое направление движения – комбинация ввода по осям
+            desiredMove = (camForward * vertical + camRight * horizontal).normalized;
 
-            // Поворот персонажа в направлении движения (без задержки, можно добавить Slerp для плавности)
+            // Поворот игрока в направлении движения (с плавностью)
             if (desiredMove != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(desiredMove);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, _rotationSpeed * Time.deltaTime);
+                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
             }
-
-            _moveDirection = desiredMove * _moveSpeed;
         }
 
-        // Обработка гравитации
-        if (_controller.isGrounded)
+        moveDirection = desiredMove * currentSpeed;
+
+        // Гравитация: если игрок на земле – слегка прижимаем, иначе уменьшаем скорость падения
+        if (characterController.isGrounded)
         {
-            _verticalVelocity = -1f; // немного опускаем, чтобы CharacterController оставался на земле
+            verticalVelocity = -1f;
         }
         else
         {
-            _verticalVelocity -= _gravity * Time.fixedDeltaTime;
+            verticalVelocity -= gravity * Time.deltaTime;
         }
-        _moveDirection.y = _verticalVelocity;
+        moveDirection.y = verticalVelocity;
 
-        // Перемещаем персонажа
-        _controller.Move(_moveDirection * Time.fixedDeltaTime);
+        // Перемещаем игрока через CharacterController
+        characterController.Move(moveDirection * Time.deltaTime);
     }
 
-
-    // Поиск ближайшего объекта с компонентом MovemtForMOvingObjects и захват его
-    private void TryGrab()
+    private void UpdateAnimator()
     {
-        GameObject closestObject = FindClosestMovingObject();
-        if (closestObject != null)
+        // Если позиция изменилась, считаем, что игрок ходит
+        if (Vector3.Distance(transform.position, lastPosition) > 0.001f)
         {
-            _movementComponent = closestObject.GetComponent<MovemtForMOvingObjects>();
-            if (_movementComponent != null)
+
+            // Если звук шагов не воспроизводится – проигрываем его
+            if (!footstepSource.isPlaying)
             {
-                _movementComponent.ChangeNeedToMovie();
-                _catchPlatform = true;
-                Debug.Log("Player grabbed: " + closestObject.name);
+                PlayFootstep();
             }
         }
-        else
+
+    }
+
+    private void PlayFootstep()
+    {
+        AudioClip clip = GetRandomFootstep();
+        if (clip != null)
         {
-            Debug.Log("No moving object found to grab.");
+            footstepSource.clip = clip;
+            footstepSource.Play();
         }
     }
 
-    // Отпускаем захваченный объект
-    private void ReleaseGrab()
+    private AudioClip GetRandomFootstep()
     {
-        if (_movementComponent != null)
+        List<AudioClip> currentFootsteps = sceneFootstepSounds.ContainsKey(SceneManager.GetActiveScene().name)
+            ? sceneFootstepSounds[SceneManager.GetActiveScene().name]
+            : defaultFootsteps;
+
+        if (currentFootsteps.Count > 0)
         {
-            _movementComponent.ChangeNeedToMovie();
-            _movementComponent = null;
+            return currentFootsteps[Random.Range(0, currentFootsteps.Count)];
         }
-        _catchPlatform = false;
-        Debug.Log("Player released object.");
+        return null;
     }
 
-    // Поиск ближайшего движущегося объекта
-    private GameObject FindClosestMovingObject()
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        MovemtForMOvingObjects[] movingComponents = FindObjectsOfType<MovemtForMOvingObjects>();
-        GameObject closestObject = null;
-        float closestDistance = Mathf.Infinity;
-        Vector3 currentPosition = transform.position;
-
-        foreach (MovemtForMOvingObjects component in movingComponents)
-        {
-            float distance = Vector3.Distance(currentPosition, component.transform.position);
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                closestObject = component.gameObject;
-            }
-        }
-        return closestObject;
+        UpdateFootstepSounds(scene.name);
     }
 
-    // Перемещение игрока вместе с захваченным объектом
-    public void MoveToPlatform(float interval)
+    private void UpdateFootstepSounds(string sceneName)
     {
-        if (_movementComponent != null && _movementComponent.Platform != null)
-        {
-            Transform platform = _movementComponent.Platform;
-            Vector3 targetPosition = platform.position - platform.forward * interval;
-            Vector3 delta = targetPosition - transform.position;
-            _controller.Move(delta);
-            Quaternion targetRotation = platform.rotation;
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _rotationSpeed);
-        }
-        else
-        {
-            Debug.LogWarning("Platform or movement component is missing!");
-        }
+        // В данном примере мы просто обновляем выбранный звук для шагов,
+        // он будет выбираться при воспроизведении.
+        // Если нужно установить конкретный клип сейчас, можно это сделать здесь.
     }
 }
