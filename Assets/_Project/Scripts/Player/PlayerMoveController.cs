@@ -17,12 +17,17 @@ public class PlayerMoveController : MonoBehaviour
     [SerializeField] private Transform cameraTransform;      // Ссылка на камеру (обычно Main Camera)
 
     [Header("Footstep Settings")]
-    [SerializeField] private List<AudioClip> defaultFootsteps;  // Базовые звуки шагов
+    // Используем один аудиоклип для шагов (будет выбран в зависимости от сцены)
+    [SerializeField] private List<AudioClip> defaultFootsteps;
     // Звуки для конкретных сцен (заполняются из Resources)
     private Dictionary<string, List<AudioClip>> sceneFootstepSounds = new Dictionary<string, List<AudioClip>>();
 
+    [Header("Footstep Pitch Settings")]
+    [SerializeField] private float walkingPitch = 1.0f;      // Базовый pitch при ходьбе
+    [SerializeField] private float runningPitch = 1.2f;      // Базовый pitch при беге
+    [SerializeField] private float stepPitchVariation = 0.05f; // Вариация для имитации разных ног
+
     private CharacterController characterController;
-    private Animator animator;
     private AudioSource footstepSource;
 
     private Vector3 moveDirection;
@@ -30,6 +35,7 @@ public class PlayerMoveController : MonoBehaviour
 
     // Для определения движения (используем разницу позиций)
     private Vector3 lastPosition;
+    private bool isLeftFootStep = true;
 
     [Inject]
     private void Construct(Transform camTransform)
@@ -40,7 +46,6 @@ public class PlayerMoveController : MonoBehaviour
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
-        animator = GetComponent<Animator>();
         footstepSource = GetComponent<AudioSource>();
         lastPosition = transform.position;
 
@@ -61,7 +66,6 @@ public class PlayerMoveController : MonoBehaviour
     private void Update()
     {
         // Обработка движения и анимации выполняется в Update для максимальной отзывчивости
-
         HandleMovement();
         UpdateAnimator();
 
@@ -77,9 +81,11 @@ public class PlayerMoveController : MonoBehaviour
 
         // Определяем текущую скорость (если зажат Shift – бег)
         float currentSpeed = moveSpeed;
+        bool isRunning = false;
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             currentSpeed *= runMultiplier;
+            isRunning = true;
         }
 
         Vector3 desiredMove = Vector3.zero;
@@ -126,38 +132,33 @@ public class PlayerMoveController : MonoBehaviour
         // Если позиция изменилась, считаем, что игрок ходит
         if (Vector3.Distance(transform.position, lastPosition) > 0.001f)
         {
-
             // Если звук шагов не воспроизводится – проигрываем его
             if (!footstepSource.isPlaying)
             {
                 PlayFootstep();
             }
         }
-
     }
 
     private void PlayFootstep()
     {
-        AudioClip clip = GetRandomFootstep();
-        if (clip != null)
+        if (footstepSource.clip != null)
         {
-            footstepSource.clip = clip;
-            footstepSource.Play();
+            // Определяем, бежит ли игрок
+            bool isRunning = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            // Выбираем базовый pitch в зависимости от режима (бег/ходьба)
+            float basePitch = isRunning ? runningPitch : walkingPitch;
+            // Добавляем небольшую вариацию для имитации чередования ног
+            float pitchVariation = isLeftFootStep ? stepPitchVariation : -stepPitchVariation;
+            footstepSource.pitch = basePitch + pitchVariation;
+            // Переключаем ногу для следующего шага
+            isLeftFootStep = !isLeftFootStep;
+            // Проигрываем звук шага
+            footstepSource.PlayOneShot(footstepSource.clip);
         }
     }
 
-    private AudioClip GetRandomFootstep()
-    {
-        List<AudioClip> currentFootsteps = sceneFootstepSounds.ContainsKey(SceneManager.GetActiveScene().name)
-            ? sceneFootstepSounds[SceneManager.GetActiveScene().name]
-            : defaultFootsteps;
-
-        if (currentFootsteps.Count > 0)
-        {
-            return currentFootsteps[Random.Range(0, currentFootsteps.Count)];
-        }
-        return null;
-    }
+    // Метод GetRandomFootstep убран, так как выбор случайного звука более не используется.
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -166,8 +167,15 @@ public class PlayerMoveController : MonoBehaviour
 
     private void UpdateFootstepSounds(string sceneName)
     {
-        // В данном примере мы просто обновляем выбранный звук для шагов,
-        // он будет выбираться при воспроизведении.
-        // Если нужно установить конкретный клип сейчас, можно это сделать здесь.
+        // Выбираем один аудиоклип для шагов: 
+        // Если для сцены определён звук, используем его (первый элемент), иначе используем дефолтный (первый элемент)
+        if (sceneFootstepSounds.ContainsKey(sceneName) && sceneFootstepSounds[sceneName].Count > 0)
+        {
+            footstepSource.clip = sceneFootstepSounds[sceneName][0];
+        }
+        else if (defaultFootsteps.Count > 0)
+        {
+            footstepSource.clip = defaultFootsteps[0];
+        }
     }
 }

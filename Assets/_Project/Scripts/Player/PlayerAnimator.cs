@@ -15,8 +15,6 @@ public class PlayerAnimator : MonoBehaviour
     [Tooltip("Время затухания для интерполяции параметра Speed")]
     [SerializeField] private float speedDampTime = 0.1f;
 
-    [Header("Footstep Settings")]
-    [SerializeField] private List<AudioClip> defaultFootsteps; // Базовые звуки шагов
 
     [Header("Footstep Timing Settings")]
     [Tooltip("Базовый интервал между шагами при ходьбе (сек.)")]
@@ -28,12 +26,8 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField] private float minPitch = 1.0f;
     [SerializeField] private float maxPitch = 1.3f;
 
-    // Параметры для анимации толкания ящика:
-    // В Animator персонажа должны быть параметры: 
-    // - IsPushing (bool)
-    // - PushSpeed (float)
     private float footstepTimer = 0f;
-    private Dictionary<string, List<AudioClip>> sceneFootstepSounds = new Dictionary<string, List<AudioClip>>();
+
 
     private void Awake()
     {
@@ -49,14 +43,6 @@ public class PlayerAnimator : MonoBehaviour
         {
             Debug.LogError("PlayerAnimator: Не найден компонент AudioSource!");
         }
-
-        // Инициализация звуков для разных сцен
-        sceneFootstepSounds.Add("MainRoom", new List<AudioClip>() { Resources.Load<AudioClip>("Footsteps/Wood") });
-        sceneFootstepSounds.Add("Forge", new List<AudioClip>() { Resources.Load<AudioClip>("Footsteps/Grass") });
-        sceneFootstepSounds.Add("Storage", new List<AudioClip>() { Resources.Load<AudioClip>("Footsteps/Stone") });
-
-        SceneManager.sceneLoaded += OnSceneLoaded;
-        UpdateFootstepSounds(SceneManager.GetActiveScene().name);
     }
 
     private void FixedUpdate()
@@ -106,61 +92,8 @@ public class PlayerAnimator : MonoBehaviour
         // Интерполируем интервал между шагами
         float currentFootstepInterval = Mathf.Lerp(baseFootstepInterval, runFootstepInterval, normalizedSpeed);
 
-        // Обработка звука шагов
-        footstepTimer += Time.deltaTime;
-        if (normalizedSpeed > 0.1f && footstepTimer >= currentFootstepInterval)
-        {
-            PlayFootstep();
-            footstepTimer = 0f;
-        }
 
         lastPosition = transform.position;
     }
 
-    private void PlayFootstep()
-    {
-        if (footstepSource != null && defaultFootsteps != null && defaultFootsteps.Count > 0)
-        {
-            AudioClip clip = GetRandomFootstep();
-            if (clip != null)
-            {
-                footstepSource.PlayOneShot(clip);
-            }
-        }
-    }
-
-    private AudioClip GetRandomFootstep()
-    {
-        List<AudioClip> currentFootsteps = sceneFootstepSounds.ContainsKey(SceneManager.GetActiveScene().name)
-            ? sceneFootstepSounds[SceneManager.GetActiveScene().name]
-            : defaultFootsteps;
-
-        if (currentFootsteps.Count > 0)
-        {
-            return currentFootsteps[Random.Range(0, currentFootsteps.Count)];
-        }
-        return null;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        UpdateFootstepSounds(scene.name);
-    }
-
-    private void UpdateFootstepSounds(string sceneName)
-    {
-        if (sceneFootstepSounds.ContainsKey(sceneName))
-        {
-            footstepSource.clip = sceneFootstepSounds[sceneName][0];
-        }
-        else if (defaultFootsteps.Count > 0)
-        {
-            footstepSource.clip = defaultFootsteps[0];
-        }
-    }
-
-    private void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
 }
