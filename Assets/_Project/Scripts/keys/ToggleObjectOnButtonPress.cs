@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets._Project.Scripts.Managers;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
@@ -48,9 +49,6 @@ public class ToggleObjectOnButtonPress : MonoBehaviour
         {
             TargetObject.SetActive(false);
         }
-
-
-        TogglePause();
     }
 
     public void TogglePause()
