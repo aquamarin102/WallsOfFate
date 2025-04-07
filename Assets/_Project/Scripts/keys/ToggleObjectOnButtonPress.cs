@@ -51,19 +51,4 @@ public class ToggleObjectOnButtonPress : MonoBehaviour
         }
     }
 
-    public void TogglePause()
-    {
-        _isPaused = !_isPaused; // Переключаем состояние паузы
-
-        if (_isPaused)
-        {
-            Time.timeScale = 0f; // Останавливаем время
-            Debug.Log("Игра на паузе");
-        }
-        else
-        {
-            Time.timeScale = 1f; // Восстанавливаем время
-            Debug.Log("Игра продолжается");
-        }
-    }
 }

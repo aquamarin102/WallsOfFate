@@ -1,23 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Assets._Project.Scripts.Managers
 {
-    public class TimeStoper : MonoBehaviour
+    public class TimeStopper : MonoBehaviour
     {
-        [field: SerializeField] public List<GameObject> TargetObjects { get; private set; }
+        [SerializeField] private List<GameObject> targetObjects;
+        public List<GameObject> TargetObjects => targetObjects;
+
+        // Переменная для отслеживания текущего состояния паузы
+        private bool isPaused = false;
+
         private void Update()
         {
-            if (TargetObjects != null && TargetObjects.Any(obj => obj.activeSelf != false)) TimeStop(true);
-            else TimeStop(false);
+            // Проверяем, должен ли быть вызван режим паузы: если список не null и хотя бы один объект активен
+            bool shouldPause = targetObjects != null && targetObjects.Any(obj => obj.activeSelf);
+
+            // Если состояние изменилось, то вызываем TimeStop
+            if (shouldPause != isPaused)
+            {
+                SetTimePause(shouldPause);
+                isPaused = shouldPause;
+            }
         }
-        public void TimeStop(bool state)
+
+        private void SetTimePause(bool pause)
         {
-            if (state)
+            if (pause)
             {
                 Time.timeScale = 0f; // Останавливаем время
                 Debug.Log("Игра на паузе");
