@@ -56,7 +56,7 @@ public class PlayerSaveLoader : ISaveLoader
 
             if (!string.IsNullOrEmpty(savedData.sceneName))
             {
-                UnityEngine.SceneManagement.SceneManager.LoadScene(savedData.sceneName);
+                LoadingScreenManager.Instance.LoadScene(savedData.sceneName);
                 Time.timeScale = 1;
             }
         }

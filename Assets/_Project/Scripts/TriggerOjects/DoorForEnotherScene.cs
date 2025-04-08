@@ -25,7 +25,7 @@ namespace Assets.Scripts.TriggerOjects
             PlayerSpawnData.SpawnRotation = SpawnRotation;
 
             // Вызываем событие для загрузки сцены
-            OnActivated?.Invoke(SceneName);
+            LoadingScreenManager.Instance.LoadScene(SceneName);
         }
     }
 }

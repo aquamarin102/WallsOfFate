@@ -40,7 +40,7 @@ public class NewGameButton : MonoBehaviour
     }
     public void StartGame()
     {
-            SceneManager.LoadScene(1);
+        LoadingScreenManager.Instance.LoadScene("MainRoom");
     }
     public void HideNewGamePanel()
     {
