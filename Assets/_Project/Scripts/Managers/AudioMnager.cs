@@ -6,12 +6,18 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance;
 
-    public AudioMixer audioMixer;
-    public AudioSource musicSource;
-    public AudioSource sfxSource;
-    public AudioSource uiSource;
+    [SerializeField] private AudioMixer audioMixer;
+    [SerializeField] private AudioSource musicSource;
+    [SerializeField] private AudioSource sfxSource;
+    [SerializeField] private AudioSource uiSource;
 
-    public AudioClip defaultMusic; // Музыка по умолчанию для первой сцены
+    [SerializeField] private AudioClip defaultMusic; // Музыка по умолчанию для первой сцены
+    [SerializeField] private AudioClip loadingMusic;   // Музыка загрузочного экрана
+
+    [Header("Mixer Snapshots")]
+    [SerializeField] private AudioMixerSnapshot normalSnapshot;   // Состояние нормального звука
+    [SerializeField] private AudioMixerSnapshot loadingSnapshot;  // Snapshot, где звук сцены выключен
+    [SerializeField] private float snapshotTransitionTime = 0.5f;   // Время перехода
 
     private void Awake()
     {
@@ -35,30 +41,31 @@ public class AudioManager : MonoBehaviour
         {
             PlayMusic(defaultMusic);
         }
-
-        // Подписываемся на смену сцены
-        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    private void OnDestroy()
+    public static AudioManager GetInstance()
     {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        ChangeMusicForScene(scene.name);
+        return Instance;
     }
 
     public void PlayMusic(AudioClip clip)
     {
         if (musicSource.isPlaying && musicSource.clip == clip) return;
-
         musicSource.clip = clip;
         musicSource.loop = true;
         musicSource.Play();
     }
 
+    /// <summary>
+    /// Проигрывает музыку загрузочного экрана.
+    /// </summary>
+    public void PlayLoadingMusic()
+    {
+        if (loadingMusic != null)
+        {
+            PlayMusic(loadingMusic);
+        }
+    }
 
     public void PlaySFX(AudioClip clip)
     {
@@ -93,7 +100,11 @@ public class AudioManager : MonoBehaviour
         SetVolume("Volume_UI", uiVolume);
     }
 
-    private void ChangeMusicForScene(string sceneName)
+    /// <summary>
+    /// Смена музыки в зависимости от названия сцены.
+    /// Этот метод вызывается из загрузочного экрана после его закрытия.
+    /// </summary>
+    public void ChangeMusicForScene(string sceneName)
     {
         AudioClip newMusic = null;
 
@@ -118,4 +129,50 @@ public class AudioManager : MonoBehaviour
             PlayMusic(newMusic);
         }
     }
+
+    /// <summary>
+    /// Переключает mixer на snapshot для загрузочного экрана, где звуки сцены выключены.
+    /// </summary>
+    public void ActivateLoadingSnapshot()
+    {
+        // Принудительно устанавливаем громкость для SFX и UI на -80 дБ независимо от пользовательских настроек
+        audioMixer.SetFloat("Volume_SFX", -80f);
+        audioMixer.SetFloat("Volume_UI", -80f);
+
+        // Затем переходим на snapshot загрузочного экрана
+        if (loadingSnapshot != null)
+        {
+            loadingSnapshot.TransitionTo(snapshotTransitionTime);
+        }
+    }
+
+    /// <summary>
+    /// Возвращает mixer в нормальное состояние.
+    /// </summary>
+    public void ActivateNormalSnapshot()
+    {
+        // Считываем настройки звука из PlayerPrefs
+        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        float uiVolume = PlayerPrefs.GetFloat("UIVolume", 1f);
+        SetVolume("Volume_SFX", sfxVolume);
+        SetVolume("Volume_UI", uiVolume);
+
+        if (normalSnapshot != null)
+        {
+            normalSnapshot.TransitionTo(snapshotTransitionTime);
+        }
+    }
+
+
+    public void ReloadVolumeSettings()
+    {
+        float musicVolume = PlayerPrefs.GetFloat("MusicVolume", 1f);
+        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 1f);
+        float uiVolume = PlayerPrefs.GetFloat("UIVolume", 1f);
+
+        SetVolume("Volume_Music", musicVolume);
+        SetVolume("Volume_SFX", sfxVolume);
+        SetVolume("Volume_UI", uiVolume);
+    }
+
 }

@@ -16,6 +16,7 @@ public class DialogueManager : MonoBehaviour
 
     [Header("Dialogue UI")]
     [SerializeField] private GameObject _dialoguePanel;
+    [SerializeField] private GameObject _dialogueBackground;
     [SerializeField] private TextMeshProUGUI _dialogueText;
     [SerializeField] private TextMeshProUGUI _displayNameText;
     [SerializeField] private Animator _portraitAnimator;
@@ -63,7 +64,7 @@ public class DialogueManager : MonoBehaviour
     {
         DialogueIsPlaying = false;
         _dialoguePanel.SetActive(false);
-
+        _dialogueBackground.SetActive(false);
         _layoutAnimator = _dialoguePanel.GetComponent<Animator>();
 
         _choicesText = new TextMeshProUGUI[_choices.Length];
@@ -116,7 +117,7 @@ public class DialogueManager : MonoBehaviour
 
         DialogueIsPlaying = true;
         _dialoguePanel.SetActive(true);
-
+        _dialogueBackground.SetActive(true);
         _dialogueVariables.StartListening(_currentStory);
 
         _displayNameText.text = "?";
@@ -134,6 +135,7 @@ public class DialogueManager : MonoBehaviour
 
         DialogueIsPlaying = false;
         _dialoguePanel.SetActive(false);
+        _dialogueBackground.SetActive(false);
         _dialogueText.text = "";
     }
 

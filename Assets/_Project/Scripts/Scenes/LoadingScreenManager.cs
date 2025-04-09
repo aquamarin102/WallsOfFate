@@ -6,23 +6,21 @@ using TMPro;
 
 public class LoadingScreenManager : MonoBehaviour
 {
-    public static LoadingScreenManager Instance; // Синглтон для доступа из любых сцен
+    public static LoadingScreenManager Instance; // Синглтон
 
     [Header("UI Элементы загрузочного экрана")]
-    public GameObject loadingScreen;   // Контейнер (например, панель или Canvas) загрузочного экрана
-    public Image loadingImage;         // Изображение, которое отображается во время загрузки
-    public TMP_Text loadingText;       // Текстовый элемент (TextMeshPro) для вывода сообщений
+    public GameObject loadingScreen;
+    public Image loadingImage;
+    public TMP_Text loadingText;
 
     [Header("Настройки финального вида")]
-    [Tooltip("Спрайт, который подставляется в loadingImage после загрузки новой сцены.")]
-    public Sprite finalSprite;         // Финальный спрайт
+    public Sprite finalSprite;
 
-    // Флаг, указывающий, что окно ждёт нажатия клавиши
-    private bool waitingForUserInput = false;
+    private string targetSceneName;
+    private bool waitingForInput = false;
 
     private void Awake()
     {
-        // Реализуем синглтон, чтобы объект не уничтожался между сценами
         if (Instance == null)
         {
             Instance = this;
@@ -34,102 +32,77 @@ public class LoadingScreenManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Запускает асинхронную загрузку указанной сцены.
-    /// Загрузочный экран появляется сразу, и после загрузки новой сцены окно остаётся видимым,
-    /// пока пользователь не нажмёт любую клавишу.
-    /// </summary>
-    /// <param name="sceneName">Имя сцены для загрузки</param>
     public void LoadScene(string sceneName)
     {
-        // Отображаем загрузочный экран с изначальным сообщением "Загрузка..."
+        Time.timeScale = 1f;
+
+        targetSceneName = sceneName;
+
         loadingScreen.SetActive(true);
         loadingText.text = "Загрузка...";
 
-        // Подписываемся на событие завершения загрузки сцены
-        SceneManager.sceneLoaded += OnSceneLoaded;
+        // Переключаем микшер на режим загрузки (замьютить звуки сцены)
+        AudioManager.Instance.ActivateLoadingSnapshot();
 
-        // Запускаем асинхронную загрузку новой сцены.
+        // Запускаем загрузочную музыку (если нужно)
+        AudioManager.Instance.PlayLoadingMusic();
+
         StartCoroutine(LoadSceneAsync(sceneName));
     }
 
-    /// <summary>
-    /// Асинхронно загружает указанную сцену.
-    /// allowSceneActivation оставляем true, чтобы новая сцена активировалась сразу после загрузки.
-    /// </summary>
     private IEnumerator LoadSceneAsync(string sceneName)
     {
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-        // Можно добавить отслеживание прогресса, если требуется.
         while (!operation.isDone)
         {
+            if (operation.progress >= 0.9f)
+            {
+                var spriteAnimator = loadingImage.GetComponent<UISpriteAnimator>();
+                if (spriteAnimator != null)
+                {
+                    spriteAnimator.enabled = false;
+                }
+                if (finalSprite != null)
+                {
+                    loadingImage.sprite = finalSprite;
+                }
+                loadingText.text = "Продолжить";
+                waitingForInput = true;
+                StartCoroutine(WaitForUserInput());
+                break;
+            }
             yield return null;
         }
     }
 
-    /// <summary>
-    /// Метод, вызываемый системой после загрузки новой сцены.
-    /// Здесь происходит смена финальных элементов загрузочного экрана,
-    /// и начинается ожидание нажатия любой клавиши для закрытия окна.
-    /// </summary>
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        // Отписываемся, чтобы избежать множественных вызовов
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-
-        // Если на объекте loadingImage есть компонент UISpriteAnimator, отключаем его.
-        UISpriteAnimator spriteAnimator = loadingImage.GetComponent<UISpriteAnimator>();
-        if (spriteAnimator != null)
-        {
-            spriteAnimator.enabled = false;
-        }
-
-        // Подставляем финальный спрайт, если он задан.
-        if (finalSprite != null)
-        {
-            loadingImage.sprite = finalSprite;
-        }
-
-        // Меняем текст на финальное сообщение.
-        loadingText.text = "Продолжить";
-        waitingForUserInput = true;
-
-        // Запускаем корутину для ожидания пользовательского ввода и, опционально, эффекта мигания текста.
-        StartCoroutine(WaitForUserInput());
-    }
-
-    /// <summary>
-    /// Корутина, которая ждет нажатия любой клавиши.
-    /// Пока не нажата любая клавиша, можно добавить дополнительные эффекты (например, мигание текста).
-    /// </summary>
     private IEnumerator WaitForUserInput()
     {
-        // Если хотите добавить мигание текста, можно запустить отдельную корутину.
         StartCoroutine(BlinkText());
-
-        // Ждем, пока пользователь не нажмет любую клавишу.
         while (!Input.anyKeyDown)
         {
             yield return null;
         }
+        waitingForInput = false;
 
-        waitingForUserInput = false;
-        // После нажатия клавиши скрываем загрузочный экран.
+        // Восстанавливаем звуки согласно пользовательским настройкам:
+        AudioManager.Instance.ReloadVolumeSettings();
+        // Или, если используется ActivateNormalSnapshot():
+        // AudioManager.GetInstance().ActivateNormalSnapshot();
+
+        // Переключаем музыку на музыку целевой сцены
+        AudioManager.Instance.ChangeMusicForScene(targetSceneName);
+        // Скрываем загрузочный экран
         loadingScreen.SetActive(false);
     }
 
-    /// <summary>
-    /// Пример корутины эффекта мигания текста.
-    /// Текст будет переключаться каждые 0.5 секунды, пока ждем ввода.
-    /// </summary>
+
     private IEnumerator BlinkText()
     {
-        while (waitingForUserInput)
+        while (waitingForInput)
         {
             loadingText.enabled = !loadingText.enabled;
             yield return new WaitForSeconds(0.5f);
         }
-        // В конце обязательно включаем текст
         loadingText.enabled = true;
     }
 }

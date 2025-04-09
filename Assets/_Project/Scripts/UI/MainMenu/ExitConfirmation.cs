@@ -30,7 +30,7 @@ public class ExitConfirmation : MonoBehaviour
 
     public void QuitToMenuGame()
     {
-        SceneManager.LoadScene(0);
+        LoadingScreenManager.Instance.LoadScene("MainMenu");
     }
     public void QuitGame()
     {
