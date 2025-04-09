@@ -13,6 +13,7 @@ public sealed class SaveLoadManager : MonoBehaviour
 
     private ISaveLoader[] saveLoaders;
     private ISaveLoader[] requiredSaveLoaders;
+    private bool _startNewGame = false;
 
     [Inject]
     private void Construct(PlayerMoveController controller)
@@ -74,12 +75,16 @@ public sealed class SaveLoadManager : MonoBehaviour
 
     public void SaveRequiredData() // правильное именование
     {
-        foreach (var saveLoader in this.requiredSaveLoaders) // исправление опечатки
+        if (!_startNewGame)
         {
-            if (saveLoader != null)
-                saveLoader.SaveData();
+            foreach (var saveLoader in this.requiredSaveLoaders) // исправление опечатки
+            {
+                if (saveLoader != null)
+                    saveLoader.SaveData();
+            }
+            Repository.SaveState();
+            _startNewGame = false;
         }
-        Repository.SaveState();
     }
 
 
@@ -105,6 +110,7 @@ public sealed class SaveLoadManager : MonoBehaviour
         QuestCollection.ClearQuests();
         AssembledPickups.Clear();
         Repository.ClearSaveData();
+        _startNewGame = true;
     }
     private void OnEnable()
     {
