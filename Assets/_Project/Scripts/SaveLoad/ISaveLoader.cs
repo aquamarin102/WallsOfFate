@@ -1,8 +1,8 @@
 public interface ISaveLoader
 {
-    void LoadData();
+    bool LoadData();
 
     void SaveData();
 
-    void LoadDefaulData();
+    void LoadDefaultData();
 }

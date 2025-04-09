@@ -47,9 +47,9 @@ public class PlayerSaveLoader : ISaveLoader
         playerTransform = transform;
     }
 
-    public void LoadData()
+    public bool LoadData()
     {
-        if (Repository.TryGetData(out PlayerSaveData savedData))
+        if (Repository.TryGetData("Player", out PlayerSaveData savedData))
         {
             PlayerSpawnData.SpawnPosition = savedData.position.ToVector3();
             PlayerSpawnData.SpawnRotation = Quaternion.Euler(savedData.rotation.ToVector3());
@@ -59,14 +59,16 @@ public class PlayerSaveLoader : ISaveLoader
                 LoadingScreenManager.Instance.LoadScene(savedData.sceneName);
                 Time.timeScale = 1;
             }
+            return true;
         }
         else
         {
             //Debug.LogWarning("No saved data found. Loading default scene and position.");
+            return false;
         }
     }
 
-    public void LoadDefaulData()
+    public void LoadDefaultData()
     {
         throw new NotImplementedException();
     }
@@ -79,7 +81,7 @@ public class PlayerSaveLoader : ISaveLoader
             UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
         );
 
-        Repository.SetData(saveData);
+        Repository.SetData("Player", saveData);
         //Debug.Log("Player data saved: " + saveData.sceneName);
     }
 }

@@ -16,7 +16,7 @@ namespace Assets.Scripts.TriggerOjects
         // Скрытое поле для Quaternion, вычисляемое на основе SpawnEulerAngles
         private Quaternion SpawnRotation => Quaternion.Euler(SpawnEulerAngles);
         public event Action<string> OnActivated;
-        public void Trrigered()
+        public void Triggered()
         {
             Debug.Log("Переход на новую локу!");
 

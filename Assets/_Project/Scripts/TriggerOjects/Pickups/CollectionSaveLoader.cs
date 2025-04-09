@@ -13,9 +13,9 @@ public class CollectionSaveLoader : ISaveLoader
         _pickups = pickups;
     }
 
-    public void LoadData()
+    public bool LoadData()
     {
-        if (Repository.TryGetData(out List<PickupData> savedPickups))
+        if (Repository.TryGetData("Pickups", out List<PickupData> savedPickups)/* || savedPickups.Count != 0*/)
         {
             //AssembledPickups.Clear();
             foreach (var pickup in savedPickups)
@@ -27,12 +27,16 @@ public class CollectionSaveLoader : ISaveLoader
             {
                 Debug.Log($"Pickup {pickup.Name}");
             }
+            return true;
         }
-        //else
-        //    LoadDefaulData();
+        else
+        {
+            return false;
+            //throw new NotImplementedException();
+        }
     }
 
-    public void LoadDefaulData()
+    public void LoadDefaultData()
     {
         TextAsset textAsset = Resources.Load<TextAsset>("SavsInformation/Inventory/Conclusions");
         if (textAsset == null)
@@ -88,7 +92,7 @@ public class CollectionSaveLoader : ISaveLoader
     {
         _pickups = AssembledPickups.GetAllPickups();
         var pickupData = _pickups.Select(PickupData.FromPickup).ToList();
-        Repository.SetData(pickupData);
+        Repository.SetData("Pickups", pickupData);
         Debug.Log("Collection saved: " + _pickups.Count + " items.");
     }
 }

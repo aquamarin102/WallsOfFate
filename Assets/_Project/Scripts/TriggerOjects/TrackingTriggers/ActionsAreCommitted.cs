@@ -12,11 +12,11 @@ public class ActionsAreCommitted : MonoBehaviour
 
     private void Awake()
     {
-        _checkableTrigger = GetComponent<ICheckableTrigger>();
-        if (_checkableTrigger == null)
-        {
-            Debug.LogError($"No component implementing ICheckableTrigger found on {gameObject.name}", this);
-        }
+        //_checkableTrigger = GetComponent<ICheckableTrigger>();
+        //if (_checkableTrigger == null)
+        //{
+        //    Debug.LogError($"No component implementing ICheckableTrigger found on {gameObject.name}", this);
+        //}
     }
 
     private void Update()

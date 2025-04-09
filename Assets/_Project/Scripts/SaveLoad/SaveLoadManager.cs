@@ -1,8 +1,10 @@
+using Quest;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Zenject;
 
 public sealed class SaveLoadManager : MonoBehaviour
@@ -10,7 +12,7 @@ public sealed class SaveLoadManager : MonoBehaviour
     private static Transform _playerTransform;
 
     private ISaveLoader[] saveLoaders;
-    private ISaveLoader[] requeredSaveLoaders;
+    private ISaveLoader[] requiredSaveLoaders;
 
     [Inject]
     private void Construct(PlayerMoveController controller)
@@ -22,15 +24,18 @@ public sealed class SaveLoadManager : MonoBehaviour
     {
         saveLoaders = new ISaveLoader[]
         {
+            new QuestSaveLoader(),
             new PlayerSaveLoader(_playerTransform),
             new CollectionSaveLoader(AssembledPickups.GetAllPickups()),
         };
-        requeredSaveLoaders = new ISaveLoader[]
+        requiredSaveLoaders = new ISaveLoader[]
         {
             //new PlayerSaveLoader(_playerTransform),
+            new QuestSaveLoader(),
             new CollectionSaveLoader(AssembledPickups.GetAllPickups()),
         };
-        LoadRequiredData();
+        //LoadGame();
+        //LoadRequiredData();
     }
 
     private void FindPlayer()
@@ -44,8 +49,8 @@ public sealed class SaveLoadManager : MonoBehaviour
         {
             Debug.LogError("Player object with tag 'Player' not found!");
         }
-    }    
-    
+    }
+
     public void LoadGame()
     {
         Repository.LoadState();
@@ -58,12 +63,25 @@ public sealed class SaveLoadManager : MonoBehaviour
     public void LoadRequiredData()
     {
         Repository.LoadState();
-
-        foreach (var saveLoader in this.requeredSaveLoaders)
+        foreach (var saveLoader in this.requiredSaveLoaders)
         {
-            saveLoader.LoadDefaulData();
+            if (!saveLoader.LoadData())
+            {
+                saveLoader.LoadDefaultData();
+            }
         }
     }
+
+    public void SaveRequiredData() // правильное именование
+    {
+        foreach (var saveLoader in this.requiredSaveLoaders) // исправление опечатки
+        {
+            if (saveLoader != null)
+                saveLoader.SaveData();
+        }
+        Repository.SaveState();
+    }
+
 
     public void SaveGame()
     {
@@ -81,9 +99,33 @@ public sealed class SaveLoadManager : MonoBehaviour
 
         return Repository.HasAnyData();
     }
-    
+
     public void ClearSavs()
     {
-        Repository.ClearSaveData(); 
+        QuestCollection.ClearQuests();
+        AssembledPickups.Clear();
+        Repository.ClearSaveData();
+    }
+    private void OnEnable()
+    {
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+         SaveRequiredData();
+        SceneManager.sceneUnloaded -= OnSceneUnloaded;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneUnloaded(Scene scene)
+    {
+        SaveRequiredData();
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        LoadRequiredData();
     }
 }

@@ -39,7 +39,7 @@ namespace Assets.Scripts.TriggerOjects
             }
         }
 
-        public void Trrigered()
+        public void Triggered()
         {
             IsDone = true;
             StartCoroutine(ShowIndication());

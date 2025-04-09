@@ -1,118 +1,75 @@
 ﻿using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Quest;
 
-public class CompositeTrigger : MonoBehaviour, ICheckableTrigger
+public class CompositeTrigger : MonoBehaviour, ITriggerable
 {
-    [SerializeField] private List<ActionsAreCommitted> _requiredTriggers = new List<ActionsAreCommitted>();
+    [Header("Quest Settings")]
+    [SerializeField] private int _SelfId; // ID текущего квеста
+    [SerializeField] private List<int> _requiredTriggerIds = new List<int>(); // ID требуемых квестов
     [SerializeField] private bool _once = false;
-    [SerializeField] private string _searchTag; 
 
     public event Action OnActivated;
     public bool IsDone { get; private set; }
 
-    private void Awake()
+    private void Start()
     {
-        if (_requiredTriggers.Count == 0 && !string.IsNullOrEmpty(_searchTag))
-        {
-            FindTriggersByTag(_searchTag);
-        }
-
-        if (_requiredTriggers.Count == 0)
-        {
-            Debug.LogWarning($"No triggers assigned to CompositeTrigger on {gameObject.name}", this);
-        }
+        ValidateQuestConfiguration();
     }
 
-    // Метод для поиска триггеров по тегу
-    public void FindTriggersByTag(string tag)
+    public void Triggered()
     {
-        if (!TagExists(tag))
-        {
-            Debug.LogWarning($"Tag '{tag}' does not exist!", this);
-            return;
-        }
-
-        GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag(tag);
-        _requiredTriggers.Clear();
-
-        foreach (GameObject obj in taggedObjects)
-        {
-            // Пропускаем себя
-            if (obj == gameObject) continue;
-
-            var trigger = obj.GetComponent<ActionsAreCommitted>();
-            if (trigger != null)
-            {
-                _requiredTriggers.Add(trigger);
-            }
-        }
-
-        Debug.Log($"Found {_requiredTriggers.Count} triggers with tag '{tag}'");
-    }
-
-    // Проверка существования тега
-    private bool TagExists(string tagName)
-    {
-        try
-        {
-            GameObject.FindWithTag(tagName);
-            return true;
-        }
-        catch (UnityException)
-        {
-            return false;
-        }
-    }
-
-    public void Trrigered()
-    {
-         //FindTriggersByTag(_searchTag);
         if (IsDone && _once) return;
-
-        bool allDone = true;
-        foreach (var trigger in _requiredTriggers)
-        {
-            ICheckableTrigger triggerIntr = trigger.gameObject.GetComponent<ICheckableTrigger>();
-            if (triggerIntr == null)
-            {
-                Debug.LogError("Null trigger in CompositeTrigger list!", this);
-                continue;
-            }
-
-            if (!triggerIntr.IsDone)
-            {
-                allDone = false;
-                break;
-            }
-        }
-
-        if (allDone)
+        if (CheckTriggerConditions())
         {
             IsDone = true;
             OnActivated?.Invoke();
+            QuestCollection.GetQuestById(_SelfId).IsDone = true;
         }
     }
 
-    // Для ручного добавления триггеров
-    public void AddTrigger(ActionsAreCommitted trigger)
+    private bool CheckTriggerConditions()
     {
-        if (trigger != null && !_requiredTriggers.Contains(trigger))
+        // Проверка выполнения всех требуемых квестов
+        foreach (int questId in _requiredTriggerIds)
         {
-            _requiredTriggers.Add(trigger);
+            Quest.Quest quest = QuestCollection.GetQuestById(questId);
+            if (quest == null || !quest.IsDone)
+            {
+                return false;
+            }
+        }
+
+        // Проверка соответствия текущего активного квеста
+        Quest.Quest currentQuest = QuestCollection.GetFirstNotDoneQuest();
+        return currentQuest != null && currentQuest.Id == _SelfId;
+    }
+
+    private void ValidateQuestConfiguration()
+    {
+        if (_requiredTriggerIds.Count == 0)
+        {
+            Debug.LogWarning($"No required quests assigned to CompositeTrigger on {gameObject.name}", this);
+        }
+
+        if (QuestCollection.GetQuestById(_SelfId) == null)
+        {
+            Debug.LogError($"Self Quest ID {_SelfId} not found in QuestCollection!", this);
         }
     }
 
-    // Контекстное меню для редактора
-    [ContextMenu("Find Triggers By Tag")]
-    private void FindTriggersByTagEditor()
+    // Обновленные методы для работы с ID (опционально)
+    public void AddRequiredQuestId(int questId)
     {
-        if (!string.IsNullOrEmpty(_searchTag))
+        if (!_requiredTriggerIds.Contains(questId))
         {
-            FindTriggersByTag(_searchTag);
-#if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(this);
-#endif
+            _requiredTriggerIds.Add(questId);
         }
+    }
+
+    public void SetSelfId(int newId)
+    {
+        _SelfId = newId;
     }
 }

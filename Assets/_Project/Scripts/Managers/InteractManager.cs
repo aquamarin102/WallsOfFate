@@ -100,7 +100,7 @@ public class InteractManager : MonoBehaviour
     {
         if (!triggeredSet.Contains(trigger) || trigger is Box)
         {
-            trigger.Trrigered();
+            trigger.Triggered();
             triggeredSet.Add(trigger);
         }
         else
