@@ -17,7 +17,7 @@ public class PlayChestAnimation : MonoBehaviour, ICheckableTrigger
         }
     }
 
-    public void Trrigered()
+    public void Triggered()
     {
         OpenChest();
     }

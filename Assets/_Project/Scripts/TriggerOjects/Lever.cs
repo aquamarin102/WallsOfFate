@@ -7,7 +7,7 @@ public class Lever : MonoBehaviour, ICheckableTrigger
     public bool IsDone { get; private set; }
     [SerializeField] private bool _once = false;
 
-    public void Trrigered()
+    public void Triggered()
     {
         if (IsDone && _once) return;
         IsDone = true;

@@ -1,0 +1,47 @@
+[
+  {
+    "Id": 0,
+    "QuestInfo": "Поговорить с Гонцом",
+    "IsDone": false
+  },
+  {
+    "Id": 1,
+    "QuestInfo": "Выйти из главного зала",
+    "IsDone": false
+  },
+  {
+    "Id": 2,
+    "QuestInfo": "Поговорить с кузнецом",
+    "IsDone": false
+  },
+  {
+    "Id": 3,
+    "QuestInfo": "Найти молот",
+    "IsDone": false
+  },
+  {
+    "Id": 4,
+    "QuestInfo": "Поговорить с кузнецом",
+    "IsDone": false
+  },
+  {
+    "Id": 5,
+    "QuestInfo": "Поговорить с главой стражи",
+    "IsDone": false
+  },
+  {
+    "Id": 6,
+    "QuestInfo": "Найти беженца",
+    "IsDone": false
+  },
+  {
+    "Id": 7,
+    "QuestInfo": "Вернуться в тронный зал",
+    "IsDone": false
+  },
+  {
+    "Id": 8,
+    "QuestInfo": "Пойти на склад",
+    "IsDone": false
+  }
+]

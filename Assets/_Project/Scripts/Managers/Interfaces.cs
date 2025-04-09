@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface ITriggerable
 {
-    void Trrigered();
+    void Triggered();
 
 }
 

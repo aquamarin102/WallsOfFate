@@ -6,7 +6,7 @@ using System;
 public class Box : MonoBehaviour, ITriggerable
 {
     public event Action OnActivated;
-    public void Trrigered()
+    public void Triggered()
     {
         //Debug.Log("Коробку можно двигать!");
         OnActivated?.Invoke();

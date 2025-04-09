@@ -40,25 +40,28 @@ public static class Repository
         throw new KeyNotFoundException($"Data for type {typeof(T).Name} not found.");
     }
 
-    public static void SetData<T>(T value)
+    public static void SetData<T>(string key, T value)
     {
         var settings = new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            Formatting = Formatting.Indented
+            TypeNameHandling = TypeNameHandling.All // Добавляем информацию о типе
         };
-        var serializedData = JsonConvert.SerializeObject(value);
-        currentState[typeof(T).Name] = serializedData;
+        var serializedData = JsonConvert.SerializeObject(value, settings);
+        currentState[key] = serializedData;
     }
 
-    public static bool TryGetData<T>(out T value)
+    public static bool TryGetData<T>(string key, out T value)
     {
-        if (currentState.TryGetValue(typeof(T).Name, out var serializedData))
+        if (currentState.TryGetValue(key, out var serializedData))
         {
-            value = JsonConvert.DeserializeObject<T>(serializedData);
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+            value = JsonConvert.DeserializeObject<T>(serializedData, settings);
             return true;
         }
-
         value = default;
         return false;
     }
