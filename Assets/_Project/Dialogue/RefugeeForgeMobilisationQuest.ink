@@ -1,4 +1,4 @@
-INCLUDE global.ink
+INCLUDE GlobalSettings\global.ink
 
 Пожалуйста, не трогайте меня... Я просто хочу спрятаться здесь, пока война не закончится. 
 # speaker: Кузнец

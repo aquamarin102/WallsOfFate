@@ -2882,10 +2882,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _dialogues:
   - questId: 0
-    inkJSON: {fileID: 4900000, guid: 454e68cf65337b04ca592def71ce0cfe, type: 3}
+    inkJSON: {fileID: 4900000, guid: 068008eaa9e0f114e8ecdf947d3dfc9f, type: 3}
     requiredQuestIds: 
   - questId: 8
-    inkJSON: {fileID: 4900000, guid: 561658de4ff74a94f9c027b499096025, type: 3}
+    inkJSON: {fileID: 4900000, guid: 21a1c08751be0524c889c7753695e33f, type: 3}
     requiredQuestIds: 0000000001000000020000000300000004000000050000000600000007000000
   _defaultDialogue: {fileID: 4900000, guid: 454e68cf65337b04ca592def71ce0cfe, type: 3}
 --- !u!1 &4044241201480333291

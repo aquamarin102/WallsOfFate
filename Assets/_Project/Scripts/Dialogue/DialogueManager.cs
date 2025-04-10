@@ -301,4 +301,9 @@ public class DialogueManager : MonoBehaviour
         }
         return variableValue;
     }
+    
+    public bool SetVariableState(string variableName, object value)
+    {
+        return _dialogueVariables.SetVariable(variableName, value);
+    }
 }

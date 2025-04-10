@@ -10,13 +10,6 @@ namespace Quest
 {
     public class QuestSaveLoader : ISaveLoader
     {
-        //private List<Quest> _quests;
-
-        //public QuestSaveLoader(List<Quest> quests)
-        //{
-        //    _quests = quests;
-        //}
-
         public void SaveData()
         {
             List<QuestData> saveData = QuestCollection.GetAllQuests()
@@ -76,15 +69,16 @@ namespace Quest
         public int Id;
         public string QuestInfo;
         public bool IsDone;
+        public QuestResources Resources;
 
-        public Quest ToQuest() => new Quest(Id, QuestInfo, IsDone);
+        public Quest ToQuest() => new Quest(Id, QuestInfo, IsDone, Resources);
 
         public static QuestData FromQuest(Quest quest) => new QuestData
         {
             Id = quest.Id,
             QuestInfo = quest.QuestInfo,
-            IsDone = quest.IsDone
+            IsDone = quest.IsDone,
+            Resources = quest.RewardResources // Добавляем ресурсы
         };
     }
-
 }

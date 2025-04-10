@@ -6,6 +6,15 @@ using System.Threading.Tasks;
 
 namespace Quest
 {
+    [System.Serializable]
+    public struct QuestResources
+    {
+        public int Gold;
+        public int Food;
+        public int PeopleSatisfaction;
+        public int CastleStrength;
+    }
+
     public static class QuestCollection
     {
         private static List<Quest> QuestList = new List<Quest>();
@@ -24,14 +33,25 @@ namespace Quest
         public int Id;
         public string QuestInfo;
         public bool IsDone;
-
-        public Quest(int id, string questInfo, bool isDone)
+        public QuestResources RewardResources;
+        public Quest(int id, string questInfo, bool isDone, QuestResources resources)
         {
             Id = id;
             QuestInfo = questInfo;
             IsDone = isDone;
+            RewardResources = resources;
         }
 
-        public void ChangeDone(bool isDone) => IsDone = isDone;
+        public void ChangeDone(bool isDone)
+        {
+            if (isDone && !IsDone) 
+            {
+                GameResources.Resources.ChangeGold(RewardResources.Gold);
+                GameResources.Resources.ChangeFood(RewardResources.Food);
+                GameResources.Resources.ChangePeopleSatisfaction(RewardResources.PeopleSatisfaction);
+                GameResources.Resources.ChangeCastleStrength(RewardResources.CastleStrength);
+            }
+            IsDone = isDone;
+        }
     }
 }
