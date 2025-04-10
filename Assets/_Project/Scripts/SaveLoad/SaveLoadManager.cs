@@ -130,6 +130,7 @@ public sealed class SaveLoadManager : MonoBehaviour
         QuestCollection.ClearQuests();
         AssembledPickups.Clear();
         Repository.ClearSaveData();
+        PlayerSpawnData.ClearData();
         _startNewGame = true;
     }
 
