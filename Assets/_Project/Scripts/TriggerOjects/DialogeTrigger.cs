@@ -31,7 +31,7 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
 
             if (dialogueData.questId == QuestCollection.GetFirstNotDoneQuest()?.Id)
             {
-                 QuestCollection.GetFirstNotDoneQuest().IsDone = true;
+                 QuestCollection.GetFirstNotDoneQuest().ChangeDone(true);
             }
         }
         else if (_defaultDialogue != null)

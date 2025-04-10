@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Ink.Runtime;
+using System;
 
 public class DialogueVariables
 {
@@ -71,6 +72,32 @@ public class DialogueVariables
         foreach(KeyValuePair<string, Ink.Runtime.Object> variable in variables)
         {
             story.variablesState.SetGlobal(variable.Key, variable.Value);
+        }
+    }
+
+    public bool SetVariable(string variableName, object value)
+    {
+        if (variables.TryGetValue(variableName, out var inkObject))
+        {
+            // ѕровер€ем тип переменной Ink и преобразуем значение
+            if (inkObject is Ink.Runtime.IntValue intValue)
+            {
+                intValue.value = Convert.ToInt32(value);
+            }
+            else if (inkObject is Ink.Runtime.BoolValue boolValue)
+            {
+                boolValue.value = Convert.ToBoolean(value);
+            }
+
+            VariablesToStory(_globalVariablesStory);
+
+            VariableChanged(variableName, inkObject);
+            return true;
+        }
+        else
+        {
+            Debug.LogError($"Variable {variableName} not found!");
+            return false;
         }
     }
 
