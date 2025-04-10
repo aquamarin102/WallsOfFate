@@ -5138,6 +5138,7 @@ MonoBehaviour:
   loadingImage: {fileID: 1471600082}
   loadingText: {fileID: 1275772446}
   finalSprite: {fileID: 21300000, guid: 5f00aaf64b74d064d84ae26f7731654e, type: 3}
+  inputDelay: 1
 --- !u!4 &1788727852
 Transform:
   m_ObjectHideFlags: 0
