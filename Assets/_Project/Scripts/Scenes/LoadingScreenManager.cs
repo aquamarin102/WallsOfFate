@@ -16,6 +16,9 @@ public class LoadingScreenManager : MonoBehaviour
     [Header("Настройки финального вида")]
     public Sprite finalSprite;
 
+    // Время задержки перед тем, как игрок сможет закрыть экран загрузки (в секундах)
+    public float inputDelay = 0.05f;
+
     private string targetSceneName;
     private bool waitingForInput = false;
 
@@ -34,6 +37,7 @@ public class LoadingScreenManager : MonoBehaviour
 
     public void LoadScene(string sceneName)
     {
+        // Восстанавливаем нормальное течение времени
         Time.timeScale = 1f;
 
         targetSceneName = sceneName;
@@ -57,11 +61,13 @@ public class LoadingScreenManager : MonoBehaviour
         {
             if (operation.progress >= 0.9f)
             {
+                // Отключаем компонент анимации, если он есть.
                 var spriteAnimator = loadingImage.GetComponent<UISpriteAnimator>();
                 if (spriteAnimator != null)
                 {
                     spriteAnimator.enabled = false;
                 }
+                // Подставляем финальный спрайт, если он задан.
                 if (finalSprite != null)
                 {
                     loadingImage.sprite = finalSprite;
@@ -77,7 +83,13 @@ public class LoadingScreenManager : MonoBehaviour
 
     private IEnumerator WaitForUserInput()
     {
+        // Запускаем мигание текста
         StartCoroutine(BlinkText());
+
+        // Добавляем задержку перед активацией возможности закрытия
+        yield return new WaitForSeconds(inputDelay);
+
+        // После задержки начинаем ожидать нажатия любой клавиши
         while (!Input.anyKeyDown)
         {
             yield return null;
@@ -86,15 +98,11 @@ public class LoadingScreenManager : MonoBehaviour
 
         // Восстанавливаем звуки согласно пользовательским настройкам:
         AudioManager.Instance.ReloadVolumeSettings();
-        // Или, если используется ActivateNormalSnapshot():
-        // AudioManager.GetInstance().ActivateNormalSnapshot();
-
         // Переключаем музыку на музыку целевой сцены
         AudioManager.Instance.ChangeMusicForScene(targetSceneName);
         // Скрываем загрузочный экран
         loadingScreen.SetActive(false);
     }
-
 
     private IEnumerator BlinkText()
     {
