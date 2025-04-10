@@ -40,6 +40,11 @@ public class NewGameButton : MonoBehaviour
     }
     public void StartGame()
     {
+        if (_saveLoadManager != null)
+        {
+            // —бросить все сохранЄнные данные, чтобы нова€ игра начиналась с чистого листа
+            _saveLoadManager.ClearSavs();
+        }
         LoadingScreenManager.Instance.LoadScene("MainRoom");
     }
     public void HideNewGamePanel()

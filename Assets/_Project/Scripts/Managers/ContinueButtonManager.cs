@@ -15,9 +15,14 @@ namespace Assets._Project.Scripts.Managers
         private void Awake()
         {
             _saveLoadManager = GetComponent<SaveLoadManager>();
-            if ( _saveLoadManager != null && _saveLoadManager.CanLoad())
+            // Если сохранённый прогресс есть, активируем кнопку "Продолжить"
+            if (_saveLoadManager != null && _saveLoadManager.CanLoad())
             {
                 _button.SetActive(true);
+            }
+            else
+            {
+                _button.SetActive(false);
             }
         }
 

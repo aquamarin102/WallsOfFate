@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
@@ -6,6 +7,7 @@ using UnityEngine;
 public static class Repository
 {
     private const string GAME_STATE_FILE = "GameState.json";
+    private const string USER_PROGRESS_KEY = "UserProgress"; // Флаг, показывающий, что пользователь действительно начал игру
 
     private static Dictionary<string, string> currentState = new();
 
@@ -16,7 +18,8 @@ public static class Repository
         if (File.Exists(FilePath))
         {
             var serializedState = File.ReadAllText(FilePath);
-            currentState = JsonConvert.DeserializeObject<Dictionary<string, string>>(serializedState) ?? new Dictionary<string, string>();
+            currentState = JsonConvert.DeserializeObject<Dictionary<string, string>>(serializedState)
+                           ?? new Dictionary<string, string>();
         }
         else
         {
@@ -45,7 +48,7 @@ public static class Repository
         var settings = new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            TypeNameHandling = TypeNameHandling.All // Добавляем информацию о типе
+            TypeNameHandling = TypeNameHandling.All // сохраняем информацию о типе
         };
         var serializedData = JsonConvert.SerializeObject(value, settings);
         currentState[key] = serializedData;
@@ -62,13 +65,29 @@ public static class Repository
             value = JsonConvert.DeserializeObject<T>(serializedData, settings);
             return true;
         }
+
         value = default;
         return false;
     }
 
+    // Изменённый метод проверки наличия истинного пользовательского сохранения.
     public static bool HasAnyData()
     {
-        return currentState.Count > 0;
+        // Проверяем ключ, отвечающий за наличие реального прогресса пользователя
+        if (currentState.TryGetValue(USER_PROGRESS_KEY, out var progressData))
+        {
+            if (bool.TryParse(progressData, out bool hasProgress))
+            {
+                return hasProgress;
+            }
+        }
+        return false;
+    }
+
+    // Метод для установки флага пользовательского прогресса.
+    public static void SetUserProgress(bool progress)
+    {
+        currentState[USER_PROGRESS_KEY] = progress.ToString();
     }
 
     public static void ClearSaveData()
