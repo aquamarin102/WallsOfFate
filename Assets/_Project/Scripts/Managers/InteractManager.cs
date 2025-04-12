@@ -4,31 +4,52 @@ using UnityEngine;
 
 public class InteractManager : MonoBehaviour
 {
+    // Список всех встреченных интерактивных объектов (реализующих ITriggerable)
     private List<ITriggerable> encounteredTriggers = new List<ITriggerable>();
-    private HashSet<ITriggerable> triggeredSet = new HashSet<ITriggerable>(); // Для отслеживания уже активированных триггеров
+    // Набор для отслеживания уже активированных триггеров
+    private HashSet<ITriggerable> triggeredSet = new HashSet<ITriggerable>();
+    // Текущий активный интерактивный объект
     private ITriggerable currentTriggerable;
+    // Объект-индикатор взаимодействия (например, подсветка)
     private GameObject interactionIndicator;
+    // Флаг, чтобы избежать повторного взаимодействия до выхода из зоны
     private bool hasInteracted = false;
+    // Коллайдер текущего интерактивного объекта
     private Collider currentTriggerCollider;
+
+    // Ссылка на компонент анимаций игрока, который содержит методы PlayPickupFloor, PlayPickupBody и PlayOpenChest
+    private PlayerAnimator playerAnimator;
+
+    private void Awake()
+    {
+       
+        playerAnimator = GetComponent<PlayerAnimator>();
+        if (playerAnimator == null)
+        {
+            Debug.LogError("InteractManager: Не найден компонент PlayerAnimator!");
+        }
+
+    }
 
     private void OnTriggerEnter(Collider collider)
     {
         ITriggerable newTriggerable = collider.gameObject.GetComponent<ITriggerable>();
         if (newTriggerable != null)
         {
-            // Добавляем триггер в список, если его там еще нет
+            // Добавляем интерактивный объект в список, если его там еще нет
             if (!encounteredTriggers.Contains(newTriggerable))
             {
                 encounteredTriggers.Add(newTriggerable);
             }
 
-            // Устанавливаем текущий активный триггер
+            // Устанавливаем текущий активный интерактивный объект
             if (currentTriggerCollider != collider || !hasInteracted)
             {
                 currentTriggerable = newTriggerable;
                 currentTriggerCollider = collider;
                 hasInteracted = false;
 
+                // Ищем дочерний объект с тегом "InteractionIndicator" и активируем его
                 var indicators = collider.gameObject.GetComponentsInChildren<Transform>(true);
                 foreach (var indicator in indicators)
                 {
@@ -45,6 +66,7 @@ public class InteractManager : MonoBehaviour
 
     private void OnTriggerExit(Collider collider)
     {
+        // При выходе из зоны интерактивного объекта сбрасываем данные
         if (collider == currentTriggerCollider)
         {
             if (interactionIndicator != null)
@@ -63,29 +85,39 @@ public class InteractManager : MonoBehaviour
 
     private void Update()
     {
-        //// Обработка текущего триггера
-        //if (currentTriggerable != null && currentTriggerable is Box)
-        //{
-        //    bool isInteract = InputManager.GetInstance().GetInteractPressed();
-        //    Debug.Log("Interacting with: " + currentTriggerable);
-        //    TryTrigger(currentTriggerable);
-        //    hasInteracted = true;
-        //    if (interactionIndicator != null)
-        //    {
-        //        interactionIndicator.SetActive(false);
-        //    }
-        //}
-        if (currentTriggerable != null && (currentTriggerable is Box || !hasInteracted))
+        // Если есть активный интерактивный объект и ещё не было взаимодействия
+        if (currentTriggerable != null && !hasInteracted)
         {
+            // Получаем нажатие кнопки взаимодействия через ваш InputManager
             bool isInteract = InputManager.GetInstance().GetInteractPressed();
-
             if (isInteract)
             {
                 Debug.Log("Interacting with: " + currentTriggerable);
-                TriggerAllEncounteredOnce(); // Переименованный метод
-                //TryTrigger(currentTriggerable); // Используем новую функцию
-                hasInteracted = true;
 
+                // Приводим currentTriggerable к MonoBehaviour для доступа к GameObject (предполагается, что ITriggerable – компонент)
+                GameObject triggerObj = (currentTriggerable as MonoBehaviour).gameObject;
+                // В зависимости от тега запускаем соответствующую анимацию
+                if (triggerObj.CompareTag("PickupFloor"))
+                {
+                    playerAnimator.PlayPickupFloor();
+                    TriggerAllEncounteredOnce();
+                }
+                else if (triggerObj.CompareTag("PickupBody"))
+                {
+                    playerAnimator.PlayPickupBody();
+                    TriggerAllEncounteredOnce();
+                }
+                else if (triggerObj.CompareTag("Chest"))
+                {
+                    playerAnimator.PlayOpenChest();
+                    TriggerAllEncounteredOnce();
+                }
+                else
+                {
+                    // Если тип не распознан, активируем все встреченные триггеры стандартно
+                    TriggerAllEncounteredOnce();
+                }
+                hasInteracted = true;
 
                 if (interactionIndicator != null)
                 {
@@ -95,7 +127,7 @@ public class InteractManager : MonoBehaviour
         }
     }
 
-    // Пытаемся активировать триггер, если еще не активировали
+    // Пытаемся активировать конкретный триггер, если он еще не был активирован (либо если это Box)
     private void TryTrigger(ITriggerable trigger)
     {
         if (!triggeredSet.Contains(trigger) || trigger is Box)
@@ -109,7 +141,7 @@ public class InteractManager : MonoBehaviour
         }
     }
 
-    // Метод для запуска всех сохраненных триггеров по одному разу
+    // Метод для однократного запуска всех встреченных триггеров
     public void TriggerAllEncounteredOnce()
     {
         foreach (var trigger in encounteredTriggers)
@@ -121,7 +153,7 @@ public class InteractManager : MonoBehaviour
         }
     }
 
-    // Метод для получения списка всех встреченных триггеров
+    // Метод для получения списка всех встреченных интерактивных объектов
     public List<ITriggerable> GetEncounteredTriggers()
     {
         return new List<ITriggerable>(encounteredTriggers);
