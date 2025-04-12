@@ -48,7 +48,7 @@ public static class Repository
         var settings = new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            TypeNameHandling = TypeNameHandling.All // сохраняем информацию о типе
+            TypeNameHandling = TypeNameHandling.All 
         };
         var serializedData = JsonConvert.SerializeObject(value, settings);
         currentState[key] = serializedData;

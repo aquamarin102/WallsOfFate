@@ -110,10 +110,26 @@ public class DialogueManager : MonoBehaviour
         }
     }
 
-    public void EnterDialogueMode(TextAsset inkJSON)
+    public void EnterDialogueMode(string dialogueFileName)
     {
+        dialogueFileName = dialogueFileName.Replace(".json", "");
+        // Формируем путь к файлу: Dialogue/имя_файла
+
+        TextAsset[] allDialogue = Resources.LoadAll<TextAsset>("Dialogue");
+        Debug.Log($"Found {allDialogue.Length} files:");
+        foreach (var file in allDialogue)
+        {
+            Debug.Log(file.name);
+        }
+        TextAsset inkJSON =Resources.Load<TextAsset>($"Dialogue/{dialogueFileName}");
+
+        if (inkJSON == null)
+        {
+            Debug.LogError($"Dialogue file 'Dialogue/{dialogueFileName}' not found!");
+            return;
+        }
+
         _currentStory = new Story(inkJSON.text);
-          
 
         DialogueIsPlaying = true;
         _dialoguePanel.SetActive(true);

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Quest;
+using System.Linq;
 
 public class CompositeTrigger : MonoBehaviour, ITriggerable
 {
@@ -13,63 +14,51 @@ public class CompositeTrigger : MonoBehaviour, ITriggerable
     public event Action OnActivated;
     public bool IsDone { get; private set; }
 
-    private void Start()
-    {
-        ValidateQuestConfiguration();
-    }
-
     public void Triggered()
     {
-        if (IsDone && _once) return;
-        if (CheckTriggerConditions())
-        {
-            IsDone = true;
-            OnActivated?.Invoke();
-            QuestCollection.GetQuestById(_SelfId).IsDone = true;
-        }
-    }
+        // Проверка на старт новых квестов
+        var availableGroups = QuestCollection.GetAllDays()
+            .SelectMany(d => d.Quests)
+            .Where(q => q.CheckOpen(_SelfId.ToString()))
+            .ToList();
 
-    private bool CheckTriggerConditions()
-    {
-        // Проверка выполнения всех требуемых квестов
-        foreach (int questId in _requiredTriggerIds)
+        if (availableGroups.Count > 0)
         {
-            Quest.Quest quest = QuestCollection.GetQuestById(questId);
-            if (quest == null || !quest.IsDone)
+            var group = availableGroups.First();
+            group.StartQuest();
+            return;
+        }
+
+        // Обработка активных квестов
+        var activeGroups = QuestCollection.GetActiveQuestGroups();
+        foreach (var group in activeGroups)
+        {
+            var currentTask = QuestCollection.GetCurrentTaskForGroup(group);
+            if (currentTask != null && CanTriggerTask(currentTask))
             {
-                return false;
+                currentTask.CompleteTask();
+                UpdateGroupState(group);
+                return;
             }
         }
-
-        // Проверка соответствия текущего активного квеста
-        Quest.Quest currentQuest = QuestCollection.GetFirstNotDoneQuest();
-        return currentQuest != null && currentQuest.Id == _SelfId;
     }
 
-    private void ValidateQuestConfiguration()
+    private bool CanTriggerTask(QuestTask task)
     {
-        if (_requiredTriggerIds.Count == 0)
-        {
-            Debug.LogWarning($"No required quests assigned to CompositeTrigger on {gameObject.name}", this);
-        }
-
-        if (QuestCollection.GetQuestById(_SelfId) == null)
-        {
-            Debug.LogError($"Self Quest ID {_SelfId} not found in QuestCollection!", this);
-        }
+        return task.ForNPS == _SelfId.ToString();
     }
 
-    // Обновленные методы для работы с ID (опционально)
-    public void AddRequiredQuestId(int questId)
+    private void UpdateGroupState(QuestGroup group)
     {
-        if (!_requiredTriggerIds.Contains(questId))
+        if (group.Tasks.All(t => t.IsDone))
         {
-            _requiredTriggerIds.Add(questId);
+            group.Complite = true;
+            group.InProgress = false;
         }
-    }
-
-    public void SetSelfId(int newId)
-    {
-        _SelfId = newId;
+        else
+        {
+            group.CurrentTaskId = group.Tasks
+                .FirstOrDefault(t => !t.IsDone && t.Id > group.CurrentTaskId)?.Id ?? -1;
+        }
     }
 }

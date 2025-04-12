@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using TMPro;
 using Quest;
+using System.Collections.Generic;
+using System.Linq;
 
 public class MultiTextChanger : MonoBehaviour
 {
-    [SerializeField] private TMP_Text _textMeshPro;
+    [SerializeField] private List<TMP_Text> _textMeshProLinks;
+    [SerializeField] private List<GameObject> _IconsLinks;
 
     [Header("Quest Settings")]
     [SerializeField] private string _defaultText = "Все квесты выполнены! Вы можетезакончить день!";
@@ -12,20 +15,37 @@ public class MultiTextChanger : MonoBehaviour
     private void Update()
     {
         UpdateQuestText();
+        if(_textMeshProLinks.Count != 0 && _IconsLinks.Count != 0 && _IconsLinks.Count == _textMeshProLinks.Count)
+        {
+            for(int i = 0; i < _textMeshProLinks.Count; i++)
+            {
+                if (_textMeshProLinks[i].text == "") _IconsLinks[i].SetActive(false);
+                else _IconsLinks[i].SetActive(true);
+            }
+        }
     }
 
     private void UpdateQuestText()
     {
-        var quest = QuestCollection.GetFirstNotDoneQuest();
+        List<QuestGroup> processingGroups = QuestCollection.GetActiveQuestGroups();
 
-        if (quest != null)
+        if (processingGroups.All(q => q.Complite && !q.InProgress))
         {
-            _textMeshPro.text = quest.QuestInfo;
+            _textMeshProLinks[0].text = _defaultText;
+            foreach (TMP_Text tx in _textMeshProLinks) tx.text = "";
+            return;
         }
-        else
+
+        if (processingGroups.Count > 0)
         {
-            _textMeshPro.text = _defaultText;
-            Debug.LogWarning($"Can't find quest info");
+            for (int i = 0; i < _textMeshProLinks.Count; i++)
+            {
+                if (i < processingGroups.Count)
+                {
+                    _textMeshProLinks[i].text = QuestCollection.GetCurrentTaskForGroup(processingGroups[i]).TaskInfo;
+                }
+                else _textMeshProLinks[i].text = "";
+            }
         }
     }
 }

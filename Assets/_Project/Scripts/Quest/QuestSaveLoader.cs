@@ -1,36 +1,21 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Quest
 {
     public class QuestSaveLoader : ISaveLoader
     {
-        public void SaveData()
-        {
-            List<QuestData> saveData = QuestCollection.GetAllQuests()
-                .Select(q => QuestData.FromQuest(q))
-                .ToList();
-
-            // Используем уникальный ключ для квестов
-            Repository.SetData("Quests", saveData);
-            Debug.Log($"Saved {saveData.Count} quests");
-        }
-
         public bool LoadData()
         {
-            // Загружаем по уникальному ключу
-            if (Repository.TryGetData("Quests", out List<QuestData> savedQuests))
+            if (Repository.TryGetData("QuestSchedule", out List<DayData> saveData))
             {
                 QuestCollection.ClearQuests();
-                foreach (var questData in savedQuests)
+                foreach (var day in saveData)
                 {
-                    QuestCollection.AddQuest(questData.ToQuest());
+                    QuestCollection.AddDay(day);
                 }
+                Debug.Log($"Loaded {saveData.Count} days");
                 return true;
             }
             return false;
@@ -41,44 +26,35 @@ namespace Quest
             TextAsset textAsset = Resources.Load<TextAsset>("SavsInformation/Quests/DefaultQuests");
             if (textAsset == null)
             {
-                Debug.LogError("File not found: Resources/SavsInformation/Quests/DefaultQuests");
+                Debug.LogError("Default quests file not found!");
                 return;
             }
 
             try
             {
-                List<QuestData> defaultQuests = JsonConvert.DeserializeObject<List<QuestData>>(textAsset.text);
-                QuestCollection.ClearQuests();
-
-                foreach (var questData in defaultQuests)
+                var settings = new JsonSerializerSettings
                 {
-                    QuestCollection.AddQuest(questData.ToQuest());
+                    MissingMemberHandling = MissingMemberHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
+
+                var defaultData = JsonConvert.DeserializeObject<List<DayData>>(textAsset.text, settings);
+                QuestCollection.ClearQuests();
+                foreach (var day in defaultData)
+                {
+                    QuestCollection.AddDay(day);
                 }
-                Debug.Log($"Loaded {defaultQuests.Count} default quests");
             }
-            catch (Exception ex)
+            catch (JsonException ex)
             {
-                Debug.LogError($"Load error: {ex.Message}");
+                Debug.LogError($"JSON error: {ex.Message}");
             }
         }
-    }
 
-    [System.Serializable]
-    public class QuestData
-    {
-        public int Id;
-        public string QuestInfo;
-        public bool IsDone;
-        public QuestResources Resources;
-
-        public Quest ToQuest() => new Quest(Id, QuestInfo, IsDone, Resources);
-
-        public static QuestData FromQuest(Quest quest) => new QuestData
+        public void SaveData()
         {
-            Id = quest.Id,
-            QuestInfo = quest.QuestInfo,
-            IsDone = quest.IsDone,
-            Resources = quest.RewardResources // Добавляем ресурсы
-        };
+            Repository.SetData("QuestSchedule", QuestCollection.GetAllDays());
+            Debug.Log($"Saved {QuestCollection.GetAllDays().Count} days");
+        }
     }
 }

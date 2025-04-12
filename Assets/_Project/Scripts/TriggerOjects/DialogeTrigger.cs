@@ -1,95 +1,68 @@
-﻿using UnityEngine;
+﻿// DialogeTrigger.cs
+using UnityEngine;
 using Quest;
 using System.Collections.Generic;
-
-[System.Serializable]
-public class DialogueData
-{
-    public int questId;
-    public TextAsset inkJSON;
-    public List<int> requiredQuestIds = new List<int>();
-}
+using System.Linq;
 
 internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
 {
     [Header("Dialogue Settings")]
-    [SerializeField] private List<DialogueData> _dialogues = new List<DialogueData>();
-    [SerializeField] private TextAsset _defaultDialogue;
+    [SerializeField] private string _defaultDialogue;
+    [SerializeField] private string _npcName;
 
     public bool IsDone { get; private set; }
 
-    private void Start()
-    {
-        ValidateDialogues();
-    }
-
     public void Triggered()
     {
-        if (CanTrigger(out DialogueData dialogueData))
-        {
-            DialogueManager.GetInstance().EnterDialogueMode(dialogueData.inkJSON);
+        // Проверка на старт новых квестов
+        var availableGroups = QuestCollection.GetAllDays()
+            .SelectMany(d => d.Quests)
+            .Where(q => q.CheckOpen(_npcName))
+            .ToList();
 
-            if (dialogueData.questId == QuestCollection.GetFirstNotDoneQuest()?.Id)
+        if (availableGroups.Count > 0)
+        {
+            var group = availableGroups.First();
+            group.StartQuest();
+            DialogueManager.GetInstance().EnterDialogueMode(group.OpenDialog);
+            return;
+        }
+
+        // Обработка активных квестов
+        var activeGroups = QuestCollection.GetActiveQuestGroups();
+        foreach (var group in activeGroups)
+        {
+            var currentTask = QuestCollection.GetCurrentTaskForGroup(group);
+            if (currentTask != null && CanTriggerTask(currentTask, out var dialogue))
             {
-                 QuestCollection.GetFirstNotDoneQuest().ChangeDone(true);
+                DialogueManager.GetInstance().EnterDialogueMode(dialogue);
+                currentTask.CompleteTask();
+                UpdateGroupState(group);
+                return;
             }
         }
-        else if (_defaultDialogue != null)
-        {
-            DialogueManager.GetInstance().EnterDialogueMode(_defaultDialogue);
-        }
+
+        // Дефолтный диалог
+        DialogueManager.GetInstance().EnterDialogueMode(_defaultDialogue);
     }
 
-    private bool CanTrigger(out DialogueData foundDialogue)
+    private bool CanTriggerTask(QuestTask task, out string dialogue)
     {
-        var currentQuest = QuestCollection.GetFirstNotDoneQuest();
-        foundDialogue = null;
-
-        if (currentQuest == null) return false;
-
-        // Ищем диалог для текущего квеста
-        foreach (var dialogue in _dialogues)
-        {
-            if (dialogue.questId == currentQuest.Id)
-            {
-                // Проверяем требования для этого конкретного диалога
-                foreach (int reqId in dialogue.requiredQuestIds)
-                {
-                    Quest.Quest quest = QuestCollection.GetQuestById(reqId);
-                    if (quest == null || !quest.IsDone) return false;
-                }
-                foundDialogue = dialogue;
-                return true;
-            }
-        }
-        return false;
+        dialogue = task.RequeredDialogPath;
+        return dialogue != null && task.ForNPS == _npcName;
     }
 
-    private void ValidateDialogues()
+    private void UpdateGroupState(QuestGroup group)
     {
-        HashSet<int> uniqueIds = new HashSet<int>();
-
-        foreach (var dialogue in _dialogues)
+        if (group.Tasks.All(t => t.IsDone))
         {
-            if (!uniqueIds.Add(dialogue.questId))
-            {
-                Debug.LogError($"Duplicate quest ID {dialogue.questId} in dialogues", this);
-            }
-
-            if (dialogue.inkJSON == null)
-            {
-                Debug.LogError($"Missing Ink JSON for quest ID {dialogue.questId}", this);
-            }
+            group.Complite = true;
+            group.InProgress = false;
         }
-    }
-
-    // Метод для редактора
-    public void AddNewDialogue(int questId, TextAsset inkJSON)
-    {
-        _dialogues.Add(new DialogueData
+        else
         {
-            questId = questId,
-            inkJSON = inkJSON
-        });
+            group.CurrentTaskId = group.Tasks
+                .FirstOrDefault(t => !t.IsDone && t.Id > group.CurrentTaskId)?.Id ?? -1;
+        }
     }
 }

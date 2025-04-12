@@ -1,101 +1,29 @@
 [
   {
-    "Id": 0,
-    "QuestInfo": "Поговорить с Гонцом",
-    "IsDone": false,
-    "Resources": {
-      "Gold": 50,
-      "Food": 50,
-      "PeopleSatisfaction": 50,
-      "CastleStrength": 0
-    }
-  },
-  {
-    "Id": 1,
-    "QuestInfo": "Выйти из главного зала",
-    "IsDone": false,
-    "Resources": {
-      "Gold": 50,
-      "Food": 20,
-      "PeopleSatisfaction": 10,
-      "CastleStrength": 0
-    }
-  },
-  {
-    "Id": 2,
-    "QuestInfo": "Поговорить с кузнецом",
-    "IsDone": false,
-    "Resources": {
-      "Gold": 50,
-      "Food": 20,
-      "PeopleSatisfaction": 10,
-      "CastleStrength": 0
-    }
-  },
-  {
-    "Id": 3,
-    "QuestInfo": "Найти молот",
-    "IsDone": false,
-    "Resources": {
-      "Gold": 50,
-      "Food": 20,
-      "PeopleSatisfaction": 10,
-      "CastleStrength": 0
-    }
-  },
-  {
-    "Id": 4,
-    "QuestInfo": "Поговорить с кузнецом",
-    "IsDone": false,
-    "Resources": {
-      "Gold": 50,
-      "Food": 20,
-      "PeopleSatisfaction": 10,
-      "CastleStrength": 0
-    }
-  },
-  {
-    "Id": 5,
-    "QuestInfo": "Поговорить с главой стражи",
-    "IsDone": false,
-    "Resources": {
-      "Gold": 50,
-      "Food": 20,
-      "PeopleSatisfaction": 10,
-      "CastleStrength": 0
-    }
-  },
-  {
-    "Id": 6,
-    "QuestInfo": "Найти беженца",
-    "IsDone": false,
-    "Resources": {
-      "Gold": 50,
-      "Food": 20,
-      "PeopleSatisfaction": 10,
-      "CastleStrength": 0
-    }
-  },
-  {
-    "Id": 7,
-    "QuestInfo": "Вернуться в тронный зал",
-    "IsDone": false,
-    "Resources": {
-      "Gold": 50,
-      "Food": 20,
-      "PeopleSatisfaction": 10,
-      "CastleStrength": 0
-    }
-  },
-  {
-    "Id": 8,
-    "QuestInfo": "Пойти на склад",
-    "IsDone": false,
-    "Resources": {
-      "Gold": 50,
-      "Food": 20,
-      "PeopleSatisfaction": 10,
-      "CastleStrength": 0
-    }
+    "Day": 1,
+    "Quests": [
+      {
+        "InProgress": false,
+        "Complite": false,
+        "OpenNPS": "Messenger",
+        "OpenDialog": "Messager/JSON/MessagerDialogMainRoom.ink",
+        "Tasks": [
+          {
+            "Id": 0,
+            "TaskInfo": "Поговорить с Гонцом",
+            "IsDone": false,
+            "ForNPS": "Messenger",
+            "RequeredTasksIds": [],
+            "RequeredDialog": "Messager/JSON/MessagerDialogMainRoom.ink",
+            "Resources": {
+              "Gold": 50,
+              "Food": 50,
+              "PeopleSatisfaction": 50,
+              "CastleStrength": 0
+            },
+          }   
+        ]       
+      }
+    ]
   }
 ]

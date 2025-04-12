@@ -1,8 +1,9 @@
+// QuestCollection и связанные классы
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Quest
 {
@@ -17,41 +18,94 @@ namespace Quest
 
     public static class QuestCollection
     {
-        private static List<Quest> QuestList = new List<Quest>();
+        private static List<DayData> Days = new List<DayData>();
 
-        public static Quest GetQuestById(int id) => QuestList.FirstOrDefault(q => q.Id == id);
-        public static Quest GetFirstNotDoneQuest() =>
-            QuestList.FirstOrDefault(q => !q.IsDone);
-        public static void AddQuest(Quest quest) => QuestList.Add(quest);
-        public static void ClearQuests() => QuestList.Clear();
-        public static List<Quest> GetAllQuests() => new List<Quest>(QuestList);
+        public static void AddDay(DayData day) => Days.Add(day);
+        public static void ClearQuests() => Days.Clear();
+        public static List<DayData> GetAllDays() => new List<DayData>(Days);
 
+        public static List<QuestGroup> GetActiveQuestGroups()
+        {
+            return Days
+                .SelectMany(d => d.Quests)
+                .Where(q => q.InProgress && !q.Complite)
+                .ToList();
+        }
+
+        public static QuestTask GetCurrentTaskForGroup(QuestGroup group)
+        {
+            return group.Tasks.FirstOrDefault(t => t.Id == group.CurrentTaskId && !t.IsDone);
+        }
     }
 
-    public class Quest
+    [System.Serializable]
+    public class DayData
     {
-        public int Id;
-        public string QuestInfo;
-        public bool IsDone;
-        public QuestResources RewardResources;
-        public Quest(int id, string questInfo, bool isDone, QuestResources resources)
+        public int Day;
+        public List<QuestGroup> Quests = new List<QuestGroup>();
+    }
+
+    [System.Serializable]
+    public class QuestGroup
+    {
+        public bool InProgress;
+        public bool Complite;
+        public int CurrentTaskId = 0;
+        public string OpenNPS;
+        public String OpenDialog;
+        public List<QuestTask> Tasks = new List<QuestTask>();
+
+        public bool CheckOpen(string npcName)
         {
-            Id = id;
-            QuestInfo = questInfo;
-            IsDone = isDone;
-            RewardResources = resources;
+            return OpenNPS == npcName && !InProgress && !Complite;
         }
 
-        public void ChangeDone(bool isDone)
+        public void StartQuest()
         {
-            if (isDone && !IsDone) 
-            {
-                GameResources.Resources.ChangeGold(RewardResources.Gold);
-                GameResources.Resources.ChangeFood(RewardResources.Food);
-                GameResources.Resources.ChangePeopleSatisfaction(RewardResources.PeopleSatisfaction);
-                GameResources.Resources.ChangeCastleStrength(RewardResources.CastleStrength);
-            }
-            IsDone = isDone;
+            InProgress = true;
+            CurrentTaskId = Tasks.FirstOrDefault()?.Id ?? -1;
         }
+    }
+
+    [System.Serializable]
+    public class QuestTask
+    {
+        public int Id;
+        public string TaskInfo;
+        public bool IsDone;
+        public string ForNPS;
+        public int[] RequeredTasksIds;
+        public string RequeredDialogPath;
+        public QuestResources Resources;
+
+        public void CompleteTask()
+        {
+            if (IsDone || !CanComplete()) return;
+
+            IsDone = true;
+            ApplyResources();
+        }
+
+        private bool CanComplete()
+        {
+            return RequeredTasksIds.All(id =>
+                QuestCollection.GetAllDays()
+                    .SelectMany(d => d.Quests)
+                    .SelectMany(q => q.Tasks)
+                    .Any(t => t.Id == id && t.IsDone));
+        }
+
+        private void ApplyResources()
+        {
+            GameResources.Resources.ChangeGold(Resources.Gold);
+            GameResources.Resources.ChangeFood(Resources.Food);
+            GameResources.Resources.ChangePeopleSatisfaction(Resources.PeopleSatisfaction);
+            GameResources.Resources.ChangeCastleStrength(Resources.CastleStrength);
+        }
+    }
+
+    [JsonArray]
+    public class QuestSaveData : List<DayData>
+    {
     }
 }
