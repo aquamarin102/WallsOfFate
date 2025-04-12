@@ -45,7 +45,7 @@ public class PlayerAnimator : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         // Вычисляем скорость как длину перемещения за кадр
         float speed = (transform.position - lastPosition).magnitude / Time.deltaTime;
