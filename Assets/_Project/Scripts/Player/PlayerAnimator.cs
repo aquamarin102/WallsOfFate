@@ -15,7 +15,6 @@ public class PlayerAnimator : MonoBehaviour
     [Tooltip("Время затухания для интерполяции параметра Speed")]
     [SerializeField] private float speedDampTime = 0.1f;
 
-
     [Header("Footstep Timing Settings")]
     [Tooltip("Базовый интервал между шагами при ходьбе (сек.)")]
     [SerializeField] private float baseFootstepInterval = 0.5f;
@@ -28,6 +27,7 @@ public class PlayerAnimator : MonoBehaviour
 
     private float footstepTimer = 0f;
 
+    private MonoBehaviour playerController;
 
     private void Awake()
     {
@@ -43,9 +43,16 @@ public class PlayerAnimator : MonoBehaviour
         {
             Debug.LogError("PlayerAnimator: Не найден компонент AudioSource!");
         }
+
+        playerController = GetComponent<PlayerMoveController>(); // Предполагается, что такой скрипт существует
+        if (playerController == null)
+        {
+            Debug.LogWarning("PlayerAnimator: Не найден компонент управления персонажем!");
+        }
+        
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // Вычисляем скорость как длину перемещения за кадр
         float speed = (transform.position - lastPosition).magnitude / Time.deltaTime;
@@ -92,8 +99,25 @@ public class PlayerAnimator : MonoBehaviour
         // Интерполируем интервал между шагами
         float currentFootstepInterval = Mathf.Lerp(baseFootstepInterval, runFootstepInterval, normalizedSpeed);
 
-
         lastPosition = transform.position;
     }
 
+    // Метод для запуска анимации подбора с пола
+    public void PlayPickupFloor()
+    {
+        // Запускаем анимацию подбора; управление движением не блокируется.
+        animator.SetTrigger("PickupFloor");
+    }
+
+    // Метод для запуска анимации подбора предмета на уровне тела
+    public void PlayPickupBody()
+    {
+        animator.SetTrigger("PickupBody");
+    }
+
+    // Метод для запуска анимации открытия сундука
+    public void PlayOpenChest()
+    {
+        animator.SetTrigger("OpenChest");
+    }
 }

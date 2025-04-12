@@ -16,6 +16,9 @@ TagManager:
   - ChiefGuardRequiredTrigger
   - QuestForStorage
   - Box
+  - PickupFloor
+  - PickupBody
+  - Chest
   layers:
   - Default
   - TransparentFX
