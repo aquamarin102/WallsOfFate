@@ -48,7 +48,7 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
 
     private bool CanTriggerTask(QuestTask task, out string dialogue)
     {
-        dialogue = task.RequeredDialogPath;
+        dialogue = task.RequeredDialog;
         return dialogue != null && task.ForNPS == _npcName;
     }
 

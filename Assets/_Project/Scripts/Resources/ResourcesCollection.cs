@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace GameResources
 {
-    public static class Resources
+    public static class GameResources
     {
-        public static int Gold { get; private set; }
-        public static int Food { get; private set; }
-        public static int PeopleSatisfaction { get; private set; }
-        public static int CastleStrength { get; private set; }
+        public static int Gold { get; set; }
+        public static int Food { get; set; }
+        public static int PeopleSatisfaction { get; set; }
+        public static int CastleStrength { get; set; }
         public static void ChangeGold(int delta)
         {
             Gold = Math.Max(Gold + delta, 0);
@@ -32,5 +32,4 @@ namespace GameResources
             CastleStrength = Math.Max(CastleStrength + delta, 0);
         }
     }    
-
 }

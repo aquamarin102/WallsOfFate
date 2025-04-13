@@ -109,24 +109,36 @@ public class DialogueManager : MonoBehaviour
             ContinueStory();
         }
     }
+    public static string TrimAfterLastSlash(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        int lastSlashIndex = input.LastIndexOf('/');
+
+        return lastSlashIndex >= 0
+            ? input.Substring(0, lastSlashIndex)
+            : input;
+    }
 
     public void EnterDialogueMode(string dialogueFileName)
     {
         dialogueFileName = dialogueFileName.Replace(".json", "");
         // Формируем путь к файлу: Dialogue/имя_файла
-
-        TextAsset[] allDialogue = Resources.LoadAll<TextAsset>("Dialogue");
+        dialogueFileName = TrimAfterLastSlash(dialogueFileName);
+        TextAsset[] allDialogue = Resources.LoadAll<TextAsset>($"Dialogue/{dialogueFileName}");
         Debug.Log($"Found {allDialogue.Length} files:");
         foreach (var file in allDialogue)
         {
             Debug.Log(file.name);
         }
-        TextAsset inkJSON =Resources.Load<TextAsset>($"Dialogue/{dialogueFileName}");
+         TextAsset inkJSON = Resources.Load<TextAsset>($"Dialogue/{dialogueFileName}");
 
         if (inkJSON == null)
         {
-            Debug.LogError($"Dialogue file 'Dialogue/{dialogueFileName}' not found!");
-            return;
+            inkJSON = allDialogue[0];
+            //Debug.LogError($"Dialogue file 'Dialogue/{dialogueFileName}' not found!");
+            //return;
         }
 
         _currentStory = new Story(inkJSON.text);

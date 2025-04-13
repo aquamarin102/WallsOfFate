@@ -1,3 +1,4 @@
+using GameResources;
 using Quest;
 using System.Collections.Generic;
 using System.IO;
@@ -32,6 +33,7 @@ public sealed class SaveLoadManager : MonoBehaviour
         saveLoaders = new ISaveLoader[]
         {
             new QuestSaveLoader(),
+            new ResourceSaveLoader(),
             new PlayerSaveLoader(_playerTransform),
             new CollectionSaveLoader(AssembledPickups.GetAllPickups()),
         };
@@ -41,6 +43,7 @@ public sealed class SaveLoadManager : MonoBehaviour
         requiredSaveLoaders = new ISaveLoader[]
         {
             new QuestSaveLoader(),
+            new ResourceSaveLoader(),
             // new PlayerSaveLoader(_playerTransform), // не загружаем позицию игрока
             new CollectionSaveLoader(AssembledPickups.GetAllPickups()),
         };

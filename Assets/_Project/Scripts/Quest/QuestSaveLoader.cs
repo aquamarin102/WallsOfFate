@@ -34,8 +34,9 @@ namespace Quest
             {
                 var settings = new JsonSerializerSettings
                 {
-                    MissingMemberHandling = MissingMemberHandling.Ignore,
-                    NullValueHandling = NullValueHandling.Ignore
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    MissingMemberHandling = MissingMemberHandling.Error
                 };
 
                 var defaultData = JsonConvert.DeserializeObject<List<DayData>>(textAsset.text, settings);

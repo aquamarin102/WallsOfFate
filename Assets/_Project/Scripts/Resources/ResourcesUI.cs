@@ -38,10 +38,10 @@ namespace GameResources
 
             if (!dialogeManager.DialogueIsPlaying)
             {
-                Resources.ChangeGold(gold);
-                Resources.ChangeFood(food);
-                Resources.ChangePeopleSatisfaction(peopleSatisfaction);
-                Resources.ChangeCastleStrength(castleStrength);
+                GameResources.ChangeGold(gold);
+                GameResources.ChangeFood(food);
+                GameResources.ChangePeopleSatisfaction(peopleSatisfaction);
+                GameResources.ChangeCastleStrength(castleStrength);
                 dialogeManager.SetVariableState("Gold", 0);
                 dialogeManager.SetVariableState("Food", 0);
                 dialogeManager.SetVariableState("PeopleSatisfaction", 0);
@@ -54,14 +54,14 @@ namespace GameResources
 
         private void UpdateAllResources(bool forceUpdate = false)
         {
-            UpdateResource(ref lastGold, Resources.Gold, goldText, forceUpdate);
-            UpdateResource(ref lastFood, Resources.Food, foodText, forceUpdate);
+            UpdateResource(ref lastGold, GameResources.Gold, goldText, forceUpdate);
+            UpdateResource(ref lastFood, GameResources.Food, foodText, forceUpdate);
             UpdateResource(ref lastSatisfaction,
-                          Resources.PeopleSatisfaction,
+                          GameResources.PeopleSatisfaction,
                           satisfactionText,
                           forceUpdate);
             UpdateResource(ref lastStrength,
-                          Resources.CastleStrength,
+                          GameResources.CastleStrength,
                           strengthText,
                           forceUpdate);
         }

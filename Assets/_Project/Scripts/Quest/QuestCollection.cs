@@ -50,10 +50,12 @@ namespace Quest
     {
         public bool InProgress;
         public bool Complite;
-        public int CurrentTaskId = 0;
         public string OpenNPS;
         public String OpenDialog;
         public List<QuestTask> Tasks = new List<QuestTask>();
+
+        [JsonIgnore]
+        public int CurrentTaskId = 0;
 
         public bool CheckOpen(string npcName)
         {
@@ -75,7 +77,7 @@ namespace Quest
         public bool IsDone;
         public string ForNPS;
         public int[] RequeredTasksIds;
-        public string RequeredDialogPath;
+        public string RequeredDialog;
         public QuestResources Resources;
 
         public void CompleteTask()
@@ -97,10 +99,10 @@ namespace Quest
 
         private void ApplyResources()
         {
-            GameResources.Resources.ChangeGold(Resources.Gold);
-            GameResources.Resources.ChangeFood(Resources.Food);
-            GameResources.Resources.ChangePeopleSatisfaction(Resources.PeopleSatisfaction);
-            GameResources.Resources.ChangeCastleStrength(Resources.CastleStrength);
+            GameResources.GameResources.ChangeGold(Resources.Gold);
+            GameResources.GameResources.ChangeFood(Resources.Food);
+            GameResources.GameResources.ChangePeopleSatisfaction(Resources.PeopleSatisfaction);
+            GameResources.GameResources.ChangeCastleStrength(Resources.CastleStrength);
         }
     }
 
