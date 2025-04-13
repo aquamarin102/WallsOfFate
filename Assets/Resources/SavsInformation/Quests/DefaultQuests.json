@@ -6,7 +6,7 @@
         "InProgress": false,
         "Complite": false,
         "OpenNPS": "Messenger",
-        "OpenDialog": "Messager/JSON/MessagerDialogMainRoom.ink",
+        "OpenDialog": "Messager/JSON/MessagerDialogMainRoom",
         "Tasks": [
           {
             "Id": 0,
@@ -14,14 +14,14 @@
             "IsDone": false,
             "ForNPS": "Messenger",
             "RequeredTasksIds": [],
-            "RequeredDialog": "Messager/JSON/MessagerDialogMainRoom.ink",
+            "RequeredDialog": "Messager/JSON/MessagerDialogMainRoom",
             "Resources": {
               "Gold": 50,
               "Food": 50,
               "PeopleSatisfaction": 50,
               "CastleStrength": 0
-            },
-          }   
+            }
+          }
         ]       
       }
     ]
