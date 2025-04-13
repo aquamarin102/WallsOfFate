@@ -74,6 +74,15 @@ public class PlayerMoveController : MonoBehaviour
 
     private void HandleMovement()
     {
+        if (DialogueManager.GetInstance() != null && DialogueManager.GetInstance().DialogueIsPlaying)
+        {
+            // Обнуляем горизонтальное движение, но сохраняем гравитацию
+            moveDirection.x = 0;
+            moveDirection.z = 0;
+            characterController.Move(new Vector3(0, moveDirection.y, 0) * Time.deltaTime);
+            return;
+        }
+
         // Получаем сырой ввод для мгновенной реакции
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
@@ -129,6 +138,8 @@ public class PlayerMoveController : MonoBehaviour
 
     private void UpdateAnimator()
     {
+        if (DialogueManager.GetInstance() != null && DialogueManager.GetInstance().DialogueIsPlaying)
+            return;
         // Если позиция изменилась, считаем, что игрок ходит
         if (Vector3.Distance(transform.position, lastPosition) > 0.001f)
         {

@@ -1,1 +1,0 @@
-За мир в королевстве... #speaker:Стражник #portrait:GuardPortrait #layout:right

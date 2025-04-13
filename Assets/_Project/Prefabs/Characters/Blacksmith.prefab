@@ -67,10 +67,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0996432d9ec83764eab23e8d27b623a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inkJSONDialogues:
-  - {fileID: 4900000, guid: 8c27e7391804a794597f6bd3179a11eb, type: 3}
-  - {fileID: 4900000, guid: e76ee498ed820e6439f0769637380178, type: 3}
-  _indexForCheck: 1
+  _defaultDialogue: Messager/MessagerMainroomDefault/
+  _npcName: Blacksmith
 --- !u!1001 &1640010124165383090
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -221,7 +219,7 @@ PrefabInstance:
       addedObject: {fileID: 6433098027503892494}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 93ec6964a48f69c489b22ef4e1f5f7d6, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5019555013856981403}
+      addedObject: {fileID: 5500082600947215786}
   m_SourcePrefab: {fileID: 100100000, guid: 93ec6964a48f69c489b22ef4e1f5f7d6, type: 3}
 --- !u!4 &7279714883907608463 stripped
 Transform:
@@ -235,7 +233,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &6433098027503892494
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -249,13 +247,14 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!64 &5019555013856981403
-MeshCollider:
+--- !u!136 &5500082600947215786
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -272,7 +271,8 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.7, z: 0}

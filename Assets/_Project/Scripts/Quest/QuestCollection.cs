@@ -34,7 +34,26 @@ namespace Quest
 
         public static QuestTask GetCurrentTaskForGroup(QuestGroup group)
         {
-            return group.Tasks.FirstOrDefault(t => t.Id == group.CurrentTaskId && !t.IsDone);
+            QuestTask currentTask = group.Tasks.First(t => t.Id == group.CurrentTaskId && !t.IsDone);
+            return currentTask;
+        }
+
+        public static void UpdateQuestGroup(QuestGroup updatedGroup)
+        {
+            // Итерируем по всем дням
+            foreach (var day in Days)
+            {
+                // Ищем группу с нужным ID в текущем дне
+                var index = day.Quests.FindIndex(g => g.Id == updatedGroup.Id);
+                if (index != -1)
+                {
+                    // Заменяем старую версию группы на обновленную
+                    day.Quests[index] = updatedGroup;
+                    return; // Предполагаем уникальность ID групп
+                }
+            }
+
+            Debug.LogWarning($"Quest group with ID {updatedGroup.Id} not found!");
         }
     }
 
@@ -48,14 +67,13 @@ namespace Quest
     [System.Serializable]
     public class QuestGroup
     {
+        public int Id;
         public bool InProgress;
         public bool Complite;
         public string OpenNPS;
         public String OpenDialog;
+        public int CurrentTaskId;
         public List<QuestTask> Tasks = new List<QuestTask>();
-
-        [JsonIgnore]
-        public int CurrentTaskId = 0;
 
         public bool CheckOpen(string npcName)
         {
@@ -88,7 +106,7 @@ namespace Quest
             ApplyResources();
         }
 
-        private bool CanComplete()
+        public bool CanComplete()
         {
             return RequeredTasksIds.All(id =>
                 QuestCollection.GetAllDays()
