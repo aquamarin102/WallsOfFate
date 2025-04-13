@@ -18,7 +18,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8167504151963174901
 RectTransform:
   m_ObjectHideFlags: 0
@@ -88,6 +88,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 669f1a336f4fc53419c55ef740481ae5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleButtons: []
-  <TargetObject>k__BackingField: {fileID: 0}
-  _objectToDisable: {fileID: 0}
+  toggleButton: 113
+  targetObject: {fileID: 5086413649536217996}
