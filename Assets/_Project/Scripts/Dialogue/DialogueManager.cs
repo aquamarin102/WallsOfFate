@@ -132,12 +132,13 @@ public class DialogueManager : MonoBehaviour
         {
             Debug.Log(file.name);
         }
-        TextAsset inkJSON =Resources.Load<TextAsset>($"Dialogue/{dialogueFileName}.json");
+         TextAsset inkJSON = Resources.Load<TextAsset>($"Dialogue/{dialogueFileName}");
 
         if (inkJSON == null)
         {
-            Debug.LogError($"Dialogue file 'Dialogue/{dialogueFileName}' not found!");
-            return;
+            inkJSON = allDialogue[0];
+            //Debug.LogError($"Dialogue file 'Dialogue/{dialogueFileName}' not found!");
+            //return;
         }
 
         _currentStory = new Story(inkJSON.text);

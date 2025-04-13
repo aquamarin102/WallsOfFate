@@ -7,7 +7,7 @@ public static class PlayerSpawnData
 
     public static void ClearData()
     {
-        SpawnPosition = Vector3.zero;
-        SpawnRotation.Set(0, 0, 0, 0);
+        SpawnPosition = Vector3.zero; 
+        SpawnRotation = Quaternion.identity; 
     }
 }

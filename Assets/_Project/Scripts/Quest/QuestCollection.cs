@@ -99,10 +99,10 @@ namespace Quest
 
         private void ApplyResources()
         {
-            GameResources.Resources.ChangeGold(Resources.Gold);
-            GameResources.Resources.ChangeFood(Resources.Food);
-            GameResources.Resources.ChangePeopleSatisfaction(Resources.PeopleSatisfaction);
-            GameResources.Resources.ChangeCastleStrength(Resources.CastleStrength);
+            GameResources.GameResources.ChangeGold(Resources.Gold);
+            GameResources.GameResources.ChangeFood(Resources.Food);
+            GameResources.GameResources.ChangePeopleSatisfaction(Resources.PeopleSatisfaction);
+            GameResources.GameResources.ChangeCastleStrength(Resources.CastleStrength);
         }
     }
 
