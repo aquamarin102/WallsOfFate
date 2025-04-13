@@ -17,23 +17,24 @@ public class PlayerMoveController : MonoBehaviour
     [SerializeField] private Transform cameraTransform;      // Ссылка на камеру (обычно Main Camera)
 
     [Header("Footstep Settings")]
-    // Используем один аудиоклип для шагов (будет выбран в зависимости от сцены)
-    [SerializeField] private List<AudioClip> defaultFootsteps;
-    // Звуки для конкретных сцен (заполняются из Resources)
+    // Звуки для конкретных сцен (заполняются из Resources) – для каждой сцены два аудиоклипа (левый и правый)
     private Dictionary<string, List<AudioClip>> sceneFootstepSounds = new Dictionary<string, List<AudioClip>>();
 
-    [Header("Footstep Pitch Settings")]
-    [SerializeField] private float walkingPitch = 1.0f;      // Базовый pitch при ходьбе
-    [SerializeField] private float runningPitch = 1.2f;      // Базовый pitch при беге
-    [SerializeField] private float stepPitchVariation = 0.05f; // Вариация для имитации разных ног
+    [Header("Pitch Settings")]
+    [SerializeField] private float walkingPitch = 1.0f;   // Базовый pitch при ходьбе
+    [SerializeField] private float runningPitch = 1.5f;   // Pitch при беге (ускоренное воспроизведение звука)
 
     private CharacterController characterController;
     private AudioSource footstepSource;
 
+    // Клипы для левой и правой ноги
+    private AudioClip leftFootstepClip;
+    private AudioClip rightFootstepClip;
+
     private Vector3 moveDirection;
     private float verticalVelocity;
 
-    // Для определения движения (используем разницу позиций)
+    // Для отслеживания движения игрока
     private Vector3 lastPosition;
     private bool isLeftFootStep = true;
 
@@ -49,10 +50,24 @@ public class PlayerMoveController : MonoBehaviour
         footstepSource = GetComponent<AudioSource>();
         lastPosition = transform.position;
 
-        // Инициализация звуков шагов для разных сцен
-        sceneFootstepSounds.Add("MainRoom", new List<AudioClip>() { Resources.Load<AudioClip>("Footsteps/Wood") });
-        sceneFootstepSounds.Add("Forge", new List<AudioClip>() { Resources.Load<AudioClip>("Footsteps/Grass") });
-        sceneFootstepSounds.Add("Storage", new List<AudioClip>() { Resources.Load<AudioClip>("Footsteps/Stone") });
+        // Инициализация звуков шагов для разных сцен.
+        // В Resources должны быть аудиоклипы с именами, например:
+        // "Footsteps/WoodLeft", "Footsteps/WoodRight", "Footsteps/GrassLeft", "Footsteps/GrassRight", "Footsteps/StoneLeft", "Footsteps/StoneRight"
+        sceneFootstepSounds.Add("MainRoom", new List<AudioClip>()
+        {
+            Resources.Load<AudioClip>("Footsteps/wood1"),
+            Resources.Load<AudioClip>("Footsteps/wood2")
+        });
+        sceneFootstepSounds.Add("Forge", new List<AudioClip>()
+        {
+            Resources.Load<AudioClip>("Footsteps/gravel1"),
+            Resources.Load<AudioClip>("Footsteps/gravel2")
+        });
+        sceneFootstepSounds.Add("Storage", new List<AudioClip>()
+        {
+            Resources.Load<AudioClip>("Footsteps/stone1"),
+            Resources.Load<AudioClip>("Footsteps/stone2")
+        });
 
         SceneManager.sceneLoaded += OnSceneLoaded;
         UpdateFootstepSounds(SceneManager.GetActiveScene().name);
@@ -65,10 +80,8 @@ public class PlayerMoveController : MonoBehaviour
 
     private void Update()
     {
-        // Обработка движения и анимации выполняется в Update для максимальной отзывчивости
         HandleMovement();
         UpdateAnimator();
-
         lastPosition = transform.position;
     }
 
@@ -76,31 +89,25 @@ public class PlayerMoveController : MonoBehaviour
     {
         if (DialogueManager.GetInstance() != null && DialogueManager.GetInstance().DialogueIsPlaying)
         {
-            // Обнуляем горизонтальное движение, но сохраняем гравитацию
             moveDirection.x = 0;
             moveDirection.z = 0;
             characterController.Move(new Vector3(0, moveDirection.y, 0) * Time.deltaTime);
             return;
         }
 
-        // Получаем сырой ввод для мгновенной реакции
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
         Vector3 input = new Vector3(horizontal, 0, vertical);
 
-        // Определяем текущую скорость (если зажат Shift – бег)
         float currentSpeed = moveSpeed;
-        bool isRunning = false;
         if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             currentSpeed *= runMultiplier;
-            isRunning = true;
         }
 
         Vector3 desiredMove = Vector3.zero;
         if (input.sqrMagnitude > 0.01f)
         {
-            // Получаем векторы направления камеры (без вертикали)
             Vector3 camForward = cameraTransform.forward;
             camForward.y = 0;
             camForward.Normalize();
@@ -108,10 +115,8 @@ public class PlayerMoveController : MonoBehaviour
             camRight.y = 0;
             camRight.Normalize();
 
-            // Итоговое направление движения – комбинация ввода по осям
             desiredMove = (camForward * vertical + camRight * horizontal).normalized;
 
-            // Поворот игрока в направлении движения (с плавностью)
             if (desiredMove != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(desiredMove);
@@ -121,7 +126,6 @@ public class PlayerMoveController : MonoBehaviour
 
         moveDirection = desiredMove * currentSpeed;
 
-        // Гравитация: если игрок на земле – слегка прижимаем, иначе уменьшаем скорость падения
         if (characterController.isGrounded)
         {
             verticalVelocity = -1f;
@@ -132,7 +136,6 @@ public class PlayerMoveController : MonoBehaviour
         }
         moveDirection.y = verticalVelocity;
 
-        // Перемещаем игрока через CharacterController
         characterController.Move(moveDirection * Time.deltaTime);
     }
 
@@ -140,10 +143,9 @@ public class PlayerMoveController : MonoBehaviour
     {
         if (DialogueManager.GetInstance() != null && DialogueManager.GetInstance().DialogueIsPlaying)
             return;
-        // Если позиция изменилась, считаем, что игрок ходит
+
         if (Vector3.Distance(transform.position, lastPosition) > 0.001f)
         {
-            // Если звук шагов не воспроизводится – проигрываем его
             if (!footstepSource.isPlaying)
             {
                 PlayFootstep();
@@ -153,23 +155,27 @@ public class PlayerMoveController : MonoBehaviour
 
     private void PlayFootstep()
     {
-        if (footstepSource.clip != null)
+        // Перед воспроизведением выставляем pitch в зависимости от режима (бег/ходьба)
+        bool isRunning = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+        footstepSource.pitch = isRunning ? runningPitch : walkingPitch;
+
+        if (leftFootstepClip != null && rightFootstepClip != null)
         {
-            // Определяем, бежит ли игрок
-            bool isRunning = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-            // Выбираем базовый pitch в зависимости от режима (бег/ходьба)
-            float basePitch = isRunning ? runningPitch : walkingPitch;
-            // Добавляем небольшую вариацию для имитации чередования ног
-            float pitchVariation = isLeftFootStep ? stepPitchVariation : -stepPitchVariation;
-            footstepSource.pitch = basePitch + pitchVariation;
-            // Переключаем ногу для следующего шага
+            if (isLeftFootStep)
+            {
+                footstepSource.PlayOneShot(leftFootstepClip);
+            }
+            else
+            {
+                footstepSource.PlayOneShot(rightFootstepClip);
+            }
             isLeftFootStep = !isLeftFootStep;
-            // Проигрываем звук шага
-            footstepSource.PlayOneShot(footstepSource.clip);
+        }
+        else
+        {
+            Debug.LogWarning("Звуки шагов для текущей сцены не настроены!");
         }
     }
-
-    // Метод GetRandomFootstep убран, так как выбор случайного звука более не используется.
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -178,15 +184,16 @@ public class PlayerMoveController : MonoBehaviour
 
     private void UpdateFootstepSounds(string sceneName)
     {
-        // Выбираем один аудиоклип для шагов: 
-        // Если для сцены определён звук, используем его (первый элемент), иначе используем дефолтный (первый элемент)
-        if (sceneFootstepSounds.ContainsKey(sceneName) && sceneFootstepSounds[sceneName].Count > 0)
+        if (sceneFootstepSounds.ContainsKey(sceneName) && sceneFootstepSounds[sceneName].Count >= 2)
         {
-            footstepSource.clip = sceneFootstepSounds[sceneName][0];
+            leftFootstepClip = sceneFootstepSounds[sceneName][0];
+            rightFootstepClip = sceneFootstepSounds[sceneName][1];
         }
-        else if (defaultFootsteps.Count > 0)
+        else
         {
-            footstepSource.clip = defaultFootsteps[0];
+            leftFootstepClip = null;
+            rightFootstepClip = null;
+            Debug.LogWarning($"Для сцены \"{sceneName}\" не заданы два звука шагов.");
         }
     }
 }

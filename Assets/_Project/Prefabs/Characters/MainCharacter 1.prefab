@@ -174,10 +174,8 @@ MonoBehaviour:
   rotationSpeed: 20
   gravity: 9.81
   cameraTransform: {fileID: 0}
-  defaultFootsteps: []
-  walkingPitch: 1
-  runningPitch: 1.2
-  stepPitchVariation: 0.05
+  walkingPitch: 1.2
+  runningPitch: 1.7
 --- !u!114 &3382583244008469319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,11 +192,6 @@ MonoBehaviour:
   speedDampTime: 0.1
   baseFootstepInterval: 1
   runFootstepInterval: 0.5
-  minPitch: 1
-  maxPitch: 1.3
-  pickupFloorDuration: 1
-  pickupBodyDuration: 1
-  openChestDuration: 1.5
 --- !u!114 &5049994645591148800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,7 +216,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb1d4cb62541b3f4dab7eaf3bb73d2df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerAnimator: {fileID: 0}
 --- !u!82 &8059408203431217830
 AudioSource:
   m_ObjectHideFlags: 0

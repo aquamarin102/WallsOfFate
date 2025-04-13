@@ -21,9 +21,6 @@ public class PlayerAnimator : MonoBehaviour
     [Tooltip("Интервал между шагами при беге (сек.)")]
     [SerializeField] private float runFootstepInterval = 0.3f;
 
-    [Header("Pitch Settings")]
-    [SerializeField] private float minPitch = 1.0f;
-    [SerializeField] private float maxPitch = 1.3f;
 
     private float footstepTimer = 0f;
 
@@ -38,11 +35,6 @@ public class PlayerAnimator : MonoBehaviour
         }
         lastPosition = transform.position;
 
-        footstepSource = GetComponent<AudioSource>();
-        if (footstepSource == null)
-        {
-            Debug.LogError("PlayerAnimator: Не найден компонент AudioSource!");
-        }
 
         playerController = GetComponent<PlayerMoveController>(); // Предполагается, что такой скрипт существует
         if (playerController == null)
@@ -88,12 +80,6 @@ public class PlayerAnimator : MonoBehaviour
                 animator.SetFloat("PushSpeed", 0f);
                 animator.speed = 0f;
             }
-        }
-
-        // Обновляем pitch звука шагов в зависимости от скорости (чем быстрее — тем выше)
-        if (footstepSource != null)
-        {
-            footstepSource.pitch = Mathf.Lerp(minPitch, maxPitch, normalizedSpeed);
         }
 
         // Интерполируем интервал между шагами
