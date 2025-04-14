@@ -122,7 +122,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     public void EnterDialogueMode(string dialogueFileName)
-    {
+     {
         dialogueFileName = dialogueFileName.Replace(".json", "");
         // Формируем путь к файлу: Dialogue/имя_файла
         dialogueFileName = TrimAfterLastSlash(dialogueFileName);

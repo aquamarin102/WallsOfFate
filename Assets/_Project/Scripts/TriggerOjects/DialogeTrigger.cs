@@ -15,6 +15,7 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
 
     public void Triggered()
     {
+        //if(QuestCollection.GetActiveQuestGroups().Count > 0 && QuestCollection.GetActiveQuestGroups()[0].CurrentTaskId == 5) return;
         // Проверка на старт новых квестов
         var availableGroups = QuestCollection.GetAllDays()
             .SelectMany(d => d.Quests)

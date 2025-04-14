@@ -86,7 +86,7 @@
             "IsDone": false,
             "ForNPS": "Refugee",
             "RequeredTasksIds": [0, 1, 3, 4],
-            "RequeredDialog": "Refugee/RefugeeForgeMobilisationQuest1/",
+            "RequeredDialog": "Refugee/RefugeeForgeMobilisationQuest/",
             "Resources": {
               "Gold": 0,
               "Food": 0,
