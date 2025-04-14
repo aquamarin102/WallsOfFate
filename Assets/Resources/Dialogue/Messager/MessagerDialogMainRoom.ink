@@ -1,23 +1,11 @@
-INCLUDE ../GlobalSettings/global.ink
+#speaker:Гонец #portrait:ms_yellow_neutral #layout:right
+Ваша светлость! Срочное донесение! Разведка заметила вражеские знамёна в долине. Противник приближается слишком быстро. Мы должны немедленно начать подготовку к осаде. 
+#speaker:Гонец #portrait:ms_yellow_neutral #layout:left
+Проклятье... Что у нас с вооружением?
+#speaker:Гонец #portrait:ms_yellow_neutral #layout:right
+Кузнец там, во дворе, уже латает доспехи и оружие.
+#speaker:Гонец #portrait:ms_yellow_neutral #layout:left
+Хорошо. Нужно сходить взглянуть самому. Если нам суждено держать оборону, — каждый меч и каждая кольчуга будут на счету.
 
-=== MessagerDialogMainRoom ===
-Ваша светлость! Срочные новости! Войска противника замечены в долине! Они движутся к крепости! #speaker:Гонец #portrait:ms_yellow_neutral #layout:right
-Мы должны подготовиться к осаде. Кузнец уже работает над оружием во внутреннем дворе, но ему нужна помощь. Пожалуйста, поговорите с ним! #speaker:Гонец #portrait:ms_yellow_neutral #layout:right
 
-+ [ыделить 20 золотых на укрепления] #speaker:Гонец #portrait:ms_yellow_neutral #layout:left
-    ~ Gold -= 100
-    ~ CastleStrength += 30
-    -> DONE
-    
-+ [Мобилизовать 50 ед. продовольствия] #speaker:Гонец #portrait:ms_yellow_neutral #layout:left
-    ~ Food -= 50
-    ~ CastleStrength += 20
-    
-    -> DONE
-
-+ [Успокоить народ] #speaker:Гонец #portrait:ms_yellow_neutral #layout:left
-    ~ PeopleSatisfaction += 25
-    ~ CastleStrength -= 10
-    -> DONE
-
--> DONE
+-> END

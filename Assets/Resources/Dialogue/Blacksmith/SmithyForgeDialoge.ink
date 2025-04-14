@@ -1,9 +1,14 @@
-А, ваша светлость! Рад вас видеть. У меня проблема — мне нужен еще один молот. Без него я не смогу починить оружие для солдат. #speaker:Кузнец #portrait:SmithyPortrait #layout:right
-Молот лежит в сундуке рядом с кузницей. Можете помочь?
+#speaker:Кузнец #portrait:SmithyPortrait #layout:right
+О, ваша светлость! Рад видеть вас у своей кузни. 
+#speaker:Кузнец #portrait:SmithyPortrait #layout:left
+Как продвигается работа?
+#speaker:Кузнец #portrait:SmithyPortrait #layout:right
+Один из молотов сломался, а без него я не смогу закончить починку оружия. Запасной молот лежит в сундуке неподалеку. Не окажете мне честь?
 
-*   Конечно, я принесу его. #speaker:Пан Яков #portrait:SmithyPortrait #layout:left
-    Спасибо, ваша светлость! Я буду ждать. #speaker:Кузнец #portrait:SmithyPortrait #layout:right
+*   Хорошо, я принесу его. #speaker:Пан Яков #portrait:SmithyPortrait #layout:left
+    Благодарю. Скоро работа будет завершена. #speaker:Кузнец #portrait:SmithyPortrait #layout:right
     -> DONE
-*   Ладно.  #speaker:Пан Яков #portrait:SmithyPortrait #layout:left
-    Спасибо, ваша светлость! Я буду ждать. #speaker:Кузнец #portrait:SmithyPortrait #layout:right
+*   Не до того. Зови своего помощника. #speaker:Пан Яков #portrait:SmithyPortrait #layout:left
+    Как прикажете… А подмастерье мой с утра как сквозь землю провалился — небось дрыхнет на сеновале. А мне ж и отойти нельзя: коль оставлю наковальню, — металл остынет, и бойцам нечем будет сражаться. #speaker:Кузнец #portrait:SmithyPortrait #layout:right
     -> DONE
+    
