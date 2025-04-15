@@ -77,7 +77,7 @@ public class PokemonNPC : MonoBehaviour
     private void StartMiniGame()
     {
         _switch.SwitchCamera();
-        _uiPannel.SetActive(false);
+        if (_uiPannel.activeSelf) _uiPannel.SetActive(false);
         _miniGame.SetActive(true);
         _castle.SetActive(false);
         _isMiniGameActive = true;
@@ -113,7 +113,7 @@ public class PokemonNPC : MonoBehaviour
 
         // ¬ыполн€ем оставшуюс€ логику конца игры
         _switch.SwitchCamera();
-        _uiPannel.SetActive(true);
+        if(!_uiPannel.activeSelf) _uiPannel.SetActive(true);
         _castle.SetActive(true);
         _isMiniGameFinished = true;
         DataBetweenLocations.ForgePerfom = true;

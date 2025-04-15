@@ -5,6 +5,8 @@ using UnityEngine;
 using Ink.Runtime;
 using System;
 using UnityEngine.EventSystems;
+using System.IO;
+using System.Linq;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -126,20 +128,43 @@ public class DialogueManager : MonoBehaviour
         //dialogueFileName = dialogueFileName.Replace(".json", "");
         // Формируем путь к файлу: Dialogue/имя_файла
         dialogueFileName = TrimAfterLastSlash(dialogueFileName);
+
+#if UNITY_EDITOR
+        // Полный путь к папке Resources/Dialogue на диске
+        string fullPath = Application.dataPath + $"/Resources/Dialogue/{dialogueFileName}";
+        Debug.Log($"Полный путь на диске: {fullPath}");
+
+        // Проверка существования папки
+        if (!Directory.Exists(fullPath))
+        {
+            Debug.LogError($"Папка не существует: {fullPath}");
+            return;
+        }
+
+        // Проверка наличия файлов .json в папке
+        string[] files = Directory.GetFiles(fullPath, "*.json");
+        Debug.Log($"Найдено файлов .json: {files.Length}");
+        foreach (string file in files)
+        {
+            Debug.Log($"Файл: {file}");
+        }
+#endif
+
         TextAsset[] allDialogue = Resources.LoadAll<TextAsset>($"Dialogue/{dialogueFileName}");
         Debug.Log($"Found {allDialogue.Length} files:");
         foreach (var file in allDialogue)
         {
             Debug.Log(file.name);
         }
-         TextAsset inkJSON = Resources.Load<TextAsset>($"Dialogue/{dialogueFileName}");
+        //TextAsset inkJSON = Resources.Load<TextAsset>($"Dialogue/{dialogueFileName}");
+        TextAsset inkJSON = allDialogue[allDialogue.Count() - 1];
 
-        if (inkJSON == null)
-        {
-            inkJSON = allDialogue[0];
-            //Debug.LogError($"Dialogue file 'Dialogue/{dialogueFileName}' not found!");
-            //return;
-        }
+        //if (inkJSON == null)
+        //{
+        //    inkJSON = allDialogue[0];
+        //    //Debug.LogError($"Dialogue file 'Dialogue/{dialogueFileName}' not found!");
+        //    //return;
+        //}
 
         _currentStory = new Story(inkJSON.text);
 

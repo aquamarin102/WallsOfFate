@@ -8,6 +8,8 @@
         "Complite": false,
         "OpenNPS": "Messenger",
         "CurrentTaskId": 0,
+        //Refugee/RefugeeForgeMobilisationQuest/
+        //Messager/MessagerDialogMainRoom/
         "OpenDialog": "Messager/MessagerDialogMainRoom/",
         "Tasks": [
           {
@@ -128,7 +130,7 @@
             "IsDone": false,
             "ForNPS": "StorageDoor",
             "RequeredTasksIds": [0, 1, 3, 4, 5, 6, 7],
-            "RequeredDialog": "Messager/ZMessagerMainRoomStorageQuest/",
+            "RequeredDialog": "Messager/MessagerMainRoomStorageQuest/",
             "Resources": {
               "Gold": 0,
               "Food": 0,
