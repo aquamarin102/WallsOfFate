@@ -1,34 +1,32 @@
 INCLUDE ../GlobalSettings/global.ink
 
-# speaker: Кузнец
+Пожалуйста, не трогайте меня... Я просто хочу спрятаться здесь, пока война не закончится. 
+# speaker: Бродяга
 # portrait: OldmenPortrait
 # layout: right
-Пощадите, Ваша Светлость! Я не воин! Мне бы только дожить до утра, не выходя из тени этих стен.
 
-
-*   Ты трус и дезертир. Мне придется казнить тебя. Здесь нет места тем, кто готов лишь брать, но не отдавать. К тому же трусы заражают страхом весь полк.
-
-    # speaker: Кузнец
+*   Ладно
+    # speaker: Бродяга
     # portrait: OldmenPortrait
     # layout: left
     -> gate1RefugeeMainRoom
 
-*   Возьмешь меч — честь тебе. Откажешься — встанешь в строй под кнутом. Но в бой ты пойдёшь, хочешь ты того или нет.
-    # speaker: Кузнец
+*   Похоже, мне придется убедить вас силой...
+    # speaker: Бродяга
     # portrait: OldmenPortrait
     # layout: left
     -> gate2RefugeeMainRoom
 
 === gate1RefugeeMainRoom ===
-    Ладно… Ладно. Я пойду. Только не бейте больше.
-    # speaker: Кузнец
+    "Спасибо! Да благословит бог вашу семью!"
+    # speaker: Бродяга
     # portrait: OldmenPortrait
     # layout: left
     -> END
 
 === gate2RefugeeMainRoom ===
-    Нет! Я не пойду! Лучше умру здесь, чем на поле!
-    # speaker: Кузнец
+    "Не бейте меня..."
+    # speaker: Бродяга
     # portrait: OldmenPortrait
     # layout: left
   ~ PowerCheckStart = true
