@@ -3,25 +3,139 @@
     "Day": 1,
     "Quests": [
       {
+        "Id": 0,
         "InProgress": false,
         "Complite": false,
         "OpenNPS": "Messenger",
-        "OpenDialog": "Messager/JSON/MessagerDialogMainRoom",
+        "CurrentTaskId": 0,
+        "OpenDialog": "Messager/MessagerDialogMainRoom/",
         "Tasks": [
           {
             "Id": 0,
-            "TaskInfo": "Поговорить с Гонцом",
+            "TaskInfo": "Выйти из главного зала",
             "IsDone": false,
-            "ForNPS": "Messenger",
+            "ForNPS": "ForgeDoor",
             "RequeredTasksIds": [],
-            "RequeredDialog": "Messager/JSON/MessagerDialogMainRoom",
+            "RequeredDialog": "",
             "Resources": {
-              "Gold": 50,
-              "Food": 50,
-              "PeopleSatisfaction": 50,
+              "Gold": 0,
+              "Food": 0,
+              "PeopleSatisfaction": 0,
               "CastleStrength": 0
             }
-          }
+          },
+          {
+            "Id": 1,
+            "TaskInfo": "Поговорить с кузнецом",
+            "IsDone": false,
+            "ForNPS": "Blacksmith",
+            "RequeredTasksIds": [0],
+            "RequeredDialog": "Blacksmith/SmithyForgeDialoge/",
+            "Resources": {
+              "Gold": 0,
+              "Food": 0,
+              "PeopleSatisfaction": 0,
+              "CastleStrength": 0
+            }
+          },
+          {
+            "Id": 2,
+            "TaskInfo": "Найти молот",
+            "IsDone": false,
+            "ForNPS": "Chest",
+            "RequeredTasksIds": [0, 1],
+            "RequeredDialog": "",
+            "Resources": {
+              "Gold": 0,
+              "Food": 0,
+              "PeopleSatisfaction": 0,
+              "CastleStrength": 0
+            }
+          },
+          {
+            "Id": 3,
+            "TaskInfo": "Поговорить с кузнецом",
+            "IsDone": false,
+            "ForNPS": "Blacksmith",
+            "RequeredTasksIds": [0, 1, 2],
+            "RequeredDialog": "Blacksmith/SmithyWithHummerDialog/",
+            "Resources": {
+              "Gold": 0,
+              "Food": 0,
+              "PeopleSatisfaction": 0,
+              "CastleStrength": 0
+            }
+          },
+          {
+            "Id": 4,
+            "TaskInfo": "Поговорить с главой стражи",
+            "IsDone": false,
+            "ForNPS": "ChiefGuard",
+            "RequeredTasksIds": [0, 1, 3],
+            "RequeredDialog": "ChiefGuard/GuardForgeGuardQuestDialog/",
+            "Resources": {
+              "Gold": 0,
+              "Food": 0,
+              "PeopleSatisfaction": 0,
+              "CastleStrength": 0
+            }
+          },
+          {
+            "Id": 5,
+            "TaskInfo": "Найти беженца",
+            "IsDone": false,
+            "ForNPS": "Refugee",
+            "RequeredTasksIds": [0, 1, 3, 4],
+            "RequeredDialog": "Refugee/RefugeeForgeMobilisationQuest1/",
+            "Resources": {
+              "Gold": 0,
+              "Food": 0,
+              "PeopleSatisfaction": 0,
+              "CastleStrength": 0
+            }
+          },
+          {
+            "Id": 6,
+            "TaskInfo": "Вернуться в тронный зал",
+            "IsDone": false,
+            "ForNPS": "MainroomDoor",
+            "RequeredTasksIds": [0, 1, 3, 4, 5],
+            "RequeredDialog": "",
+            "Resources": {
+              "Gold": 0,
+              "Food": 0,
+              "PeopleSatisfaction": 0,
+              "CastleStrength": 0
+            }
+          },
+          {
+            "Id": 7,
+            "TaskInfo": " Узнать у гонца новости",
+            "IsDone": false,
+            "ForNPS": "Messenger",
+            "RequeredTasksIds": [0, 1, 3, 4, 5, 6],
+            "RequeredDialog": "",
+            "Resources": {
+              "Gold": 0,
+              "Food": 0,
+              "PeopleSatisfaction": 0,
+              "CastleStrength": 0
+            }
+          },
+          {
+            "Id": 8,
+            "TaskInfo": "Пойти на склад",
+            "IsDone": false,
+            "ForNPS": "StorageDoor",
+            "RequeredTasksIds": [0, 1, 3, 4, 5, 6, 7],
+            "RequeredDialog": "Messager/ZMessagerMainRoomStorageQuest/",
+            "Resources": {
+              "Gold": 0,
+              "Food": 0,
+              "PeopleSatisfaction": 0,
+              "CastleStrength": 0
+            }
+          },
         ]       
       }
     ]

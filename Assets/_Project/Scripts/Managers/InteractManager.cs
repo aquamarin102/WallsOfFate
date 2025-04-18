@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class InteractManager : MonoBehaviour
 {
     // Список всех встреченных интерактивных объектов (реализующих ITriggerable)
-    private List<ITriggerable> encounteredTriggers = new List<ITriggerable>();
+    private HashSet<ITriggerable> encounteredTriggers = new HashSet<ITriggerable>();
     // Набор для отслеживания уже активированных триггеров
     private HashSet<ITriggerable> triggeredSet = new HashSet<ITriggerable>();
     // Текущий активный интерактивный объект
@@ -33,33 +34,41 @@ public class InteractManager : MonoBehaviour
 
     private void OnTriggerEnter(Collider collider)
     {
-        ITriggerable newTriggerable = collider.gameObject.GetComponent<ITriggerable>();
-        if (newTriggerable != null)
+        // Получаем ВСЕ компоненты ITriggerable на объекте
+        ITriggerable[] triggerables = collider.gameObject.GetComponents<ITriggerable>();
+
+        if (triggerables.Length == 0) return;
+
+        bool isNewCollider = currentTriggerCollider != collider;
+
+        foreach (var triggerable in triggerables)
         {
-            // Добавляем интерактивный объект в список, если его там еще нет
-            if (!encounteredTriggers.Contains(newTriggerable))
+            // Добавляем все триггеры в список
+            if (!encounteredTriggers.Contains(triggerable))
             {
-                encounteredTriggers.Add(newTriggerable);
+                encounteredTriggers.Add(triggerable);
             }
 
-            // Устанавливаем текущий активный интерактивный объект
-            if (currentTriggerCollider != collider || !hasInteracted)
+            // Обновляем текущий активный триггер только если:
+            // - это новый коллайдер
+            // - или еще не было взаимодействия
+            if (isNewCollider || !hasInteracted)
             {
-                currentTriggerable = newTriggerable;
+                currentTriggerable = triggerable;
                 currentTriggerCollider = collider;
                 hasInteracted = false;
+            }
+        }
 
-                // Ищем дочерний объект с тегом "InteractionIndicator" и активируем его
-                var indicators = collider.gameObject.GetComponentsInChildren<Transform>(true);
-                foreach (var indicator in indicators)
-                {
-                    if (indicator.CompareTag("InteractionIndicator"))
-                    {
-                        interactionIndicator = indicator.gameObject;
-                        interactionIndicator.SetActive(true);
-                        break;
-                    }
-                }
+        // Поиск индикатора взаимодействия (один на весь объект)
+        var indicators = collider.gameObject.GetComponentsInChildren<Transform>(true);
+        foreach (var indicator in indicators)
+        {
+            if (indicator.CompareTag("InteractionIndicator"))
+            {
+                interactionIndicator = indicator.gameObject;
+                interactionIndicator.SetActive(true);
+                break;
             }
         }
     }
@@ -67,19 +76,24 @@ public class InteractManager : MonoBehaviour
     private void OnTriggerExit(Collider collider)
     {
         // При выходе из зоны интерактивного объекта сбрасываем данные
-        if (collider == currentTriggerCollider)
-        {
-            if (interactionIndicator != null)
-            {
-                interactionIndicator.SetActive(false);
-            }
+        ClearData(collider);
+    }
 
-            encounteredTriggers.Clear();
-            triggeredSet.Clear();
-            currentTriggerable = null;
+    private void ClearData(Collider collider = null, bool onDestroy = false)
+    {
+        if (interactionIndicator != null)
+        {
+            interactionIndicator.SetActive(false);
+        }
+
+        encounteredTriggers.Clear();
+        triggeredSet.Clear();
+        currentTriggerable = null;
+        interactionIndicator = null;
+        hasInteracted = false;
+        if (collider == currentTriggerCollider || onDestroy)
+        {
             currentTriggerCollider = null;
-            interactionIndicator = null;
-            hasInteracted = false;
         }
     }
 
@@ -163,5 +177,10 @@ public class InteractManager : MonoBehaviour
     public bool HasTriggerBeenActivated(ITriggerable trigger)
     {
         return triggeredSet.Contains(trigger);
+    }
+
+    private void OnDisable()
+    {
+        ClearData(null, true);
     }
 }

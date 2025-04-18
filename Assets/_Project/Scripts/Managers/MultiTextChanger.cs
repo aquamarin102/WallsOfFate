@@ -3,6 +3,7 @@ using TMPro;
 using Quest;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class MultiTextChanger : MonoBehaviour
 {
@@ -27,25 +28,32 @@ public class MultiTextChanger : MonoBehaviour
 
     private void UpdateQuestText()
     {
-        List<QuestGroup> processingGroups = QuestCollection.GetActiveQuestGroups();
-
-        if (processingGroups.All(q => q.Complite && !q.InProgress))
+        try
         {
-            _textMeshProLinks[0].text = _defaultText;
-            foreach (TMP_Text tx in _textMeshProLinks) tx.text = "";
-            return;
-        }
+            List<QuestGroup> processingGroups = QuestCollection.GetActiveQuestGroups();
 
-        if (processingGroups.Count > 0)
-        {
-            for (int i = 0; i < _textMeshProLinks.Count; i++)
+            if (processingGroups.All(q => q.Complite && !q.InProgress))
             {
-                if (i < processingGroups.Count)
-                {
-                    _textMeshProLinks[i].text = QuestCollection.GetCurrentTaskForGroup(processingGroups[i]).TaskInfo;
-                }
-                else _textMeshProLinks[i].text = "";
+                _textMeshProLinks[0].text = _defaultText;
+                foreach (TMP_Text tx in _textMeshProLinks) tx.text = "";
+                return;
             }
+
+            if (processingGroups.Count > 0)
+            {
+                for (int i = 0; i < _textMeshProLinks.Count; i++)
+                {
+                    if (i < processingGroups.Count)
+                    {
+                        _textMeshProLinks[i].text = QuestCollection.GetCurrentTaskForGroup(processingGroups[i]).TaskInfo;
+                    }
+                    else _textMeshProLinks[i].text = "";
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("//");
         }
     }
 }

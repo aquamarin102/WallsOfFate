@@ -171,6 +171,8 @@ MonoBehaviour:
   rotationSpeed: 20
   gravity: 9.81
   cameraTransform: {fileID: 0}
+  walkingPitch: 1.4
+  runningPitch: 1.9
 --- !u!114 &3382583244008469319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185,11 +187,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxSpeed: 4.5
   speedDampTime: 0.1
-  defaultFootsteps: []
   baseFootstepInterval: 0.5
   runFootstepInterval: 0.3
-  minPitch: 1
-  maxPitch: 1.3
 --- !u!114 &5049994645591148800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -352,6 +351,7 @@ MonoBehaviour:
   grabKey: 101
   maxSpeed: 2
   turnSpeed: 50
+  attachedBox: {fileID: 0}
 --- !u!136 &-4248748749519651901
 CapsuleCollider:
   m_ObjectHideFlags: 0

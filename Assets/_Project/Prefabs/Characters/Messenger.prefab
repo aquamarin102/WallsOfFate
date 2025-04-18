@@ -2880,7 +2880,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0996432d9ec83764eab23e8d27b623a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultDialogue: MessagerMainroomDefault
+  _defaultDialogue: Messager/MessagerMainroomDefault
   _npcName: Messenger
 --- !u!1 &4044241201480333291
 GameObject:
@@ -5043,6 +5043,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8856146272783591639}
   - component: {fileID: 5484098227992672439}
+  - component: {fileID: 6882138215155267680}
   m_Layer: 0
   m_Name: Messenger
   m_TagString: Untagged
@@ -5099,6 +5100,29 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!136 &6882138215155267680
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7280076937197616263}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &7363507171811652826
 GameObject:
   m_ObjectHideFlags: 0

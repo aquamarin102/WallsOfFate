@@ -3,6 +3,7 @@ using UnityEngine;
 using Quest;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
 {
@@ -30,14 +31,15 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
 
         // Обработка активных квестов
         var activeGroups = QuestCollection.GetActiveQuestGroups();
-        foreach (var group in activeGroups)
+        for (int i = 0; i < activeGroups.Count; i++)
         {
-            var currentTask = QuestCollection.GetCurrentTaskForGroup(group);
+            var currentTask = QuestCollection.GetCurrentTaskForGroup(activeGroups[i]);
             if (currentTask != null && CanTriggerTask(currentTask, out var dialogue))
             {
-                DialogueManager.GetInstance().EnterDialogueMode(dialogue);
                 currentTask.CompleteTask();
-                UpdateGroupState(group);
+                activeGroups[i] = UpdateGroupState(activeGroups[i]);
+                DialogueManager.GetInstance().EnterDialogueMode(currentTask.RequeredDialog);
+                QuestCollection.UpdateQuestGroup(activeGroups[i]);
                 return;
             }
         }
@@ -49,20 +51,28 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
     private bool CanTriggerTask(QuestTask task, out string dialogue)
     {
         dialogue = task.RequeredDialog;
-        return dialogue != null && task.ForNPS == _npcName;
+        return dialogue != null && task.ForNPS == _npcName && task.CanComplete();
     }
 
-    private void UpdateGroupState(QuestGroup group)
+    private QuestGroup UpdateGroupState(QuestGroup group)
     {
-        if (group.Tasks.All(t => t.IsDone))
+        bool allTasksDone = group.Tasks.All(t => t.IsDone);
+
+        return new QuestGroup
         {
-            group.Complite = true;
-            group.InProgress = false;
-        }
-        else
-        {
-            group.CurrentTaskId = group.Tasks
-                .FirstOrDefault(t => !t.IsDone && t.Id > group.CurrentTaskId)?.Id ?? -1;
-        }
+            Id = group.Id,
+            Complite = allTasksDone,
+            InProgress = !allTasksDone,
+            OpenNPS = group.OpenNPS,
+            OpenDialog = group.OpenDialog,
+            CurrentTaskId = allTasksDone
+                ? -1
+                : group.Tasks
+                    .Where(t => !t.IsDone)
+                    .OrderBy(t => t.Id)
+                    .FirstOrDefault()?.Id ?? -1,
+            Tasks = group.Tasks
+        };
     }
+
 }
