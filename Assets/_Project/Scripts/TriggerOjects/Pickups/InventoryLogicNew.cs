@@ -7,18 +7,19 @@ public class InventoryLigicNew : MonoBehaviour
 {
     [SerializeField] private List<GameObject> pickupPanels; // Список UI панелей с компонентом Pickup
     [SerializeField] private string _pickupType; // Тип пикапов, которые мы хотим отображать
+    [SerializeField] private List<Image> panelImages;
 
     private List<Pickup> _currentPickupsOfType = new List<Pickup>();
     private int currentPanelIndex = 0;
 
-    private void Start()
-    {
-        // Инициализация - активируем первую панель
-        if (pickupPanels.Count > 0)
-        {
-            SetActivePanel(currentPanelIndex);
-        }
-    }
+    //private void Start()
+    //{
+    //    // Инициализация - активируем первую панель
+    //    if (pickupPanels.Count > 0)
+    //    {
+    //        SetActivePanel(currentPanelIndex);
+    //    }
+    //}
 
     private void Update()
     {
@@ -55,21 +56,23 @@ public class InventoryLigicNew : MonoBehaviour
             if (i < _currentPickupsOfType.Count)
             {
                 // Активируем панель и обновляем ее данные
-                SetActivePanel(i);
+                //SetActivePanel(i);
                 UpdateActivePanelFromPickup(_currentPickupsOfType[i]);
+                NextPanel();
             }
-            else
-            {
-                // Деактивируем лишние панели
-                pickupPanels[i].SetActive(false);
-            }
+            //else
+            //{
+            //    // Деактивируем лишние панели
+            //    pickupPanels[i].SetActive(false);
+            //}
         }
 
         // Возвращаемся к первой панели
-        if (pickupPanels.Count > 0 && _currentPickupsOfType.Count > 0)
-        {
-            SetActivePanel(0);
-        }
+        //if (pickupPanels.Count > 0 && _currentPickupsOfType.Count > 0)
+        //{
+        //    UpdateActivePanelFromPickup(_currentPickupsOfType[0]);
+        //    //SetActivePanel(0);
+        //}
     }
 
     // Переключение на следующую панель
@@ -146,9 +149,9 @@ public class InventoryLigicNew : MonoBehaviour
         if (!string.IsNullOrEmpty(pickup.Picture))
         {
             Sprite loadedSprite = Resources.Load<Sprite>(pickup.Picture);
-            if (loadedSprite != null && panelPickupImage != null)
+            if (loadedSprite != null && panelImages[currentPanelIndex] != null)
             {
-                panelPickupImage.sprite = loadedSprite;
+                panelImages[currentPanelIndex].sprite = loadedSprite;
             }
             else
             {
