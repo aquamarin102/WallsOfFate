@@ -1,1 +1,2 @@
-Хнык... Хнык.. Хнык... Я не хочу умирать... #speaker:Бродяга #portrait:OldmenPortrait #layout:right
+Я не солдат, милорд. Я даже меча держать не умею. 
+#speaker:Бродяга #portrait:OldmenPortrait #layout:right

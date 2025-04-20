@@ -20,7 +20,7 @@ public class MultiTextChanger : MonoBehaviour
         {
             for(int i = 0; i < _textMeshProLinks.Count; i++)
             {
-                if (_textMeshProLinks[i].text == "") _IconsLinks[i].SetActive(false);
+                 if (_textMeshProLinks[i].text == "") _IconsLinks[i].SetActive(false);
                 else _IconsLinks[i].SetActive(true);
             }
         }
@@ -53,7 +53,7 @@ public class MultiTextChanger : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError("//");
+            Debug.LogError($"Error {e.Message}");
         }
     }
 }

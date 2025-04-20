@@ -1,26 +1,19 @@
 using UnityEngine;
 using UnityEngine.AI;
-using Zenject;
 
 public class ChickenAI : MonoBehaviour
 {
     public float detectionRange = 5f;    // Радиус, при котором курица начинает убегать
-    public float fleeSpeed = 3.5f;       // Скорость при убегании
-    public float wanderSpeed = 1.5f;     // Скорость при блуждании
-    public float idleTime = 2f;          // Время простоя в состоянии Idle
-    public float wanderRadius = 10f;     // Радиус выбора случайной точки для блуждания
+    public float fleeSpeed = 3.5f;         // Скорость при убегании
+    public float wanderSpeed = 1.5f;       // Скорость при блуждании
+    public float idleTime = 2f;            // Время простоя в состоянии Idle
+    public float wanderRadius = 10f;       // Радиус выбора случайной точки для блуждания
 
     private NavMeshAgent agent;
     private Animator animator;
 
-    private Transform player;
-
-    [Inject]
-    private void Construct(PlayerMoveController _player)
-    {
-        Debug.Log("Player injected: " + _player);
-        player = _player.gameObject.transform;
-    }
+    // Ссылка на игрока. Можно присвоить через инспектор или установить по тегу "Player" в методе Start.
+    public Transform player;
 
     // Определяем состояния курицы
     private enum ChickenState { Idle, Wander, Flee }
@@ -34,10 +27,24 @@ public class ChickenAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
 
+        // Если ссылка на игрока не установлена через инспектор, ищем объект с тегом "Player"
+        if (player == null)
+        {
+            GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+            if (playerObject != null)
+            {
+                player = playerObject.transform;
+            }
+            else
+            {
+                Debug.LogError("Игрок не найден! Установите тег 'Player' для объекта игрока или укажите ссылку в инспекторе.");
+            }
+        }
+
         // Начальное состояние – Idle
         currentState = ChickenState.Idle;
         idleTimer = idleTime;
-        SetAnimatorParameters(vert: 0f, state: 0);
+        SetAnimatorParameters(0f, 0);
     }
 
     void Update()
@@ -74,7 +81,7 @@ public class ChickenAI : MonoBehaviour
     private void HandleIdleState()
     {
         // Idle: курица стоит на месте
-        SetAnimatorParameters(vert: 0f, state: 0);
+        SetAnimatorParameters(0f, 0);
         agent.speed = 0f; // Агент не двигается в Idle
 
         idleTimer -= Time.deltaTime;
@@ -89,7 +96,7 @@ public class ChickenAI : MonoBehaviour
     private void HandleWanderState()
     {
         // Блуждание (Walk):
-        SetAnimatorParameters(vert: 1f, state: 0);
+        SetAnimatorParameters(1f, 0);
         agent.speed = wanderSpeed;
 
         // Если курица достигла цели блуждания
@@ -103,7 +110,7 @@ public class ChickenAI : MonoBehaviour
     private void HandleFleeState()
     {
         // Убегание (Run):
-        SetAnimatorParameters(vert: 1f, state: 1);
+        SetAnimatorParameters(1f, 1);
         agent.speed = fleeSpeed;
 
         // Вычисляем направление для убегания от угрозы (игрока)
@@ -140,6 +147,9 @@ public class ChickenAI : MonoBehaviour
     /// </summary>
     private void CheckForThreats()
     {
+        if (player == null)
+            return;
+
         float distToPlayer = Vector3.Distance(transform.position, player.position);
 
         if (distToPlayer < detectionRange)
@@ -153,6 +163,9 @@ public class ChickenAI : MonoBehaviour
     /// </summary>
     private Vector3 GetFleeDirection()
     {
+        if (player == null)
+            return Vector3.zero;
+
         Vector3 direction = transform.position - player.position;
         direction.Normalize();
         return direction;
