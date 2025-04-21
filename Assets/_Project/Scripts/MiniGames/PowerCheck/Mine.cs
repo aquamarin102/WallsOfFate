@@ -1,52 +1,45 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
+/// <summary>
+/// Lightweight data‑holder for a spawned mine.
+/// </summary>
 public class Mine
 {
-    private uint number;           
-    private float cooldown;         
-    private GameObject mineGameObject;  
-    private bool isFirst = true;    
+    // ─────────────── Public, read‑only data ───────────────
+    public uint Number { get; }   // ID in the pool / wave
+    public float Cooldown { get; }   // Respawn time
+    public GameObject MineGameObject { get; }   // Visual / collider root
 
-    public Mine(uint number, float cooldown, GameObject mine)
+    /// <summary>True only for the very first появление мины после создания.</summary>
+    public bool IsFirstSpawn { get; set; } = true;
+
+    // ─────────────── Ctor ───────────────
+    public Mine(uint number, float cooldown, GameObject mineGameObject)
     {
-        this.number = number;
-        this.cooldown = cooldown;
-        this.mineGameObject = mine;
+        Debug.Assert(mineGameObject, "Mine ctor: GameObject reference is null");
+        Number = number;
+        Cooldown = cooldown;
+        MineGameObject = mineGameObject;
     }
 
-    // ��������� �������� ��� ������� � �����
-    public uint Number
-    {
-        get { return this.number; }
-    }
+    // ─────────────── API ───────────────
 
-    public float Cooldown
+    /// <summary>
+    /// Слой‑обёртка над GameObject.activeSelf.  
+    /// Для чтения: `mine.Active`; для записи: `mine.Active = true`.
+    /// </summary>
+    public bool Active
     {
-        get { return this.cooldown; }
-    }
-
-    public GameObject MineGameObject
-    {
-        get { return this.mineGameObject; }
-    }
-
-    public bool IsFirstSpawn
-    {
-        get { return this.isFirst; }
-        set { this.isFirst = value; }
-    }
-
-    public void SetActive(bool isActive)
-    {
-        if (mineGameObject != null)
+        get => MineGameObject && MineGameObject.activeSelf;
+        set
         {
-            mineGameObject.SetActive(isActive);
-        }
-        else
-        {
-            Debug.LogWarning("Mine GameObject is null. Cannot change active state.");
+            if (MineGameObject)
+                MineGameObject.SetActive(value);
+            else
+                Debug.LogError("Mine: GameObject reference lost — cannot change active state.");
         }
     }
+
+    /// <summary>Старый метод оставлен ради обратной совместимости.</summary>
+    public void SetActive(bool isActive) => Active = isActive;
 }

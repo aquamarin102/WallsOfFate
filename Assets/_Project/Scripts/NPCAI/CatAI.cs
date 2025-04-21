@@ -1,30 +1,30 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.AI;
 using Zenject;
 
 public class CatAI : MonoBehaviour
 {
-    [Header("Параметры отношения к игроку")]
-    public float approachRange = 5f;       // Если игрок в пределах 5 м – кот начинает подходить
-    public float tooCloseRange = 1.5f;       // Если игрок слишком близко (< 1.5 м) – кот инициирует отступление (через Turn)
-    public float retreatExitRange = 3f;      // При расстоянии > 3 м из режима Retreat кот возвращается в Idle
+    [Header("РџР°СЂР°РјРµС‚СЂС‹ РѕС‚РЅРѕС€РµРЅРёСЏ Рє РёРіСЂРѕРєСѓ")]
+    public float approachRange = 5f;       // Р•СЃР»Рё РёРіСЂРѕРє РІ РїСЂРµРґРµР»Р°С… 5 Рј вЂ“ РєРѕС‚ РЅР°С‡РёРЅР°РµС‚ РїРѕРґС…РѕРґРёС‚СЊ
+    public float tooCloseRange = 1.5f;       // Р•СЃР»Рё РёРіСЂРѕРє СЃР»РёС€РєРѕРј Р±Р»РёР·РєРѕ (< 1.5 Рј) вЂ“ РєРѕС‚ РёРЅРёС†РёРёСЂСѓРµС‚ РѕС‚СЃС‚СѓРїР»РµРЅРёРµ (С‡РµСЂРµР· Turn)
+    public float retreatExitRange = 3f;      // РџСЂРё СЂР°СЃСЃС‚РѕСЏРЅРёРё > 3 Рј РёР· СЂРµР¶РёРјР° Retreat РєРѕС‚ РІРѕР·РІСЂР°С‰Р°РµС‚СЃСЏ РІ Idle
 
-    [Header("Параметры подхода (комфортный диапазон)")]
-    public float minApproachDistance = 2f;   // Если кот оказывается ближе 2 м – считаем, что он слишком близко
-    public float maxApproachDistance = 4f;   // Комфортное расстояние, при котором коту нравится находиться рядом с игроком
+    [Header("РџР°СЂР°РјРµС‚СЂС‹ РїРѕРґС…РѕРґР° (РєРѕРјС„РѕСЂС‚РЅС‹Р№ РґРёР°РїР°Р·РѕРЅ)")]
+    public float minApproachDistance = 2f;   // Р•СЃР»Рё РєРѕС‚ РѕРєР°Р·С‹РІР°РµС‚СЃСЏ Р±Р»РёР¶Рµ 2 Рј вЂ“ СЃС‡РёС‚Р°РµРј, С‡С‚Рѕ РѕРЅ СЃР»РёС€РєРѕРј Р±Р»РёР·РєРѕ
+    public float maxApproachDistance = 4f;   // РљРѕРјС„РѕСЂС‚РЅРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ, РїСЂРё РєРѕС‚РѕСЂРѕРј РєРѕС‚Сѓ РЅСЂР°РІРёС‚СЃСЏ РЅР°С…РѕРґРёС‚СЊСЃСЏ СЂСЏРґРѕРј СЃ РёРіСЂРѕРєРѕРј
 
-    [Header("Параметры перемещения")]
-    public float wanderRadius = 10f;       // Радиус для случайного блуждания
-    public float idleTime = 2f;            // Время простоя в состоянии Idle
-    public float wanderSpeed = 1.5f;       // Скорость блуждания
-    public float approachSpeed = 2.5f;     // Скорость при подходе к игроку
-    public float retreatSpeed = 3.5f;      // Скорость отступления при слишком близком приближении
+    [Header("РџР°СЂР°РјРµС‚СЂС‹ РїРµСЂРµРјРµС‰РµРЅРёСЏ")]
+    public float wanderRadius = 10f;       // Р Р°РґРёСѓСЃ РґР»СЏ СЃР»СѓС‡Р°Р№РЅРѕРіРѕ Р±Р»СѓР¶РґР°РЅРёСЏ
+    public float idleTime = 2f;            // Р’СЂРµРјСЏ РїСЂРѕСЃС‚РѕСЏ РІ СЃРѕСЃС‚РѕСЏРЅРёРё Idle
+    public float wanderSpeed = 1.5f;       // РЎРєРѕСЂРѕСЃС‚СЊ Р±Р»СѓР¶РґР°РЅРёСЏ
+    public float approachSpeed = 2.5f;     // РЎРєРѕСЂРѕСЃС‚СЊ РїСЂРё РїРѕРґС…РѕРґРµ Рє РёРіСЂРѕРєСѓ
+    public float retreatSpeed = 3.5f;      // РЎРєРѕСЂРѕСЃС‚СЊ РѕС‚СЃС‚СѓРїР»РµРЅРёСЏ РїСЂРё СЃР»РёС€РєРѕРј Р±Р»РёР·РєРѕРј РїСЂРёР±Р»РёР¶РµРЅРёРё
 
-    [Header("Параметры усталости")]
-    public float followMaxTime = 10f;      // Максимальное время, которое кот будет следовать за игроком
+    [Header("РџР°СЂР°РјРµС‚СЂС‹ СѓСЃС‚Р°Р»РѕСЃС‚Рё")]
+    public float followMaxTime = 10f;      // РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РІСЂРµРјСЏ, РєРѕС‚РѕСЂРѕРµ РєРѕС‚ Р±СѓРґРµС‚ СЃР»РµРґРѕРІР°С‚СЊ Р·Р° РёРіСЂРѕРєРѕРј
 
-    [Header("Параметры поворота")]
-    public float turnDuration = 0.5f;      // Время, которое кот поворачивается на месте
+    [Header("РџР°СЂР°РјРµС‚СЂС‹ РїРѕРІРѕСЂРѕС‚Р°")]
+    public float turnDuration = 0.5f;      // Р’СЂРµРјСЏ, РєРѕС‚РѕСЂРѕРµ РєРѕС‚ РїРѕРІРѕСЂР°С‡РёРІР°РµС‚СЃСЏ РЅР° РјРµСЃС‚Рµ
 
     private NavMeshAgent agent;
     private Animator animator;
@@ -37,26 +37,26 @@ public class CatAI : MonoBehaviour
         player = _player.gameObject.transform;
     }
 
-    // Определяем состояния кота
+    // РћРїСЂРµРґРµР»СЏРµРј СЃРѕСЃС‚РѕСЏРЅРёСЏ РєРѕС‚Р°
     private enum CatState { Idle, Wander, Approach, Turn, Retreat }
     private CatState currentState;
 
     private float idleTimer;
-    private float followTimer;  // Таймер нахождения в режиме Approach
-    private float turnTimer;    // Таймер для поворота в состоянии Turn
+    private float followTimer;  // РўР°Р№РјРµСЂ РЅР°С…РѕР¶РґРµРЅРёСЏ РІ СЂРµР¶РёРјРµ Approach
+    private float turnTimer;    // РўР°Р№РјРµСЂ РґР»СЏ РїРѕРІРѕСЂРѕС‚Р° РІ СЃРѕСЃС‚РѕСЏРЅРёРё Turn
     private Vector3 wanderTarget;
-    private Quaternion targetRotation; // Желательная ориентация при повороте
+    private Quaternion targetRotation; // Р–РµР»Р°С‚РµР»СЊРЅР°СЏ РѕСЂРёРµРЅС‚Р°С†РёСЏ РїСЂРё РїРѕРІРѕСЂРѕС‚Рµ
 
     /// <summary>
-    /// Устанавливает параметры аниматора по той же схеме, что и у курицы:
+    /// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ РїР°СЂР°РјРµС‚СЂС‹ Р°РЅРёРјР°С‚РѕСЂР° РїРѕ С‚РѕР№ Р¶Рµ СЃС…РµРјРµ, С‡С‚Рѕ Рё Сѓ РєСѓСЂРёС†С‹:
     /// - Idle: Vert = 0, State = 0
-    /// - Ходьба: Vert = 1, State = 0
-    /// - Бег (отступление): Vert = 1, State = 1
+    /// - РҐРѕРґСЊР±Р°: Vert = 1, State = 0
+    /// - Р‘РµРі (РѕС‚СЃС‚СѓРїР»РµРЅРёРµ): Vert = 1, State = 1
     /// </summary>
-    private void SetAnimatorParameters(float vert, int state)
+    private void SetAnimatorParameters(float vert, float state)
     {
         animator.SetFloat("Vert", vert);
-        animator.SetInteger("State", state);
+        animator.SetFloat("State", state);
     }
 
     void Start()
@@ -75,7 +75,7 @@ public class CatAI : MonoBehaviour
     {
         float distToPlayer = Vector3.Distance(transform.position, player.position);
 
-        // Логика переключения состояний с учётом комфортного диапазона и поворота
+        // Р›РѕРіРёРєР° РїРµСЂРµРєР»СЋС‡РµРЅРёСЏ СЃРѕСЃС‚РѕСЏРЅРёР№ СЃ СѓС‡С‘С‚РѕРј РєРѕРјС„РѕСЂС‚РЅРѕРіРѕ РґРёР°РїР°Р·РѕРЅР° Рё РїРѕРІРѕСЂРѕС‚Р°
         switch (currentState)
         {
             case CatState.Idle:
@@ -83,11 +83,11 @@ public class CatAI : MonoBehaviour
                 if (distToPlayer < approachRange && distToPlayer > maxApproachDistance)
                 {
                     currentState = CatState.Approach;
-                    followTimer = 0f; // Сброс таймера при входе в режим Approach
+                    followTimer = 0f; // РЎР±СЂРѕСЃ С‚Р°Р№РјРµСЂР° РїСЂРё РІС…РѕРґРµ РІ СЂРµР¶РёРј Approach
                 }
                 if (distToPlayer < tooCloseRange)
                 {
-                    // Вместо прямого перехода в Retreat переходим в Turn
+                    // Р’РјРµСЃС‚Рѕ РїСЂСЏРјРѕРіРѕ РїРµСЂРµС…РѕРґР° РІ Retreat РїРµСЂРµС…РѕРґРёРј РІ Turn
                     PrepareTurn();
                 }
                 break;
@@ -108,7 +108,7 @@ public class CatAI : MonoBehaviour
                     followTimer += Time.deltaTime;
                     if (followTimer > followMaxTime)
                     {
-                        // Коту надоело следовать за игроком – переходим в режим блуждания
+                        // РљРѕС‚Сѓ РЅР°РґРѕРµР»Рѕ СЃР»РµРґРѕРІР°С‚СЊ Р·Р° РёРіСЂРѕРєРѕРј вЂ“ РїРµСЂРµС…РѕРґРёРј РІ СЂРµР¶РёРј Р±Р»СѓР¶РґР°РЅРёСЏ
                         currentState = CatState.Wander;
                         followTimer = 0f;
                     }
@@ -116,13 +116,13 @@ public class CatAI : MonoBehaviour
                 break;
 
             case CatState.Turn:
-                // В состоянии Turn просто ждем, пока не пройдет заданное время поворота или не достигнем нужной ориентации
+                // Р’ СЃРѕСЃС‚РѕСЏРЅРёРё Turn РїСЂРѕСЃС‚Рѕ Р¶РґРµРј, РїРѕРєР° РЅРµ РїСЂРѕР№РґРµС‚ Р·Р°РґР°РЅРЅРѕРµ РІСЂРµРјСЏ РїРѕРІРѕСЂРѕС‚Р° РёР»Рё РЅРµ РґРѕСЃС‚РёРіРЅРµРј РЅСѓР¶РЅРѕР№ РѕСЂРёРµРЅС‚Р°С†РёРё
                 turnTimer -= Time.deltaTime;
-                // Плавное поворотное движение с использованием Quaternion.RotateTowards
+                // РџР»Р°РІРЅРѕРµ РїРѕРІРѕСЂРѕС‚РЅРѕРµ РґРІРёР¶РµРЅРёРµ СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј Quaternion.RotateTowards
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, 360f * Time.deltaTime);
                 if (turnTimer <= 0f || Quaternion.Angle(transform.rotation, targetRotation) < 5f)
                 {
-                    // Когда поворот завершен, переходим в режим Retreat
+                    // РљРѕРіРґР° РїРѕРІРѕСЂРѕС‚ Р·Р°РІРµСЂС€РµРЅ, РїРµСЂРµС…РѕРґРёРј РІ СЂРµР¶РёРј Retreat
                     currentState = CatState.Retreat;
                 }
                 break;
@@ -136,7 +136,7 @@ public class CatAI : MonoBehaviour
                 break;
         }
 
-        // Выполнение действий по текущему состоянию
+        // Р’С‹РїРѕР»РЅРµРЅРёРµ РґРµР№СЃС‚РІРёР№ РїРѕ С‚РµРєСѓС‰РµРјСѓ СЃРѕСЃС‚РѕСЏРЅРёСЋ
         switch (currentState)
         {
             case CatState.Idle:
@@ -149,9 +149,9 @@ public class CatAI : MonoBehaviour
                 HandleApproachState();
                 break;
             case CatState.Turn:
-                // В состоянии Turn движение не производится – агент останавливается
+                // Р’ СЃРѕСЃС‚РѕСЏРЅРёРё Turn РґРІРёР¶РµРЅРёРµ РЅРµ РїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ вЂ“ Р°РіРµРЅС‚ РѕСЃС‚Р°РЅР°РІР»РёРІР°РµС‚СЃСЏ
                 agent.speed = 0f;
-                SetAnimatorParameters(0f, 0); // Может использоваться Idle-анимация
+                SetAnimatorParameters(0f, 0); // РњРѕР¶РµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ Idle-Р°РЅРёРјР°С†РёСЏ
                 break;
             case CatState.Retreat:
                 HandleRetreatState();
@@ -160,22 +160,22 @@ public class CatAI : MonoBehaviour
     }
 
     /// <summary>
-    /// Метод подготовки к повороту: вычисляет желаемую ориентацию (targetRotation) так, чтобы кот лицом смотрел в сторону от игрока,
-    /// устанавливает состояние Turn и запускает таймер поворота.
+    /// РњРµС‚РѕРґ РїРѕРґРіРѕС‚РѕРІРєРё Рє РїРѕРІРѕСЂРѕС‚Сѓ: РІС‹С‡РёСЃР»СЏРµС‚ Р¶РµР»Р°РµРјСѓСЋ РѕСЂРёРµРЅС‚Р°С†РёСЋ (targetRotation) С‚Р°Рє, С‡С‚РѕР±С‹ РєРѕС‚ Р»РёС†РѕРј СЃРјРѕС‚СЂРµР» РІ СЃС‚РѕСЂРѕРЅСѓ РѕС‚ РёРіСЂРѕРєР°,
+    /// СѓСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ СЃРѕСЃС‚РѕСЏРЅРёРµ Turn Рё Р·Р°РїСѓСЃРєР°РµС‚ С‚Р°Р№РјРµСЂ РїРѕРІРѕСЂРѕС‚Р°.
     /// </summary>
     void PrepareTurn()
     {
-        // Вычисляем направление от игрока к коту
+        // Р’С‹С‡РёСЃР»СЏРµРј РЅР°РїСЂР°РІР»РµРЅРёРµ РѕС‚ РёРіСЂРѕРєР° Рє РєРѕС‚Сѓ
         Vector3 retreatDirection = (transform.position - player.position).normalized;
         targetRotation = Quaternion.LookRotation(retreatDirection);
         currentState = CatState.Turn;
         turnTimer = turnDuration;
-        // Сброс followTimer, если необходимо
+        // РЎР±СЂРѕСЃ followTimer, РµСЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ
         followTimer = 0f;
     }
 
     /// <summary>
-    /// Состояние Idle – кот стоит на месте.
+    /// РЎРѕСЃС‚РѕСЏРЅРёРµ Idle вЂ“ РєРѕС‚ СЃС‚РѕРёС‚ РЅР° РјРµСЃС‚Рµ.
     /// </summary>
     void HandleIdleState()
     {
@@ -190,7 +190,7 @@ public class CatAI : MonoBehaviour
     }
 
     /// <summary>
-    /// Состояние Wander – кот случайно блуждает по локации.
+    /// РЎРѕСЃС‚РѕСЏРЅРёРµ Wander вЂ“ РєРѕС‚ СЃР»СѓС‡Р°Р№РЅРѕ Р±Р»СѓР¶РґР°РµС‚ РїРѕ Р»РѕРєР°С†РёРё.
     /// </summary>
     void HandleWanderState()
     {
@@ -204,7 +204,7 @@ public class CatAI : MonoBehaviour
     }
 
     /// <summary>
-    /// Состояние Approach – кот идёт к игроку (любопытство, привязанность).
+    /// РЎРѕСЃС‚РѕСЏРЅРёРµ Approach вЂ“ РєРѕС‚ РёРґС‘С‚ Рє РёРіСЂРѕРєСѓ (Р»СЋР±РѕРїС‹С‚СЃС‚РІРѕ, РїСЂРёРІСЏР·Р°РЅРЅРѕСЃС‚СЊ).
     /// </summary>
     void HandleApproachState()
     {
@@ -214,20 +214,20 @@ public class CatAI : MonoBehaviour
     }
 
     /// <summary>
-    /// Состояние Retreat – кот быстро отступает, если игрок слишком близко.
+    /// РЎРѕСЃС‚РѕСЏРЅРёРµ Retreat вЂ“ РєРѕС‚ Р±С‹СЃС‚СЂРѕ РѕС‚СЃС‚СѓРїР°РµС‚, РµСЃР»Рё РёРіСЂРѕРє СЃР»РёС€РєРѕРј Р±Р»РёР·РєРѕ.
     /// </summary>
     void HandleRetreatState()
     {
         SetAnimatorParameters(1f, 1);
         agent.speed = retreatSpeed;
-        // Рассчитываем направление для отступления (оно уже было определено в PrepareTurn)
+        // Р Р°СЃСЃС‡РёС‚С‹РІР°РµРј РЅР°РїСЂР°РІР»РµРЅРёРµ РґР»СЏ РѕС‚СЃС‚СѓРїР»РµРЅРёСЏ (РѕРЅРѕ СѓР¶Рµ Р±С‹Р»Рѕ РѕРїСЂРµРґРµР»РµРЅРѕ РІ PrepareTurn)
         Vector3 retreatDirection = (transform.position - player.position).normalized;
         Vector3 retreatDestination = transform.position + retreatDirection * 5f;
         agent.SetDestination(retreatDestination);
     }
 
     /// <summary>
-    /// Выбирает случайную точку для блуждания в пределах wanderRadius.
+    /// Р’С‹Р±РёСЂР°РµС‚ СЃР»СѓС‡Р°Р№РЅСѓСЋ С‚РѕС‡РєСѓ РґР»СЏ Р±Р»СѓР¶РґР°РЅРёСЏ РІ РїСЂРµРґРµР»Р°С… wanderRadius.
     /// </summary>
     void ChooseNewWanderTarget()
     {

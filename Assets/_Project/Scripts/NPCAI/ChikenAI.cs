@@ -1,21 +1,21 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.AI;
 
 public class ChickenAI : MonoBehaviour
 {
-    public float detectionRange = 5f;    // Радиус, при котором курица начинает убегать
-    public float fleeSpeed = 3.5f;         // Скорость при убегании
-    public float wanderSpeed = 1.5f;       // Скорость при блуждании
-    public float idleTime = 2f;            // Время простоя в состоянии Idle
-    public float wanderRadius = 10f;       // Радиус выбора случайной точки для блуждания
+    public float detectionRange = 5f;    // Р Р°РґРёСѓСЃ, РїСЂРё РєРѕС‚РѕСЂРѕРј РєСѓСЂРёС†Р° РЅР°С‡РёРЅР°РµС‚ СѓР±РµРіР°С‚СЊ
+    public float fleeSpeed = 3.5f;         // РЎРєРѕСЂРѕСЃС‚СЊ РїСЂРё СѓР±РµРіР°РЅРёРё
+    public float wanderSpeed = 1.5f;       // РЎРєРѕСЂРѕСЃС‚СЊ РїСЂРё Р±Р»СѓР¶РґР°РЅРёРё
+    public float idleTime = 2f;            // Р’СЂРµРјСЏ РїСЂРѕСЃС‚РѕСЏ РІ СЃРѕСЃС‚РѕСЏРЅРёРё Idle
+    public float wanderRadius = 10f;       // Р Р°РґРёСѓСЃ РІС‹Р±РѕСЂР° СЃР»СѓС‡Р°Р№РЅРѕР№ С‚РѕС‡РєРё РґР»СЏ Р±Р»СѓР¶РґР°РЅРёСЏ
 
     private NavMeshAgent agent;
     private Animator animator;
 
-    // Ссылка на игрока. Можно присвоить через инспектор или установить по тегу "Player" в методе Start.
+    // РЎСЃС‹Р»РєР° РЅР° РёРіСЂРѕРєР°. РњРѕР¶РЅРѕ РїСЂРёСЃРІРѕРёС‚СЊ С‡РµСЂРµР· РёРЅСЃРїРµРєС‚РѕСЂ РёР»Рё СѓСЃС‚Р°РЅРѕРІРёС‚СЊ РїРѕ С‚РµРіСѓ "Player" РІ РјРµС‚РѕРґРµ Start.
     public Transform player;
 
-    // Определяем состояния курицы
+    // РћРїСЂРµРґРµР»СЏРµРј СЃРѕСЃС‚РѕСЏРЅРёСЏ РєСѓСЂРёС†С‹
     private enum ChickenState { Idle, Wander, Flee }
     private ChickenState currentState;
 
@@ -27,7 +27,7 @@ public class ChickenAI : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
 
-        // Если ссылка на игрока не установлена через инспектор, ищем объект с тегом "Player"
+        // Р•СЃР»Рё СЃСЃС‹Р»РєР° РЅР° РёРіСЂРѕРєР° РЅРµ СѓСЃС‚Р°РЅРѕРІР»РµРЅР° С‡РµСЂРµР· РёРЅСЃРїРµРєС‚РѕСЂ, РёС‰РµРј РѕР±СЉРµРєС‚ СЃ С‚РµРіРѕРј "Player"
         if (player == null)
         {
             GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
@@ -37,11 +37,11 @@ public class ChickenAI : MonoBehaviour
             }
             else
             {
-                Debug.LogError("Игрок не найден! Установите тег 'Player' для объекта игрока или укажите ссылку в инспекторе.");
+                Debug.LogError("РРіСЂРѕРє РЅРµ РЅР°Р№РґРµРЅ! РЈСЃС‚Р°РЅРѕРІРёС‚Рµ С‚РµРі 'Player' РґР»СЏ РѕР±СЉРµРєС‚Р° РёРіСЂРѕРєР° РёР»Рё СѓРєР°Р¶РёС‚Рµ СЃСЃС‹Р»РєСѓ РІ РёРЅСЃРїРµРєС‚РѕСЂРµ.");
             }
         }
 
-        // Начальное состояние – Idle
+        // РќР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ вЂ“ Idle
         currentState = ChickenState.Idle;
         idleTimer = idleTime;
         SetAnimatorParameters(0f, 0);
@@ -49,7 +49,7 @@ public class ChickenAI : MonoBehaviour
 
     void Update()
     {
-        // Проверяем угрозу от игрока
+        // РџСЂРѕРІРµСЂСЏРµРј СѓРіСЂРѕР·Сѓ РѕС‚ РёРіСЂРѕРєР°
         CheckForThreats();
 
         switch (currentState)
@@ -67,27 +67,27 @@ public class ChickenAI : MonoBehaviour
     }
 
     /// <summary>
-    /// Устанавливаем параметры аниматора согласно системе:
+    /// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїР°СЂР°РјРµС‚СЂС‹ Р°РЅРёРјР°С‚РѕСЂР° СЃРѕРіР»Р°СЃРЅРѕ СЃРёСЃС‚РµРјРµ:
     /// - Idle: Vert = 0, State = 0
     /// - Walk: Vert = 1, State = 0
     /// - Run:  Vert = 1, State = 1
     /// </summary>
-    private void SetAnimatorParameters(float vert, int state)
+    private void SetAnimatorParameters(float vert, float state)
     {
         animator.SetFloat("Vert", vert);
-        animator.SetInteger("State", state);
+        animator.SetFloat("State", state);
     }
 
     private void HandleIdleState()
     {
-        // Idle: курица стоит на месте
+        // Idle: РєСѓСЂРёС†Р° СЃС‚РѕРёС‚ РЅР° РјРµСЃС‚Рµ
         SetAnimatorParameters(0f, 0);
-        agent.speed = 0f; // Агент не двигается в Idle
+        agent.speed = 0f; // РђРіРµРЅС‚ РЅРµ РґРІРёРіР°РµС‚СЃСЏ РІ Idle
 
         idleTimer -= Time.deltaTime;
         if (idleTimer <= 0)
         {
-            // Переход к блужданию
+            // РџРµСЂРµС…РѕРґ Рє Р±Р»СѓР¶РґР°РЅРёСЋ
             currentState = ChickenState.Wander;
             ChooseNewWanderTarget();
         }
@@ -95,11 +95,11 @@ public class ChickenAI : MonoBehaviour
 
     private void HandleWanderState()
     {
-        // Блуждание (Walk):
+        // Р‘Р»СѓР¶РґР°РЅРёРµ (Walk):
         SetAnimatorParameters(1f, 0);
         agent.speed = wanderSpeed;
 
-        // Если курица достигла цели блуждания
+        // Р•СЃР»Рё РєСѓСЂРёС†Р° РґРѕСЃС‚РёРіР»Р° С†РµР»Рё Р±Р»СѓР¶РґР°РЅРёСЏ
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
             currentState = ChickenState.Idle;
@@ -109,16 +109,16 @@ public class ChickenAI : MonoBehaviour
 
     private void HandleFleeState()
     {
-        // Убегание (Run):
+        // РЈР±РµРіР°РЅРёРµ (Run):
         SetAnimatorParameters(1f, 1);
         agent.speed = fleeSpeed;
 
-        // Вычисляем направление для убегания от угрозы (игрока)
+        // Р’С‹С‡РёСЃР»СЏРµРј РЅР°РїСЂР°РІР»РµРЅРёРµ РґР»СЏ СѓР±РµРіР°РЅРёСЏ РѕС‚ СѓРіСЂРѕР·С‹ (РёРіСЂРѕРєР°)
         Vector3 fleeDirection = GetFleeDirection();
-        Vector3 fleeDestination = transform.position + fleeDirection * 5f; // Длина рывка
+        Vector3 fleeDestination = transform.position + fleeDirection * 5f; // Р”Р»РёРЅР° СЂС‹РІРєР°
         agent.SetDestination(fleeDestination);
 
-        // Если игрок отходит достаточно далеко, возвращаемся в Idle
+        // Р•СЃР»Рё РёРіСЂРѕРє РѕС‚С…РѕРґРёС‚ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ РґР°Р»РµРєРѕ, РІРѕР·РІСЂР°С‰Р°РµРјСЃСЏ РІ Idle
         if (Vector3.Distance(transform.position, player.position) > detectionRange)
         {
             currentState = ChickenState.Idle;
@@ -127,7 +127,7 @@ public class ChickenAI : MonoBehaviour
     }
 
     /// <summary>
-    /// Выбираем случайную точку для блуждания в пределах заданного радиуса.
+    /// Р’С‹Р±РёСЂР°РµРј СЃР»СѓС‡Р°Р№РЅСѓСЋ С‚РѕС‡РєСѓ РґР»СЏ Р±Р»СѓР¶РґР°РЅРёСЏ РІ РїСЂРµРґРµР»Р°С… Р·Р°РґР°РЅРЅРѕРіРѕ СЂР°РґРёСѓСЃР°.
     /// </summary>
     private void ChooseNewWanderTarget()
     {
@@ -143,7 +143,7 @@ public class ChickenAI : MonoBehaviour
     }
 
     /// <summary>
-    /// Проверка угрозы: если игрок находится ближе, чем detectionRange, переключаем в режим Flee.
+    /// РџСЂРѕРІРµСЂРєР° СѓРіСЂРѕР·С‹: РµСЃР»Рё РёРіСЂРѕРє РЅР°С…РѕРґРёС‚СЃСЏ Р±Р»РёР¶Рµ, С‡РµРј detectionRange, РїРµСЂРµРєР»СЋС‡Р°РµРј РІ СЂРµР¶РёРј Flee.
     /// </summary>
     private void CheckForThreats()
     {
@@ -159,7 +159,7 @@ public class ChickenAI : MonoBehaviour
     }
 
     /// <summary>
-    /// Возвращает нормализованное направление от игрока к курице.
+    /// Р’РѕР·РІСЂР°С‰Р°РµС‚ РЅРѕСЂРјР°Р»РёР·РѕРІР°РЅРЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ РѕС‚ РёРіСЂРѕРєР° Рє РєСѓСЂРёС†Рµ.
     /// </summary>
     private Vector3 GetFleeDirection()
     {

@@ -64,6 +64,9 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -98,7 +101,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 8816934456661431518}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 0.5
+  m_Radius: 0.018
   m_Speed: 6
   m_Acceleration: 9999999
   avoidancePriority: 50
@@ -107,8 +110,8 @@ NavMeshAgent:
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
-  m_Height: 1
-  m_BaseOffset: 0.5
+  m_Height: 0.05
+  m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
 --- !u!114 &7199289145805238938
@@ -144,10 +147,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mineSpawner: {fileID: 0}
-  _thisCharacteristics: {fileID: 0}
-  _playerCharacteristics: {fileID: 0}
+  _thisStats: {fileID: 0}
+  _playerStats: {fileID: 0}
   _agent: {fileID: 0}
-  _playerTransform: {fileID: 0}
+  _playerTf: {fileID: 0}
   _damageGlobalModifier: 1
   _healGlobalModifier: 1
   _buffGlobalModifier: 1
@@ -155,6 +158,9 @@ MonoBehaviour:
   _riskDistanceThreshold: 5
   _playerRiskFactor: 15
   _mineRiskFactor: 5
+  _stuckTimeThreshold: 1
+  _stuckVelocitySqrThreshold: 0.01
+  _speedSmoothTime: 0.2
 --- !u!54 &9178682298882230463
 Rigidbody:
   m_ObjectHideFlags: 0
