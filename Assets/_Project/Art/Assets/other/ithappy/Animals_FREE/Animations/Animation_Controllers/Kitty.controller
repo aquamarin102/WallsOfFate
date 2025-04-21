@@ -70,14 +70,22 @@ BlendTree:
     m_DirectBlendParameter: State
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: -6051970767711962892}
+    m_Motion: {fileID: -5156239905007698629, guid: 31d2c91682ac6f045b4b75ebf27e5d77, type: 3}
+    m_Threshold: 0.5
+    m_Position: {x: 0, y: 0}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: State
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: 2428467827692170992, guid: 31d2c91682ac6f045b4b75ebf27e5d77, type: 3}
     m_Threshold: 1
     m_Position: {x: 0, y: 0}
     m_TimeScale: 1
     m_CycleOffset: 0
     m_DirectBlendParameter: State
     m_Mirror: 0
-  m_BlendParameter: Vert
+  m_BlendParameter: Speed
   m_BlendParameterY: State
   m_MinThreshold: 0
   m_MaxThreshold: 1
@@ -93,13 +101,7 @@ AnimatorController:
   m_Name: Kitty
   serializedVersion: 5
   m_AnimatorParameters:
-  - m_Name: State
-    m_Type: 1
-    m_DefaultFloat: 0
-    m_DefaultInt: 0
-    m_DefaultBool: 0
-    m_Controller: {fileID: 9100000}
-  - m_Name: Vert
+  - m_Name: Speed
     m_Type: 1
     m_DefaultFloat: 0
     m_DefaultInt: 0
@@ -126,7 +128,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Blend Tree
-  m_Speed: 1
+  m_Speed: 2
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
