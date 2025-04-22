@@ -55,6 +55,15 @@ namespace Quest
 
             Debug.LogWarning($"Quest group with ID {updatedGroup.Id} not found!");
         }
+
+        public static int CurrentDayNumber
+        {
+            get
+            {
+                if (Days.Count == 0) return -1;
+                return Days[Days.Count - 1].Day;
+            }
+        }
     }
 
     [System.Serializable]
@@ -122,6 +131,8 @@ namespace Quest
             GameResources.GameResources.ChangePeopleSatisfaction(Resources.PeopleSatisfaction);
             GameResources.GameResources.ChangeCastleStrength(Resources.CastleStrength);
         }
+
+
     }
 
     [JsonArray]

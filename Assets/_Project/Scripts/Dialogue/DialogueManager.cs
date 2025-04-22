@@ -23,6 +23,8 @@ public class DialogueManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _displayNameText;
     [SerializeField] private Animator _portraitAnimator;
 
+    public event System.Action DialogueFinished;
+
     private Animator _layoutAnimator;
 
     [Header("Choices UI")]
@@ -61,6 +63,8 @@ public class DialogueManager : MonoBehaviour
     {
         return _instance;
     }
+
+    public static bool HasInstance => _instance != null;
 
     private void Start()
     {
@@ -125,6 +129,12 @@ public class DialogueManager : MonoBehaviour
 
     public void EnterDialogueMode(string dialogueFileName)
      {
+        if (DialogueIsPlaying)
+        {
+            // Защита от двойного запуска
+            StopAllCoroutines();
+            StartCoroutine(ExitDialogueMode());   // мягко закрыть и открыть заново
+        }
         //dialogueFileName = dialogueFileName.Replace(".json", "");
         // Формируем путь к файлу: Dialogue/имя_файла
         dialogueFileName = TrimAfterLastSlash(dialogueFileName);
@@ -180,7 +190,7 @@ public class DialogueManager : MonoBehaviour
         ContinueStory();
     }
 
-    private IEnumerator ExitDialogueMode()
+    public IEnumerator ExitDialogueMode()
     {
         yield return new WaitForSeconds(0.2f);
 
@@ -190,7 +200,10 @@ public class DialogueManager : MonoBehaviour
         _dialoguePanel.SetActive(false);
         _dialogueBackground.SetActive(false);
         _dialogueText.text = "";
+
+        DialogueFinished?.Invoke();
     }
+
 
     private void ContinueStory()
     {
@@ -249,13 +262,22 @@ public class DialogueManager : MonoBehaviour
             else
             {
                 _dialogueText.maxVisibleCharacters++;
-                yield return new WaitForSeconds(_typingSpeed);
+                yield return TypingDelay();
             }
         }
 
         DisplayChoices();
 
         _canContinueToNextLine = true;
+    }
+
+    IEnumerator TypingDelay() 
+    { 
+        float t = 0; 
+        while (t < _typingSpeed) 
+        { 
+            t += Time.unscaledDeltaTime; yield return null; 
+        } 
     }
 
     private void HideChoices()
@@ -340,6 +362,7 @@ public class DialogueManager : MonoBehaviour
             _currentStory.ChooseChoiceIndex(choiceIndex);
             InputManager.GetInstance().RegisterSubmitPressed();
             _isSelectingChoice = false;
+            _portraitAnimator.SetTrigger("blink");
             ContinueStory();
         }
     }

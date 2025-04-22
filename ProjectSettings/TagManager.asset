@@ -19,6 +19,7 @@ TagManager:
   - PickupFloor
   - PickupBody
   - Chest
+  - AudienceTrigger
   layers:
   - Default
   - TransparentFX

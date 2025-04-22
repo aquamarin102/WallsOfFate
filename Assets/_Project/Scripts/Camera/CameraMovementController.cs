@@ -46,7 +46,7 @@ public class CameraMovementController : MonoBehaviour
             // Переводим камеру в перспективный режим
             cam.orthographic = false;
             // Устанавливаем начальное значение поля зрения (Field of View)
-            cam.fieldOfView = 40f;
+            cam.fieldOfView = 30f;
         }
 
         // Устанавливаем изометрическое направление обзора
