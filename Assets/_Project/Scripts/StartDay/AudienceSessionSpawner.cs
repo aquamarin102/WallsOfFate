@@ -60,7 +60,7 @@ public class AudienceSessionSpawner : MonoBehaviour
     {
         // здесь можно вставить any cleanup / анимацию ухода
         Debug.Log("Приём окончен — загружаем следующую сцену");
-        SceneManager.LoadScene("MainRoom");  // ← укажите имя сцены или её индекс
+        LoadingScreenManager.Instance.LoadScene("MainRoom");  // ← укажите имя сцены или её индекс
     }
 
     private void OnDialogueFinished() => _current?.Leave();
