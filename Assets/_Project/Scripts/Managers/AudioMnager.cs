@@ -113,6 +113,9 @@ public class AudioManager : MonoBehaviour
             case "MainMenu":
                 newMusic = Resources.Load<AudioClip>("Music/MainMenuMusic");
                 break;
+            case "StartDay":
+                newMusic = Resources.Load<AudioClip>("Music/StartDayMusic");
+                break;
             case "MainRoom":
                 newMusic = Resources.Load<AudioClip>("Music/MainRoomMusic");
                 break;
