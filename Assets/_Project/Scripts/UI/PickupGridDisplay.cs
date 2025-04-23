@@ -111,7 +111,7 @@ public class PickupGridDisplay : MonoBehaviour
     private void SetPickupUI(GameObject pickupUI, Pickup pickup)
     {
         // Получаем компонент Image у панели (для установки фона)
-        Image backgroundImage = pickupUI.GetComponent<Image>();
+        Image backgroundImage = pickupUI.transform.Find("Image")?.GetComponent<Image>();
         pickupUI.name = pickup.Name;
         // Получаем компонент TMP_Text внутри панели
         //TMP_Text nameText = pickupUI.GetComponentInChildren<TMP_Text>();

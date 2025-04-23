@@ -34,6 +34,11 @@ public static class AssembledPickups
         return pickups.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
     }
 
+    public static Pickup FindByType(string type)
+    {
+        return pickups.FirstOrDefault(p => p.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
+    }
+
     public static IEnumerable<Pickup> GetPickupsByType(string type)
     {
         return pickups.Where(p => p.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
