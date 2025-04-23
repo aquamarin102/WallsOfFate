@@ -34,6 +34,7 @@ public class InventoryLigicNew : MonoBehaviour
         {
             _currentPickupsOfType = newPickups;
             UpdateAllPanels();
+            currentPanelIndex = 0;
         }
     }
 
@@ -56,7 +57,6 @@ public class InventoryLigicNew : MonoBehaviour
             if (i < _currentPickupsOfType.Count)
             {
                 // Активируем панель и обновляем ее данные
-                //SetActivePanel(i);
                 UpdateActivePanelFromPickup(_currentPickupsOfType[i]);
                 NextPanel();
             }
@@ -81,7 +81,7 @@ public class InventoryLigicNew : MonoBehaviour
         if (pickupPanels.Count == 0) return;
 
         currentPanelIndex = (currentPanelIndex + 1) % pickupPanels.Count;
-        SetActivePanel(currentPanelIndex);
+        //SetActivePanel(currentPanelIndex);
     }
 
     // Переключение на предыдущую панель
@@ -90,7 +90,7 @@ public class InventoryLigicNew : MonoBehaviour
         if (pickupPanels.Count == 0) return;
 
         currentPanelIndex = (currentPanelIndex - 1 + pickupPanels.Count) % pickupPanels.Count;
-        SetActivePanel(currentPanelIndex);
+        //SetActivePanel(currentPanelIndex);
     }
 
     // Активация конкретной панели и деактивация остальных
@@ -152,9 +152,11 @@ public class InventoryLigicNew : MonoBehaviour
             if (loadedSprite != null && panelImages[currentPanelIndex] != null)
             {
                 panelImages[currentPanelIndex].sprite = loadedSprite;
+                if (!pickupPanels[currentPanelIndex].activeSelf) pickupPanels[currentPanelIndex].SetActive(true);
             }
             else
             {
+                pickupPanels[currentPanelIndex].SetActive(false);
                 Debug.LogWarning($"Не удалось загрузить изображение по пути: {pickup.Picture}");
             }
         }

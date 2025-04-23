@@ -6,23 +6,39 @@ namespace Assets.Scripts.UI
     internal class ChangeText : MonoBehaviour
     {
         private GameObject _textField;
+        private GameObject _indication;
+        Pickup _pickup;
+
 
         private void Start()
         {
             // Находим объект с тегом "TextField"
             _textField = GameObject.FindWithTag("TextField");
+            _indication = GameObject.FindWithTag("InteractionIndicator");
 
             if (_textField == null)
             {
                 Debug.LogWarning("Объект с тегом 'TextField' не найден.");
             }
+
+
+            Pickup _pickup = AssembledPickups.FindByName(this.gameObject.name);
+            if (_pickup == null)
+            {
+                _pickup = GetComponent<Pickup>();
+            }
+        }
+
+        private void Update()
+        {
+            Text textComponent = _textField.GetComponent<Text>();
+            TMPro.TextMeshProUGUI textMeshProComponent = _textField.GetComponent<TMPro.TextMeshProUGUI>();
+            if (_pickup.Description != textMeshProComponent.text && _indication.activeSelf) _indication.SetActive(false);
+            else _indication.SetActive(true);
         }
 
         public void ChangeTextContent()
         {
-            // Получаем данные пикапа по имени объекта
-            Pickup pickup = AssembledPickups.FindByName(this.gameObject.name);
-
             if (_textField == null)
             {
                 Debug.LogWarning("TextField не назначен.");
@@ -36,12 +52,12 @@ namespace Assets.Scripts.UI
             if (textComponent != null)
             {
                 // Устанавливаем текст для стандартного компонента Text
-                textComponent.text = $"{pickup.Description}\n{pickup.HideDescription}";
+                textComponent.text = $"{_pickup.Description}\n{_pickup.HideDescription}";
             }
             else if (textMeshProComponent != null)
             {
                 // Устанавливаем текст для компонента TextMeshProUGUI
-                textMeshProComponent.text = $"{pickup.Description} {pickup.HideDescription}";
+                textMeshProComponent.text = $"{_pickup.Description} {_pickup.HideDescription}";
             }
             else
             {
