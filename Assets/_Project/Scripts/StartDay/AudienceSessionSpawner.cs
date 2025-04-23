@@ -1,48 +1,73 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using Quest;
-using UnityEngine.SceneManagement;
 
 public class AudienceSessionSpawner : MonoBehaviour
 {
+    /* ───── точки на сцене ───── */
     [Header("Points")]
     [SerializeField] private Transform _spawnPoint;
     [SerializeField] private Transform _dialogSpot;
     [SerializeField] private Transform _exitSpot;
 
-    [Header("Main Quest Givers ─ day 0 / day 1 / day 2")]
+    /* ───── босс-НПС для каждого дня ───── */
+    [Header("Main Quest Givers  (day 0 / day 1 / day 2)")]
     [SerializeField] private NPCDefinition[] _mainQuestGivers;
 
     private readonly Queue<NPCDefinition> _sessionQueue = new();
     private NPCController _current;
 
+    /* ───────────────────────────────────────────────────────────── */
+
     private void Start()
     {
-        // формируем очередь и подписываемся
+        // Если открыт loading-экран — дождаться его закрытия
+        if (LoadingScreenManager.Instance != null &&
+            LoadingScreenManager.Instance.IsLoading)
+        {
+            LoadingScreenManager.Instance.LoadingFinished += OnLoadingClosed;
+        }
+        else
+        {
+            PrepareQueueAndStart();
+        }
+    }
+
+    private void OnLoadingClosed()
+    {
+        LoadingScreenManager.Instance.LoadingFinished -= OnLoadingClosed;
+        PrepareQueueAndStart();
+    }
+
+    /* ─────────── подготовка очереди ─────────── */
+    private void PrepareQueueAndStart()
+    {
+        // 1) три случайных из мешка
         for (int i = 0; i < 3; i++)
             if (AudiencePool.Instance.TryTakeRandom(out var def))
                 _sessionQueue.Enqueue(def);
 
-        // добавляем «босса»…
-        int day = Quest.QuestCollection.CurrentDayNumber;
+        // 2) босс-проситель сегодняшнего дня
+        int day = QuestCollection.CurrentDayNumber;          // 0,1,2 …
         if (day < _mainQuestGivers.Length)
             _sessionQueue.Enqueue(_mainQuestGivers[day]);
 
         if (_sessionQueue.Count == 0)
         {
-            EndSession();               // сразу переходим, если никого нет
+            EndSession();        // никого нет → сразу выходим
             return;
         }
 
         DialogueManager.GetInstance().DialogueFinished += OnDialogueFinished;
-        SpawnNextFromQueue();
+        SpawnNext();
     }
 
-    private void SpawnNextFromQueue()
+    /* ─────────── спавн одного НПС ─────────── */
+    private void SpawnNext()
     {
         if (_sessionQueue.Count == 0)
         {
-            EndSession();               // очередь закончена — переходим дальше
+            EndSession();
             return;
         }
 
@@ -52,29 +77,31 @@ public class AudienceSessionSpawner : MonoBehaviour
         _current = go.GetComponent<NPCController>();
         _current.Init(_dialogSpot, _exitSpot);
 
-        _current.Arrived += npc => { /* optional bow */ };
         _current.Left += OnNpcLeft;
     }
 
-    private void EndSession()
-    {
-        // здесь можно вставить any cleanup / анимацию ухода
-        Debug.Log("Приём окончен — загружаем следующую сцену");
-        LoadingScreenManager.Instance.LoadScene("MainRoom");  // ← укажите имя сцены или её индекс
-    }
-
+    /* ─────────── колбэки ─────────── */
     private void OnDialogueFinished() => _current?.Leave();
 
     private void OnNpcLeft(NPCController npc)
     {
         npc.Left -= OnNpcLeft;
         Destroy(npc.gameObject, 0.3f);
-        SpawnNextFromQueue();            // переходим к следующему из троих
+        SpawnNext();
+    }
+
+    private void EndSession()
+    {
+        Debug.Log("<color=yellow>Приём окончен — переходим в MainRoom</color>");
+        LoadingScreenManager.Instance.LoadScene("MainRoom");
     }
 
     private void OnDestroy()
     {
         if (DialogueManager.HasInstance)
             DialogueManager.GetInstance().DialogueFinished -= OnDialogueFinished;
+
+        if (LoadingScreenManager.Instance != null)
+            LoadingScreenManager.Instance.LoadingFinished -= OnLoadingClosed;
     }
 }
