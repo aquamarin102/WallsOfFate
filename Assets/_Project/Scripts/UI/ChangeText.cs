@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace Assets.Scripts.UI
@@ -13,8 +14,9 @@ namespace Assets.Scripts.UI
         private void Start()
         {
             // Находим объект с тегом "TextField"
-            _textField = GameObject.FindWithTag("TextField");
-            _indication = GameObject.FindWithTag("InteractionIndicator");
+            _textField = GameObject.FindWithTag("TextField"); 
+            _indication = GetComponentsInChildren<Transform>(true)
+    .FirstOrDefault(t => t.CompareTag("InteractionIndicator"))?.gameObject;
 
             if (_textField == null)
             {
@@ -22,7 +24,7 @@ namespace Assets.Scripts.UI
             }
 
 
-            Pickup _pickup = AssembledPickups.FindByName(this.gameObject.name);
+            _pickup = AssembledPickups.FindByName(this.gameObject.name);
             if (_pickup == null)
             {
                 _pickup = GetComponent<Pickup>();
@@ -31,10 +33,9 @@ namespace Assets.Scripts.UI
 
         private void Update()
         {
-            Text textComponent = _textField.GetComponent<Text>();
+            //Text textComponent = _textField?.GetComponent<Text>();
             TMPro.TextMeshProUGUI textMeshProComponent = _textField.GetComponent<TMPro.TextMeshProUGUI>();
-            if (_pickup.Description != textMeshProComponent.text && _indication.activeSelf) _indication.SetActive(false);
-            else _indication.SetActive(true);
+            if ((_pickup.Description + "\n" +_pickup.HideDescription) != textMeshProComponent.text && _indication.activeSelf) _indication.SetActive(false);
         }
 
         public void ChangeTextContent()
@@ -53,11 +54,13 @@ namespace Assets.Scripts.UI
             {
                 // Устанавливаем текст для стандартного компонента Text
                 textComponent.text = $"{_pickup.Description}\n{_pickup.HideDescription}";
+                _indication.SetActive(true);
             }
             else if (textMeshProComponent != null)
             {
                 // Устанавливаем текст для компонента TextMeshProUGUI
-                textMeshProComponent.text = $"{_pickup.Description} {_pickup.HideDescription}";
+                textMeshProComponent.text = $"{_pickup.Description}\n{_pickup.HideDescription}";
+                _indication.SetActive(true);
             }
             else
             {

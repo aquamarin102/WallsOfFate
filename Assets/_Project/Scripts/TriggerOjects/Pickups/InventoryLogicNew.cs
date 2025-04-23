@@ -12,15 +12,6 @@ public class InventoryLigicNew : MonoBehaviour
     private List<Pickup> _currentPickupsOfType = new List<Pickup>();
     private int currentPanelIndex = 0;
 
-    //private void Start()
-    //{
-    //    // Инициализация - активируем первую панель
-    //    if (pickupPanels.Count > 0)
-    //    {
-    //        SetActivePanel(currentPanelIndex);
-    //    }
-    //}
-
     private void Update()
     {
         if (string.IsNullOrEmpty(_pickupType)) return;
@@ -60,19 +51,7 @@ public class InventoryLigicNew : MonoBehaviour
                 UpdateActivePanelFromPickup(_currentPickupsOfType[i]);
                 NextPanel();
             }
-            //else
-            //{
-            //    // Деактивируем лишние панели
-            //    pickupPanels[i].SetActive(false);
-            //}
         }
-
-        // Возвращаемся к первой панели
-        //if (pickupPanels.Count > 0 && _currentPickupsOfType.Count > 0)
-        //{
-        //    UpdateActivePanelFromPickup(_currentPickupsOfType[0]);
-        //    //SetActivePanel(0);
-        //}
     }
 
     // Переключение на следующую панель
@@ -108,7 +87,8 @@ public class InventoryLigicNew : MonoBehaviour
         if (pickupPanels.Count == 0 || currentPanelIndex >= pickupPanels.Count) return;
 
         var panelPickup = pickupPanels[currentPanelIndex].GetComponent<Pickup>();
-        var panelPickupImage = pickupPanels[currentPanelIndex].GetComponent<Image>();
+        var pannelImage = pickupPanels[currentPanelIndex].gameObject.transform.Find("Image");
+        var panelPickupImage = pannelImage?.GetComponent<Image>();
         if (panelPickup == null) return;
 
         // Копируем все данные из переданного Pickup
@@ -151,8 +131,8 @@ public class InventoryLigicNew : MonoBehaviour
             Sprite loadedSprite = Resources.Load<Sprite>(pickup.Picture);
             if (loadedSprite != null && panelImages[currentPanelIndex] != null)
             {
-                panelImages[currentPanelIndex].sprite = loadedSprite;
-                if (!pickupPanels[currentPanelIndex].activeSelf) pickupPanels[currentPanelIndex].SetActive(true);
+                panelPickupImage.sprite = loadedSprite;
+                if (!pannelImage.gameObject.activeSelf) pannelImage.gameObject.SetActive(true);
             }
             else
             {

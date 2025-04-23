@@ -27,8 +27,8 @@ namespace Assets.Scripts.UI
             }
 
             // Получаем компонент Image у панели
-            Image backgroundPannelImage = _imagePannel.GetComponent<Image>();
-            Sprite backgroundPickupSprite = this.gameObject.GetComponent<Image>().sprite;
+            Image backgroundPannelImage = _imagePannel/*.transform.Find("Image")?*/.GetComponent<Image>();
+            Sprite backgroundPickupSprite = this.gameObject.transform.Find("Image")?.GetComponent<Image>().sprite;
 
             if (backgroundPannelImage != null)
             {

@@ -257,7 +257,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3524931707646789595}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 92bf1ccf6d64f6744a20a6d49b1efdd5, type: 3}
   m_Name: 
@@ -377,7 +377,7 @@ RectTransform:
   m_GameObject: {fileID: 8357760800225969783}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.4, y: 1.4, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3952228344174020409}
@@ -415,7 +415,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 2c2bd53b18498574dacab75910b91ca8, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6b98363761e30664e97e88a5e8ab9bac, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
