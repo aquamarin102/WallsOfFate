@@ -127,10 +127,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerName: Enemy
-  maxHealth: 20
-  health: 20
+  maxHealth: 15
+  health: 15
   damage: 2
-  speed: 6
+  speed: 4
   speedModifier: 1
   healingAmount: 2
   isDead: 0
