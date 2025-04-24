@@ -1,109 +1,125 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
+/// <summary>
+/// Handles animation parameters for the player character and plays footstep sounds.
+/// The main goal is to keep the locomotion blend-tree perfectly smooth, even when the
+/// physics update rate fluctuates or the character changes state (pushing / running / idle).
+/// </summary>
+[RequireComponent(typeof(Animator))]
 public class PlayerAnimator : MonoBehaviour
 {
-    private Animator animator;
-    private Vector3 lastPosition;
-    private AudioSource footstepSource;
-
-    [Header("Speed Normalization Settings")]
-    [Tooltip("Максимальная скорость игрока для нормализации параметра Speed (например, скорость бега)")]
+    #region Inspector
+    [Header("Movement")]
+    [Tooltip("Top‑end speed of the character in m/s. Used for normalising the blend‑tree parameter.")]
     [SerializeField] private float maxSpeed = 4.5f;
-    [Tooltip("Время затухания для интерполяции параметра Speed")]
-    [SerializeField] private float speedDampTime = 0.1f;
 
-    [Header("Footstep Timing Settings")]
-    [Tooltip("Базовый интервал между шагами при ходьбе (сек.)")]
-    [SerializeField] private float baseFootstepInterval = 0.5f;
-    [Tooltip("Интервал между шагами при беге (сек.)")]
-    [SerializeField] private float runFootstepInterval = 0.3f;
+    [Tooltip("Time it takes for the Speed parameter to reach the target value (seconds).")]
+    [SerializeField] private float speedSmoothTime = 0.1f;
 
+    [Header("Pushing Box")]
+    [Tooltip("Tag that marks objects the player can push.")]
+    [SerializeField] private string boxTag = "Box";
 
-    private float footstepTimer = 0f;
+    [Tooltip("Minimal speed (m/s) at which the pushing animation starts to blend in.")]
+    [SerializeField] private float pushMoveThreshold = 0.05f;
 
-    private MonoBehaviour playerController;
+    [Header("Footsteps (optional)")]
+    [SerializeField] private AudioSource footstepSource;
+    [SerializeField] private AudioClip[] walkStepClips;
+    [SerializeField] private AudioClip[] runStepClips;
+    [SerializeField] private float baseFootstepInterval = 0.5f; // walk cadence
+    [SerializeField] private float runFootstepInterval = 0.3f; // run cadence
+    #endregion
 
+    private Animator animator;
+    private Vector3 lastPos;
+    private float currentSpeedParam; // smoothed animator parameter [0‑1]
+    private float speedRef;          // velocity reference for SmoothDamp
+    private float footstepTimer;
+
+    // ──────────────────────────────────────────────────────────────────────────────
+    #region Unity
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        if (animator == null)
-        {
-            Debug.LogError("PlayerAnimator: Не найден компонент Animator!");
-        }
-        lastPosition = transform.position;
-
-
-        playerController = GetComponent<PlayerMoveController>(); // Предполагается, что такой скрипт существует
-        if (playerController == null)
-        {
-            Debug.LogWarning("PlayerAnimator: Не найден компонент управления персонажем!");
-        }
-        
+        lastPos = transform.position;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
-        // Вычисляем скорость как длину перемещения за кадр
-        float speed = (transform.position - lastPosition).magnitude / Time.deltaTime;
-        // Нормализуем скорость (значение от 0 до 1)
-        float normalizedSpeed = Mathf.Clamp01(speed / maxSpeed);
+        UpdateLocomotion();   // handles speed, pushing, animator parameters
+        UpdateFootsteps();    // handles audio cadence
+        lastPos = transform.position; // cache for next frame after all logic
+    }
+    #endregion
 
-        // Проверяем, держится ли игрок за ящик
-        bool isPushing = (transform.parent != null && transform.parent.CompareTag("Box"));
+    // ──────────────────────────────────────────────────────────────────────────────
+    #region Locomotion
+    private void UpdateLocomotion()
+    {
+        // Calculate world‑space speed since last rendered frame
+        float rawSpeed = (transform.position - lastPos).magnitude / Mathf.Max(Time.deltaTime, 0.0001f);
+        float targetNormalised = Mathf.Clamp01(rawSpeed / maxSpeed);
 
-        if (!isPushing)
+        // Low‑pass filter to remove jitter when character stops / starts
+        currentSpeedParam = Mathf.SmoothDamp(currentSpeedParam, targetNormalised, ref speedRef, speedSmoothTime);
+
+        bool isPushing = transform.parent != null && transform.parent.CompareTag(boxTag);
+
+        if (isPushing)
         {
-            // Обычное движение: стандартная анимация передвижения
-            animator.speed = 1f; // нормальная скорость анимации
-            animator.SetFloat("Speed", normalizedSpeed, speedDampTime, Time.deltaTime);
-            animator.SetBool("IsPushing", false);
-            animator.SetFloat("PushSpeed", 0f);
+            animator.SetBool("IsPushing", true);
+            animator.SetFloat("PushSpeed", currentSpeedParam >= pushMoveThreshold ? 1f : 0f);
         }
         else
         {
-            // Режим толкания ящика:
-            animator.SetBool("IsPushing", true);
-            animator.SetFloat("Speed", 0f); // отключаем стандартную анимацию передвижения
-
-            if (normalizedSpeed > 0.1f)
-            {
-                // Если игрок двигается, запускаем анимацию толкания с постоянной скоростью
-                animator.SetFloat("PushSpeed", 1f);
-                animator.speed = 2f;
-            }
-            else
-            {
-                // Если игрок не двигается, анимация толкания не проигрывается
-                animator.SetFloat("PushSpeed", 0f);
-                animator.speed = 0f;
-            }
+            animator.SetBool("IsPushing", false);
+            animator.SetFloat("Speed", currentSpeedParam);
         }
 
-        // Интерполируем интервал между шагами
-        float currentFootstepInterval = Mathf.Lerp(baseFootstepInterval, runFootstepInterval, normalizedSpeed);
-
-        lastPosition = transform.position;
+        // Do NOT globally scale the whole controller – sudden jumps in Animator.speed
+        // are the #1 cause of visual jitter, especially at low framerates.
+        animator.speed = 1f;
     }
+    #endregion
 
-    // Метод для запуска анимации подбора с пола
-    public void PlayPickupFloor()
+    // ──────────────────────────────────────────────────────────────────────────────
+    #region Footstep Audio
+    private void UpdateFootsteps()
     {
-        // Запускаем анимацию подбора; управление движением не блокируется.
-        animator.SetTrigger("PickupFloor");
+        if (footstepSource == null) return; // sound system is optional
+
+        if (currentSpeedParam > 0.05f)
+        {
+            footstepTimer += Time.deltaTime;
+            float interval = Mathf.Lerp(baseFootstepInterval, runFootstepInterval, currentSpeedParam);
+
+            if (footstepTimer >= interval)
+            {
+                PlayRandomFootstep(currentSpeedParam > 0.6f);
+                footstepTimer = 0f;
+            }
+        }
+        else
+        {
+            footstepTimer = 0f; // reset so the first step triggers instantly when we start moving again
+        }
     }
 
-    // Метод для запуска анимации подбора предмета на уровне тела
-    public void PlayPickupBody()
+    private void PlayRandomFootstep(bool running)
     {
-        animator.SetTrigger("PickupBody");
-    }
+        AudioClip[] bank = running ? runStepClips : walkStepClips;
+        if (bank == null || bank.Length == 0) return;
 
-    // Метод для запуска анимации открытия сундука
-    public void PlayOpenChest()
-    {
-        animator.SetTrigger("OpenChest");
+        footstepSource.clip = bank[Random.Range(0, bank.Length)];
+        footstepSource.Play();
     }
+    #endregion
+
+    // ──────────────────────────────────────────────────────────────────────────────
+    #region Public Triggers
+    public void PlayPickupFloor() => animator.SetTrigger("PickupFloor");
+    public void PlayPickupBody() => animator.SetTrigger("PickupBody");
+    public void PlayOpenChest() => animator.SetTrigger("OpenChest");
+    #endregion
 }

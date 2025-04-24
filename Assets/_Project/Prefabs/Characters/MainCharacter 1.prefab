@@ -189,7 +189,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 4.5
-  speedDampTime: 0.1
+  speedSmoothTime: 0.1
+  boxTag: Box
+  pushMoveThreshold: 0.05
+  footstepSource: {fileID: 0}
+  walkStepClips: []
+  runStepClips: []
   baseFootstepInterval: 1
   runFootstepInterval: 0.5
 --- !u!114 &5049994645591148800
@@ -334,7 +339,7 @@ CharacterController:
   m_Height: 1.8
   m_Radius: 0.4
   m_SlopeLimit: 45
-  m_StepOffset: 0.1
+  m_StepOffset: 0.05
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}

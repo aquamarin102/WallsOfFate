@@ -186,7 +186,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 4.5
-  speedDampTime: 0.1
+  speedSmoothTime: 0.1
+  boxTag: Box
+  pushMoveThreshold: 0.05
+  footstepSource: {fileID: 0}
+  walkStepClips: []
+  runStepClips: []
   baseFootstepInterval: 0.5
   runFootstepInterval: 0.3
 --- !u!114 &5049994645591148800
@@ -347,11 +352,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcca926d9c972d4596bc2eba7022fa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grabRange: 2
-  grabKey: 101
-  maxSpeed: 2
+  grabRadius: 2
+  grabAction: {fileID: 7060275564721094829, guid: 19d04aaacdc84114ca140a207fbe0af5, type: 3}
+  maxPushSpeed: 3
+  accel: 8
   turnSpeed: 50
-  attachedBox: {fileID: 0}
 --- !u!136 &-4248748749519651901
 CapsuleCollider:
   m_ObjectHideFlags: 0
