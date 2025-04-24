@@ -11,20 +11,40 @@ public class RandomFactDisplay : MonoBehaviour
     [TextArea(2, 5)]
     public string[] facts;
 
+    private static int currentIndex = 0;
+    private static bool allFactsShown = false;
+
     private void OnEnable()
     {
         RefreshFact();
     }
 
     /// <summary>
-    /// ¬ыбирает случайный факт и присваивает его текстовому компоненту.
+    /// ѕоказывает следующий факт по пор€дку, а после окончани€ Ч случайный.
     /// </summary>
     public void RefreshFact()
     {
         if (factText != null && facts != null && facts.Length > 0)
         {
-            int index = Random.Range(0, facts.Length);
-            factText.text = facts[index];
+            string selectedFact;
+
+            if (!allFactsShown)
+            {
+                selectedFact = facts[currentIndex];
+                currentIndex++;
+
+                if (currentIndex >= facts.Length)
+                {
+                    allFactsShown = true;
+                }
+            }
+            else
+            {
+                int randomIndex = Random.Range(0, facts.Length);
+                selectedFact = facts[randomIndex];
+            }
+
+            factText.text = selectedFact;
         }
     }
 }

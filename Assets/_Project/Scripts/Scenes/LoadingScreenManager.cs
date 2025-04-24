@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using System;
 using System.Collections;
+using UnityEngine.UI;
 
 public class LoadingScreenManager : MonoBehaviour
 {
@@ -16,7 +17,13 @@ public class LoadingScreenManager : MonoBehaviour
 
     [Header("UI")]
     public GameObject loadingScreen;
+    public Image loadingImage;
     public TMP_Text loadingText;
+
+    private UISpriteAnimator spriteAnimator;
+
+    [Header("Настройки финального вида")]
+    public Sprite finalSprite;
 
     public float inputDelay = 0.05f;
 
@@ -28,6 +35,7 @@ public class LoadingScreenManager : MonoBehaviour
     {
         if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); }
         else { Destroy(gameObject); }
+        spriteAnimator = loadingImage.GetComponent<UISpriteAnimator>();
     }
 
     /* ---------- ЗАПУСК ЗАГРУЗКИ ---------- */
@@ -59,7 +67,19 @@ public class LoadingScreenManager : MonoBehaviour
         {
             if (op.progress >= 0.9f)
             {
+           
                 yield return new WaitForSeconds(inputDelay);
+
+                
+                if (spriteAnimator != null)
+                {
+                    spriteAnimator.enabled = false;
+                }
+                // Подставляем финальный спрайт, если он задан.
+                if (finalSprite != null)
+                {
+                    loadingImage.sprite = finalSprite;
+                }
 
                 loadingText.text = "Продолжить";
                 waitingForInput = true;
@@ -81,6 +101,8 @@ public class LoadingScreenManager : MonoBehaviour
 
         AudioManager.Instance.ReloadVolumeSettings();
         AudioManager.Instance.ChangeMusicForScene(targetSceneName);
+
+        spriteAnimator.enabled = true;
 
         loadingScreen.SetActive(false);
 
