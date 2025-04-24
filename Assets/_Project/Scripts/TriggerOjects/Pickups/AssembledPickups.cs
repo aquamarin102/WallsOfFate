@@ -29,6 +29,22 @@ public static class AssembledPickups
         pickups.Remove(elem);
     }
 
+    public static bool RemovePickupByName(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return false;
+        }
+
+        var pickupToRemove = FindByName(name);
+        if (pickupToRemove != null)
+        {
+            return pickups.Remove(pickupToRemove);
+        }
+
+        return false;
+    }
+
     public static Pickup FindByName(string name)
     {
         return pickups.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
@@ -57,6 +73,20 @@ public static class AssembledPickups
     public static void Clear()
     {
         pickups.Clear();
+    }
+
+    public static bool ContainsPrefab(Pickup pickup)
+    {
+        if (pickup == null) return false;
+
+        // Проверяем, не уничтожен ли объект
+        if (pickup == null || pickup.gameObject == null) return false;
+
+        return pickups.Any(p =>
+            p != null &&
+            p.gameObject != null &&
+            (p.gameObject.GetInstanceID() == pickup.gameObject.GetInstanceID() ||
+             p.Name.Equals(pickup.Name, StringComparison.OrdinalIgnoreCase)));
     }
 
     public static int Count => pickups.Count;

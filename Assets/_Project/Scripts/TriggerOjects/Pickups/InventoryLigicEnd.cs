@@ -3,51 +3,92 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryLigiEnd : MonoBehaviour
+public class InventoryLogicEnd : MonoBehaviour
 {
+    [Header("Panel Settings")]
     [SerializeField] private List<GameObject> pickupPanels;
     [SerializeField] private string _pickupType;
-    //[SerializeField] private List<Image> panelImages;
+
+    [Header("Button Settings")]
+    [SerializeField] private GameObject _buttonObject; // Ссылка на объект-кнопку
 
     private List<Pickup> _currentPickupsOfType = new List<Pickup>();
+    private int _displayedImagesCount = 0;
 
     private void Update()
     {
         if (string.IsNullOrEmpty(_pickupType)) return;
 
-        IEnumerable<Pickup> pickupsEnumerable = AssembledPickups.GetPickupsByType(_pickupType);
-        List<Pickup> newPickups = pickupsEnumerable.ToList();
+        var newPickups = AssembledPickups.GetPickupsByType(_pickupType).ToList();
 
         if (!PickupListsEqual(_currentPickupsOfType, newPickups))
         {
             _currentPickupsOfType = newPickups;
             UpdatePanelsVisibility();
+            CheckAllImagesDisplayed();
         }
     }
 
     private void UpdatePanelsVisibility()
     {
-        // Сначала деактивируем все панели
+        _displayedImagesCount = 0;
+
         foreach (var panel in pickupPanels)
         {
-            var pannelImage = panel.gameObject.transform.Find("Image").gameObject;
-            pannelImage.SetActive(false);
-        }
+            if (panel == null) continue;
 
-        // Для каждого пикапа в AssembledPickups
-        foreach (var pickup in _currentPickupsOfType)
-        {
-            // Ищем панель, у которой компонент Pickup совпадает с текущим пикапом
-            var matchingPanel = pickupPanels.FirstOrDefault(panel =>
-                panel.GetComponent<Pickup>() == pickup);
+            var imageTransform = panel.transform.Find("Image");
+            var panelPickup = panel.GetComponent<Pickup>();
 
-            if (matchingPanel != null)
+            bool shouldDisplay = panelPickup != null &&
+                               AssembledPickups.ContainsPrefab(panelPickup);
+
+            if (imageTransform != null)
             {
-                var pannelImage = matchingPanel.gameObject.transform.Find("Image").gameObject;
-                pannelImage.SetActive(true);
-                //UpdatePanelFromPickup(matchingPanel, pickup);
+                imageTransform.gameObject.SetActive(shouldDisplay);
+                if (shouldDisplay) _displayedImagesCount++;
             }
         }
+    }
+
+    private void CheckAllImagesDisplayed()
+    {
+        if (_buttonObject == null) return;
+
+        // Находим первый неотрендеренный пикап
+        var nonRenderedPickup = FindFirstNonRenderedPickup(_pickupType);
+
+        // Если все пикапы отрендерены и есть что показывать
+        bool allDisplayed = nonRenderedPickup == null && _displayedImagesCount >= 3;
+        _buttonObject.SetActive(allDisplayed);
+    }
+
+    public Pickup FindFirstNonRenderedPickup(string pickupType)
+    {
+        return AssembledPickups.GetPickupsByType(pickupType + "Conc")
+            .FirstOrDefault(p => !p.Rendered);
+    }
+
+    public void RefreshPanel()
+    {
+        _displayedImagesCount = 0;
+        _buttonObject.SetActive(false);
+        foreach(var panel in pickupPanels)
+        {
+            var imageTransform = panel.transform.Find("Image");
+            var indicationTransform = panel.transform.Find("Indication");
+            imageTransform.gameObject.SetActive(false);
+            indicationTransform.gameObject.SetActive(false);
+            Pickup pannelPickup = panel.GetComponent<Pickup>();
+            AssembledPickups.RemovePickupByName(pannelPickup.Name);
+        }
+    }
+
+    public void ChangeVisibility(string pickupType)
+    {
+        Pickup pickup = FindFirstNonRenderedPickup(pickupType);
+        pickup.Rendered = true;
+        RefreshPanel();
     }
 
     private void UpdatePanelFromPickup(GameObject panel, Pickup pickup)
@@ -57,38 +98,48 @@ public class InventoryLigiEnd : MonoBehaviour
 
         if (panelPickup == null) return;
 
-        // Копируем данные
-        panelPickup.Name = pickup.Name;
-        panelPickup.Type = pickup.Type;
-        panelPickup.Description = pickup.Description;
-        panelPickup.HideDescription = pickup.HideDescription;
-        panelPickup.Picture = pickup.Picture;
-        panelPickup.Rendered = pickup.Rendered;
-        panelPickup.RenderedOnScreen = pickup.RenderedOnScreen;
-
-        // Копируем словари
-        panelPickup.SimpleDict.Clear();
-        foreach (var pair in pickup.SimpleDict)
-        {
-            panelPickup.SimpleDict.Add(pair.Key, pair.Value);
-        }
+        // Копируем основные данные
+        CopyPickupData(panelPickup, pickup);
 
         // Устанавливаем изображение
         if (!string.IsNullOrEmpty(pickup.Picture) && panelImage != null)
         {
-            Sprite loadedSprite = Resources.Load<Sprite>(pickup.Picture);
-            if (loadedSprite != null)
-            {
-                panelImage.sprite = loadedSprite;
-                panelImage.gameObject.SetActive(true);
-            }
-            else
-            {
-                Debug.LogWarning($"Не удалось загрузить изображение: {pickup.Picture}");
-            }
+            LoadAndSetSprite(pickup.Picture, panelImage);
         }
 
         panelPickup.Display();
+    }
+
+    private void CopyPickupData(Pickup target, Pickup source)
+    {
+        target.Name = source.Name;
+        target.Type = source.Type;
+        target.Description = source.Description;
+        target.HideDescription = source.HideDescription;
+        target.Picture = source.Picture;
+        target.Rendered = source.Rendered;
+        target.RenderedOnScreen = source.RenderedOnScreen;
+
+        // Копируем словари
+        target.SimpleDict.Clear();
+        foreach (var pair in source.SimpleDict)
+        {
+            target.SimpleDict.Add(pair.Key, pair.Value);
+        }
+    }
+
+    private void LoadAndSetSprite(string path, Image targetImage)
+    {
+        Sprite loadedSprite = Resources.Load<Sprite>(path);
+        if (loadedSprite != null)
+        {
+            targetImage.sprite = loadedSprite;
+            targetImage.gameObject.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning($"Не удалось загрузить изображение: {path}");
+        }
     }
 
     private bool PickupListsEqual(List<Pickup> list1, List<Pickup> list2)
@@ -99,7 +150,9 @@ public class InventoryLigiEnd : MonoBehaviour
 
     public Pickup GetCurrentPickup()
     {
-        var activePanel = pickupPanels.FirstOrDefault(p => p.activeSelf);
-        return activePanel?.GetComponent<Pickup>();
+        return pickupPanels
+            .Where(p => p != null && p.activeSelf)
+            .Select(p => p.GetComponent<Pickup>())
+            .FirstOrDefault();
     }
 }

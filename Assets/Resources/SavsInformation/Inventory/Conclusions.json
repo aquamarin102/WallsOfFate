@@ -13,10 +13,10 @@
   },
   {
     "Name": "Conc2",
-    "Type": "Type",
+    "Type": "---Conc",
     "Description": "Conc2",
     "HideDescription": "Пахнет лесом...",
-    "Picture": "UI\\UIPrefabs\\ItemsImages\\forest",
+    "Picture": "UI\\Inventory\\UIPrefabs\\ItemsImages\\forest",
     "Rendered": false,
     "RenderedOnScreen": false,
     "SimpleDict": {},

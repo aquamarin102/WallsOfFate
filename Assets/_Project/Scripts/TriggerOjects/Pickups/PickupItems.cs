@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace Assets.Scripts.TriggerOjects
 {
     internal class PickupItems : MonoBehaviour, ICheckableTrigger
     {
+        [Header("UI Settings")]
         [SerializeField] private GameObject _textInd;
+        [SerializeField] private string _spritePath; // Путь относительно папки Resources
+
         private Pickup _pickup;
         private ToggleObjectOnButtonPress _toggleScript;
-
         public bool IsDone { get; private set; }
 
         [Inject]
@@ -26,6 +27,12 @@ namespace Assets.Scripts.TriggerOjects
         private void Awake()
         {
             _pickup = GetComponent<Pickup>();
+
+            // Если путь не задан в инспекторе, используем путь из Pickup
+            if (string.IsNullOrEmpty(_spritePath) && _pickup != null)
+            {
+                _spritePath = _pickup.Picture;
+            }
         }
 
         private IEnumerator ShowIndication()
@@ -35,7 +42,6 @@ namespace Assets.Scripts.TriggerOjects
                 if (!_textInd.activeSelf) _textInd.SetActive(true);
                 yield return new WaitForSeconds(2f);
                 if (_textInd.activeSelf) _textInd.SetActive(false);
-
             }
         }
 
@@ -43,46 +49,62 @@ namespace Assets.Scripts.TriggerOjects
         {
             IsDone = true;
             StartCoroutine(ShowIndication());
-            Debug.Log("подобрал предмет!");
-            AssembledPickups.AddPickup(_pickup);
-            string allItems = "";
+            Debug.Log("Подобрал предмет: " + _pickup?.Name);
+
+            if (_pickup != null)
+            {
+                AssembledPickups.AddPickup(_pickup);
+                LogAllPickups();
+
+                if (_pickup.RenderedOnScreen)
+                {
+                    HandleScreenRendering();
+                }
+            }
+        }
+
+        private void LogAllPickups()
+        {
+            StringBuilder sb = new StringBuilder("Все предметы в инвентаре: ");
             foreach (Pickup pickup in AssembledPickups.GetAllPickups())
             {
-                allItems += pickup.Name;
+                sb.Append(pickup.Name).Append(", ");
             }
-            Debug.Log(allItems);
-            if(_pickup.RenderedOnScreen)
+            Debug.Log(sb.ToString());
+        }
+
+        private void HandleScreenRendering()
+        {
+            if (_toggleScript == null || _toggleScript.TargetObject == null) return;
+
+            // Активируем объект если нужно
+            if (!_toggleScript.TargetObject.activeSelf)
             {
-                if (_toggleScript.TargetObject != null && _toggleScript.TargetObject.activeSelf == false)
-                {
-                    _toggleScript.Activate(true);
-                }
+                _toggleScript.Activate(true);
+            }
 
-                if (_toggleScript.TargetObject != null && !string.IsNullOrEmpty(_pickup.Picture))
-                {
-                    // Загружаем спрайт из ресурсов
-                    Sprite loadedSprite = Resources.Load<Sprite>(_pickup.Picture);
+            // Загружаем и устанавливаем спрайт
+            if (!string.IsNullOrEmpty(_spritePath))
+            {
+                Sprite loadedSprite = Resources.Load<Sprite>(_spritePath);
 
-                    if (loadedSprite != null)
+                if (loadedSprite != null)
+                {
+                    Image image = _toggleScript.TargetObject.GetComponent<Image>();
+                    if (image != null)
                     {
-                        var image = _toggleScript.TargetObject.GetComponent<UnityEngine.UI.Image>();
-                        if (image != null)
-                        {
-                            image.sprite = loadedSprite;
-                        }
-                        else
-                        {
-                            Debug.LogError("У целевого объекта отсутствует компонент Image.");
-                        }
+                        image.sprite = loadedSprite;
                     }
                     else
                     {
-                        Debug.LogError($"Не удалось загрузить спрайт по пути: {_pickup.Picture}");
+                        Debug.LogError("У целевого объекта отсутствует компонент Image");
                     }
                 }
-            }           
-
+                else
+                {
+                    Debug.LogError($"Не удалось загрузить спрайт по пути: Resources/{_spritePath}");
+                }
+            }
         }
     }
-
 }
