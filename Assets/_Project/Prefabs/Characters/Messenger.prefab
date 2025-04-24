@@ -2880,7 +2880,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0996432d9ec83764eab23e8d27b623a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultDialogue: Messager/MessagerMainroomDefault
+  _defaultDialogue: Messager/MessagerMainroomDefault/
   _npcName: Messenger
 --- !u!1 &4044241201480333291
 GameObject:

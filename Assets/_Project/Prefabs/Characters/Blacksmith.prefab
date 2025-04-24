@@ -67,7 +67,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0996432d9ec83764eab23e8d27b623a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultDialogue: Messager/MessagerMainroomDefault/
+  _defaultDialogue: Blacksmith/SmithyDefaultDialoge/
   _npcName: Blacksmith
 --- !u!1001 &1640010124165383090
 PrefabInstance:
