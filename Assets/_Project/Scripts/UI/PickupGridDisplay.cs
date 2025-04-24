@@ -2,10 +2,13 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
+using NUnit.Framework.Constraints;
 
 public class PickupGridDisplay : MonoBehaviour
 {
     [SerializeField] private GameObject pickupUIPrefab; // Префаб для отображения пикапа
+    [SerializeField] private GameObject textPrefab; // Префаб для обновления текста
+    [SerializeField] private GameObject imagePrefab; // Префаб для обновления картинки
     [SerializeField] private RectTransform contentPanel; // Панель, на которой будут отображаться пикапы
     [SerializeField] private Vector2 gridSpacing = new Vector2(10, 10); // Отступы между элементами сетки
 
@@ -39,6 +42,12 @@ public class PickupGridDisplay : MonoBehaviour
             Destroy(element);
         }
         pickupUIElements.Clear();
+
+        TextMeshProUGUI tmpr = textPrefab.GetComponent<TextMeshProUGUI>();
+        Image image = imagePrefab.GetComponent<Image>();
+
+        tmpr.text = "";
+        image.sprite = Resources.Load<Sprite>("UI\\Inventory\\highlight alpha");
 
         // Принудительно обновляем макет
         Canvas.ForceUpdateCanvases();

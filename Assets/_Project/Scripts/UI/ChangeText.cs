@@ -16,7 +16,7 @@ namespace Assets.Scripts.UI
             // Находим объект с тегом "TextField"
             _textField = GameObject.FindWithTag("TextField"); 
             _indication = GetComponentsInChildren<Transform>(true)
-    .FirstOrDefault(t => t.CompareTag("InteractionIndicator"))?.gameObject;
+                        .FirstOrDefault(t => t.CompareTag("InteractionIndicator"))?.gameObject;
 
             if (_textField == null)
             {
@@ -35,7 +35,7 @@ namespace Assets.Scripts.UI
         {
             //Text textComponent = _textField?.GetComponent<Text>();
             TMPro.TextMeshProUGUI textMeshProComponent = _textField.GetComponent<TMPro.TextMeshProUGUI>();
-            if ((_pickup.Description + "\n" +_pickup.HideDescription) != textMeshProComponent.text && _indication.activeSelf) _indication.SetActive(false);
+            if ((_pickup.Description + "\n" + _pickup.HideDescription) != textMeshProComponent.text && _indication.activeSelf) _indication.SetActive(false);
         }
 
         public void ChangeTextContent()
@@ -44,6 +44,12 @@ namespace Assets.Scripts.UI
             {
                 Debug.LogWarning("TextField не назначен.");
                 return;
+            }
+
+            if (_pickup == null )_pickup = AssembledPickups.FindByName(this.gameObject.name);
+            else if (_pickup == null)
+            {
+                _pickup = GetComponent<Pickup>();
             }
 
             // Получаем компонент Text или TextMeshProUGUI у текстового поля
@@ -56,7 +62,7 @@ namespace Assets.Scripts.UI
                 textComponent.text = $"{_pickup.Description}\n{_pickup.HideDescription}";
                 _indication.SetActive(true);
             }
-            else if (textMeshProComponent != null)
+            else if (textMeshProComponent != null && AssembledPickups.ContainsPrefab(_pickup))
             {
                 // Устанавливаем текст для компонента TextMeshProUGUI
                 textMeshProComponent.text = $"{_pickup.Description}\n{_pickup.HideDescription}";
