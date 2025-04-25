@@ -144,8 +144,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerName: Player
-  maxHealth: 20
-  health: 20
+  maxHealth: 50
+  health: 50
   damage: 4
   speed: 5
   speedModifier: 2

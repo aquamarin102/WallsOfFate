@@ -4,7 +4,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
-
 [RequireComponent(typeof(NavMeshAgent))]
 [RequireComponent(typeof(MiniGamePlayer))]
 public class EnemyMove : MonoBehaviour
@@ -13,115 +12,113 @@ public class EnemyMove : MonoBehaviour
     [SerializeField] private MineSpawner _mineSpawner;
     [SerializeField] private MiniGamePlayer _characteristics;
 
-    private Queue<Vector3> _targetsQueue = new Queue<Vector3>(); // Очередь целей
+    private Queue<Vector3> _targetsQueue = new Queue<Vector3>();
+    private NavMeshAgent _agent;
 
-    private Rigidbody _rb;
-    private MiniGamePlayer _playerChar;
-    private NavMeshAgent _Agent;
-    private float _baseAgentSpeed;
-    private bool _underDebuff;
+    // Priority weights for mine types
+    private readonly float healPriorityHigh = 10f;
+    private readonly float healPriorityLow = 3f;
+    private readonly float damagePriority = 4f;
+    private readonly float buffPriority = 6f;
+    private readonly float trapAvoidancePenalty = -2f;
 
     private void Awake()
     {
-        _rb = GetComponent<Rigidbody>();
-
-        _rb.useGravity = false;
-        _Agent = GetComponent<NavMeshAgent>();
-
-        _characteristics = this.GetComponent<MiniGamePlayer>();
-        _baseAgentSpeed = _characteristics.Speed;
+        _agent = GetComponent<NavMeshAgent>();
+        _characteristics = GetComponent<MiniGamePlayer>();
     }
 
     private void Start()
     {
-        if (!HasTargetQueue())
-        {
-            UpdateTargetPoints();
-        }
+        UpdateTargetPoints();
+        if (_targetsQueue.Count > 0)
+            SetNextDestination();
     }
 
     private void FixedUpdate()
     {
-
-        UpdateTargetPoints();
-        if (!_Agent.pathPending && HasTargetQueue())
+        if (!_agent.pathPending && _agent.remainingDistance < 0.5f)
         {
-            SetNextDestination();
+            UpdateTargetPoints();
+            if (_targetsQueue.Count > 0)
+                SetNextDestination();
         }
-
-        Vector3 pos = _Agent.transform.position;
-        pos.y = 0; // Принудительно фиксируем Y
-        _Agent.transform.position = pos;
     }
 
+    // Build and sort targets by dynamic priority
     private void UpdateTargetPoints()
     {
-        List<Mine> allMines = new List<Mine>();
+        var candidates = new List<Mine>();
+        candidates.AddRange(_mineSpawner.HealMines.Where(m => m.MineGameObject.activeSelf));
+        candidates.AddRange(_mineSpawner.DamageMines.Where(m => m.MineGameObject.activeSelf));
+        candidates.AddRange(_mineSpawner.BuffMines.Where(m => m.MineGameObject.activeSelf));
+        candidates.AddRange(_mineSpawner.DebuffMines.Where(m => m.MineGameObject.activeSelf));
 
-        // Добавляем ближайшую мину из каждой категории
-        if (_mineSpawner.HealMines.Count > 0) allMines.Add(FindClosestMine(_mineSpawner.HealMines));
-        if (_mineSpawner.DamageMines.Count > 0) allMines.Add(FindClosestMine(_mineSpawner.DamageMines));
-        if (_mineSpawner.BuffMines.Count > 0) allMines.Add(FindClosestMine(_mineSpawner.BuffMines));
+        Vector3 selfPos = transform.position;
+        float currentHealthPct = _characteristics.Health / _characteristics.MaxHealth;
 
+        // Compute weighted score for each mine
+        var scored = candidates.Select(mine => {
+            Vector3 pos = mine.MineGameObject.transform.position;
+            float dist = Vector3.Distance(selfPos, pos);
+            float baseScore = 0f;
 
-        // Сортируем точки по расстоянию от агента
-        var sortedMines = allMines
-            .Where(m => m != null)
-            .OrderBy(m => Vector3.Distance(transform.position, m.MineGameObject.transform.position));
-        _targetsQueue.Clear(); // Очищаем старые цели
-        foreach (var mine in sortedMines)
+            // Heal priorities: higher if low health
+            if (_mineSpawner.HealMines.Contains(mine))
+            {
+                baseScore = currentHealthPct < 0.5f ? healPriorityHigh : healPriorityLow;
+            }
+            // Damage: enemy may seek damage mines to hurt player
+            else if (_mineSpawner.DamageMines.Contains(mine))
+            {
+                baseScore = damagePriority;
+            }
+            // Buff (speed-up)
+            else if (_mineSpawner.BuffMines.Contains(mine))
+            {
+                baseScore = buffPriority;
+            }
+            // Trap (debuff mines) - avoid unless no other options
+            else if (_mineSpawner.DebuffMines.Contains(mine))
+            {
+                baseScore = trapAvoidancePenalty;
+            }
+
+            // Final score: weight by inverse distance
+            float score = baseScore / (dist + 1f);
+            return new { Position = pos, Score = score };
+        });
+
+        // Order descending by score
+        var ordered = scored
+            .Where(x => x.Score > 0)
+            .OrderByDescending(x => x.Score)
+            .ToList();
+
+        // If no positive scores, fallback to nearest heal or damage
+        if (ordered.Count == 0)
         {
-            _targetsQueue.Enqueue(mine.MineGameObject.transform.position);
+            var fallback = candidates
+                .OrderBy(m => Vector3.Distance(selfPos, m.MineGameObject.transform.position))
+                .FirstOrDefault();
+            _targetsQueue.Clear();
+            if (fallback != null)
+                _targetsQueue.Enqueue(fallback.MineGameObject.transform.position);
+            return;
         }
 
-        //SetNextDestination();
-    }
-
-    private Mine FindClosestMine(IReadOnlyList<Mine> mines)
-    {
-        return mines
-            .Where(m => m.MineGameObject.activeSelf)
-            .OrderBy(m => Vector3.Distance(transform.position, m.MineGameObject.transform.position))
-            .FirstOrDefault();
+        // Enqueue sorted positions, clear old
+        _targetsQueue.Clear();
+        foreach (var entry in ordered)
+            _targetsQueue.Enqueue(entry.Position);
     }
 
     private void SetNextDestination()
     {
         if (_targetsQueue.Count > 0)
         {
-            Vector3 nextTarget = _targetsQueue.Dequeue();
-            _Agent.SetDestination(nextTarget);
+            Vector3 nextPos = _targetsQueue.Dequeue();
+            _agent.SetDestination(nextPos);
         }
     }
-
-    private bool HasMines()
-    {
-        return _mineSpawner.HealMines.Any(m => m.MineGameObject.activeSelf) ||
-               _mineSpawner.DamageMines.Any(m => m.MineGameObject.activeSelf) ||
-               _mineSpawner.BuffMines.Any(m => m.MineGameObject.activeSelf);
-    }
-
-    private bool HasTargetQueue()
-    {
-        return _targetsQueue.Count > 0 && _targetsQueue.Any(target => target != Vector3.zero);
-    }
-
-    public void ChangeSpeed(float speed, bool isDebuff)
-    {
-        if(_underDebuff && isDebuff)
-        {
-            _underDebuff = false;
-            _Agent.speed = _baseAgentSpeed * speed;
-        }
-        else if(!_underDebuff && isDebuff)
-        {
-            _underDebuff = true;
-            _Agent.speed = _baseAgentSpeed * speed;
-        }
-        else if(!_underDebuff && !isDebuff)
-        {
-            _Agent.speed = _baseAgentSpeed * speed;
-        }
-    }
-
 }
