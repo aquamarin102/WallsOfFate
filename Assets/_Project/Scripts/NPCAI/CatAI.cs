@@ -2,239 +2,352 @@
 using UnityEngine.AI;
 using Zenject;
 
-[RequireComponent(typeof(NavMeshAgent))]
-[RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(NavMeshAgent)), RequireComponent(typeof(Animator))]
 public class CatAI : MonoBehaviour
 {
-    #region Serialized
+    #region ── Inspector ──────────────────────────────────────────────────────
     [Header("Player reaction")]
-    [SerializeField] private float curiosityRange = 6f;   // «интересно»
-    [SerializeField] private float comfortMin = 2f;   // «очень близко»
-    [SerializeField] private float comfortMax = 3.5f; // «рядом»
-    [SerializeField] private float approachReenterDistance = 8f;   // когда снова можно заинтересоваться
-    [SerializeField] private float panicRange = 1.2f; // убегаем
+    [SerializeField] float curiosityRange = 6f;
+    [SerializeField] float comfortMin = 2f;
+    [SerializeField] float comfortMax = 3.5f;
+    [SerializeField] float approachReenterDistance = 8f;
+    [SerializeField] float panicRange = 1.2f;
+
+    [SerializeField] float fleeEndDistance = 7f;
 
     [Header("Move speeds (m/s)")]
-    [SerializeField] private float walkSpeed = 1.5f;
-    [SerializeField] private float runSpeed = 3.2f;
+    [SerializeField] float walkSpeed = 1.6f;
+    [SerializeField] float runSpeed = 3.5f;
 
     [Header("Cat routine")]
-    [SerializeField] private float wanderRadius = 8f;
-    [SerializeField] private float idleMinTime = 2f;
-    [SerializeField] private float idleMaxTime = 5f;
-    [SerializeField] private float curiosityTime = 5f;
-    [SerializeField] private float curiosityCooldown = 8f;
-    [SerializeField] private float retreatDistance = 5f;  // насколько далеко отойти
-    [SerializeField] private float sleepChance = 0.1f;
-    [SerializeField] private float sleepTime = 10f;
+    [SerializeField] float wanderRadius = 10f;
+    [SerializeField] float idleMinTime = 2f;
+    [SerializeField] float idleMaxTime = 4f;
+    [SerializeField] float curiosityTime = 5f;
+    [SerializeField] float curiosityCooldown = 8f;
+    [SerializeField] float retreatDistance = 5f;
+    [SerializeField] float sleepChance = 0.1f;
+    [SerializeField] float sleepTime = 10f;
 
-    [Header("Anti‑stuck")]
-    [SerializeField] private float stuckSpeed = 0.05f;
-    [SerializeField] private float stuckTime = 2f;
+    [Header("Anti-stuck & edges")]
+    [SerializeField] float stuckSpeed = .05f;
+    [SerializeField] float stuckTime = 2f;
+    [SerializeField] float edgeAvoidDistance = .25f;
+
+    [Header("Turn-in-place")]
+    [SerializeField] float turnSpeed = 420f;
+    [SerializeField] float turnAngleThreshold = 5f;
     #endregion
 
-    private enum State { Idle, Wander, Approach, Retreat, Flee, Sleep }
-    private State _state;
+    enum State { Idle, Turn, Wander, Approach, Retreat, Flee, Sleep }
+    State _state;
 
-    private NavMeshAgent _agent;
-    private Animator _anim;
-    private Transform _player;
+    /* components */
+    NavMeshAgent _agent;
+    Animator _anim;
+    Transform _player;
 
-    private float _stateTimer;
-    private float _curiosityTimer;
-    private float _cooldownTimer;
-    private float _stuckTimer;
+    /* timers */
+    float _stateTimer, _curiosityTimer, _cooldownTimer, _stuckTimer;
 
-    #region DI
-    [Inject]
-    private void Construct(PlayerMoveController player) =>
-        _player = player.transform;
-    #endregion
+    /* turn helpers */
+    Vector3 _pendingDestination;
+    float _pendingSpeed;
+    State _afterTurnState;
 
-    private void Awake()
+    /* DI */
+    [Inject] void Construct(PlayerMoveController pc) => _player = pc.transform;
+
+    /* ──────────────────────────────────────────────────────────────── */
+
+    void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
-        _agent.acceleration = runSpeed * 2f;
         _anim = GetComponent<Animator>();
+        _agent.acceleration = runSpeed * 2f;
+        _agent.angularSpeed = 720f;
+        _agent.autoBraking = false;
+        _agent.updateRotation = false;   // моделью крутим сами
     }
 
-    private void OnEnable() => SwitchState(State.Idle);
+    void OnEnable() => SwitchState(State.Idle);
 
-    private void Update()
+    void Update()
     {
         float dt = Time.deltaTime;
-        float dist = Vector3.Distance(transform.position, _player.position);
 
-        if (_cooldownTimer > 0f) _cooldownTimer -= dt;
+        DetectThreats();
 
-        /* ────── глобальные переходы ────── */
-        if (_state != State.Flee && dist < panicRange)
-        {
-            SwitchState(State.Flee);
-        }
-        else if (_state is State.Idle or State.Wander or State.Sleep)
-        {
-            bool inInterestZone = dist < curiosityRange && dist > comfortMax;
-            bool cooledDown = _cooldownTimer <= 0f && dist > approachReenterDistance;
-            if (inInterestZone && cooledDown) SwitchState(State.Approach);
-        }
-
-        /* ────── локальная логика ────── */
         switch (_state)
         {
-            case State.Idle:
-                if (_stateTimer <= 0f)
-                    SwitchState(Random.value < sleepChance ? State.Sleep : State.Wander);
-                break;
-
-            case State.Wander:
-                if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
-                    SwitchState(State.Idle);
-                break;
-
-            case State.Approach:
-                ApproachLogic(dist);
-                break;
-
-            case State.Retreat:
-                if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
-                    SwitchState(State.Wander);              // дальше обычные бродилки
-                break;
-
-            case State.Flee:
-                if (dist > comfortMax * 2f)
-                    EndPlayerInteraction();
-                break;
-
-            case State.Sleep:
-                if (_stateTimer <= 0f)
-                    SwitchState(State.Idle);
-                break;
+            case State.Idle: TickIdle(dt); break;
+            case State.Turn: TickTurn(dt); break;
+            case State.Wander: TickWander(dt); break;
+            case State.Approach: TickApproach(dt); break;
+            case State.Retreat: TickRetreat(dt); break;
+            case State.Flee: TickFlee(dt); break;
+            case State.Sleep: TickSleep(dt); break;
         }
 
-        _stateTimer -= dt;
+        Animate(dt);
 
-        /* ────── анти‑застревание ────── */
-        DetectStuck(dt);
-
-        /* ────── анимация ────── */
-        float speedNorm = _agent.velocity.magnitude / runSpeed;
-        _anim.SetFloat("Speed", speedNorm, 0.1f, dt);
+        if (_state != State.Turn && _agent.velocity.sqrMagnitude > 0.001f)
+        {
+            Quaternion look = Quaternion.LookRotation(_agent.velocity.normalized);
+            transform.rotation = Quaternion.RotateTowards(
+                                    transform.rotation, look,
+                                    turnSpeed * dt);            // тот же turnSpeed
+        }
     }
 
-    /* ────────────── FSM ────────────── */
+    /* ====================== STATE MACHINE ====================== */
 
-    private void SwitchState(State next)
+    void SwitchState(State next)
     {
         _state = next;
-        _stateTimer = 0f;
-        _agent.ResetPath();
-        _agent.isStopped = false;
+        _stateTimer = _curiosityTimer = _stuckTimer = 0f;
 
         switch (next)
         {
             case State.Idle:
                 _stateTimer = Random.Range(idleMinTime, idleMaxTime);
-                _agent.speed = 0f;
+                _agent.ResetPath();
                 break;
 
             case State.Wander:
-                _agent.speed = walkSpeed;
-                _agent.SetDestination(RandomNavSphere(transform.position, wanderRadius));
+                BeginMove(RandomSafePoint(transform.position, wanderRadius), walkSpeed, State.Wander);
                 break;
 
             case State.Approach:
-                _agent.speed = walkSpeed;
                 _curiosityTimer = curiosityTime;
+                BeginMove(SafePointNear(_player.position), walkSpeed, State.Approach);
                 break;
 
             case State.Retreat:
-                _agent.speed = walkSpeed;
-                Vector3 dir = (transform.position - _player.position).normalized;
-                Vector3 tgt = transform.position + dir * retreatDistance;
-                _agent.SetDestination(ClampToNavMesh(tgt));
+                BeginMove(SafePointNear(transform.position - DirToPlayer() * retreatDistance),
+                          walkSpeed, State.Retreat);
                 break;
 
             case State.Flee:
-                _agent.speed = runSpeed;
-                Vector3 fleeDir = (transform.position - _player.position).normalized;
-                Vector3 fleeDest = transform.position + fleeDir * comfortMax * 2f;
-                _agent.SetDestination(ClampToNavMesh(fleeDest));
+                PickFleeDestination();
                 break;
 
             case State.Sleep:
                 _stateTimer = sleepTime;
-                _agent.isStopped = true;
-                _anim.SetFloat("Speed", 0f);
+                _agent.ResetPath();
+                break;
+
+            case State.Turn: /* managed internally */ break;
+        }
+    }
+
+    /* ── individual ticks ───────────────────────────────────────── */
+
+    void TickIdle(float dt)
+    {
+        if ((_stateTimer -= dt) <= 0f)
+            SwitchState(Random.value < sleepChance ? State.Sleep : State.Wander);
+    }
+
+    void TickTurn(float dt)
+    {
+        RotateTowards(_pendingDestination, dt);
+
+        if (FacingTarget(_pendingDestination))
+        {
+            _agent.speed = _pendingSpeed;
+            _agent.isStopped = false;
+            _state = _afterTurnState;
+        }
+    }
+
+    void TickWander(float dt)
+    {
+        AntiStuck(dt);
+        if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
+            SwitchState(State.Idle);
+    }
+
+    void TickApproach(float dt)
+    {
+        float dist = DistToPlayer();
+
+        if (dist > comfortMin)
+            _agent.SetDestination(SafePointNear(_player.position));
+        else
+            _agent.ResetPath(); // остановка, наблюдаем
+
+        _curiosityTimer -= dt;
+        if (_curiosityTimer <= 0f || dist > curiosityRange * 1.2f)
+            EndPlayerInteraction();
+
+        AntiStuck(dt);
+    }
+
+    void TickRetreat(float dt)
+    {
+        AntiStuck(dt);
+        if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
+            SwitchState(State.Wander);
+    }
+
+    void TickFlee(float dt)
+    {
+        AntiStuck(dt);
+
+        // ▸ 1. как только добежали до предыдущей точки – строим новую
+        if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
+            PickFleeDestination();          // ← выберет новую точку «подальше от игрока»
+
+        // ▸ 2. прекращаем убегать, только если игрок окончательно отстал
+        if (DistToPlayer() > fleeEndDistance)
+            EndPlayerInteraction();
+    }
+
+    void TickSleep(float dt)
+    {
+        if ((_stateTimer -= dt) <= 0f)
+            SwitchState(State.Idle);
+    }
+
+    /* ====================== HELPERS ====================== */
+
+    /* -- threats & curiosity ------------------------------------- */
+    void DetectThreats()
+    {
+        float dist = DistToPlayer();
+
+        if (_state != State.Flee && dist < panicRange)
+        {
+            SwitchState(State.Flee);
+            return;
+        }
+
+        if (_state is State.Idle or State.Wander or State.Sleep)
+        {
+            bool interesting = dist < curiosityRange && dist > comfortMax;
+            bool cooled = _cooldownTimer <= 0f && dist > approachReenterDistance;
+            if (interesting && cooled) SwitchState(State.Approach);
+        }
+
+        if (_cooldownTimer > 0f) _cooldownTimer -= Time.deltaTime;
+    }
+
+    void EndPlayerInteraction()
+    {
+        _cooldownTimer = curiosityCooldown;
+        SwitchState(State.Retreat);
+    }
+
+    /* -- movement ------------------------------------------------ */
+    void BeginMove(Vector3 dest, float speed, State afterTurn)
+    {
+        _pendingDestination = dest;
+        _pendingSpeed = speed;
+        _afterTurnState = afterTurn;
+
+        _agent.SetDestination(dest); // пусть рассчитывает путь
+        _agent.speed = 0f;       // тормозим на месте
+        _agent.isStopped = true;
+
+        _state = State.Turn;
+    }
+
+    void RotateTowards(Vector3 target, float dt)
+    {
+        Vector3 dir = target - transform.position; dir.y = 0;
+        if (dir.sqrMagnitude < 0.001f) return;
+
+        Quaternion tgt = Quaternion.LookRotation(dir);
+        transform.rotation = Quaternion.RotateTowards(transform.rotation, tgt, turnSpeed * dt);
+    }
+
+    bool FacingTarget(Vector3 tgt) =>
+        Quaternion.Angle(transform.rotation,
+                         Quaternion.LookRotation((tgt - transform.position).normalized)) <= turnAngleThreshold;
+
+    /* -- anti-stuck ---------------------------------------------- */
+    void AntiStuck(float dt)
+    {
+        bool slow = _agent.velocity.sqrMagnitude < stuckSpeed * stuckSpeed;
+        bool bad = _agent.pathStatus != NavMeshPathStatus.PathComplete;
+
+        if (slow || bad) _stuckTimer += dt; else _stuckTimer = 0f;
+
+        if (_stuckTimer >= stuckTime)
+        {
+            _stuckTimer = 0f;
+            Replan();
+        }
+    }
+
+    void Replan()
+    {
+        switch (_state)
+        {
+            case State.Wander:
+                BeginMove(RandomSafePoint(transform.position, wanderRadius), walkSpeed, State.Wander);
+                break;
+            case State.Approach:
+                BeginMove(SafePointNear(_player.position), walkSpeed, State.Approach);
+                break;
+            case State.Retreat:
+            case State.Flee:
+                PickFleeDestination();
                 break;
         }
     }
 
-    private void ApproachLogic(float dist)
+    /* -- flee with fan search ------------------------------------ */
+    void PickFleeDestination()
     {
-        if (dist > comfortMin)
-            _agent.SetDestination(_player.position);
-        else
+        Vector3 away = DirToPlayer();
+        float[] angs = { 0, -30, 30, -60, 60, -90, 90 };
+
+        foreach (float a in angs)
         {
-            _agent.ResetPath();
-            LookAtPlayer();
-        }
-
-        _curiosityTimer -= Time.deltaTime;
-        if (_curiosityTimer <= 0f || dist > curiosityRange * 1.2f)
-            EndPlayerInteraction();
-    }
-
-    private void EndPlayerInteraction()
-    {
-        _cooldownTimer = curiosityCooldown;
-        SwitchState(State.Retreat);           // сначала уходим, потом Wander
-    }
-
-    /* ────────────── защита от застревания ────────────── */
-    private void DetectStuck(float dt)
-    {
-        bool pathBad = !_agent.hasPath || _agent.pathStatus != NavMeshPathStatus.PathComplete;
-        bool noMove = _agent.velocity.sqrMagnitude < stuckSpeed * stuckSpeed;
-
-        if ((_state == State.Wander || _state == State.Approach ||
-             _state == State.Retreat || _state == State.Flee) &&
-            (pathBad || noMove))
-        {
-            _stuckTimer += dt;
-            if (_stuckTimer >= stuckTime)
+            Vector3 dir = Quaternion.AngleAxis(a, Vector3.up) * away;
+            Vector3 dst = SafePointNear(transform.position + dir * retreatDistance);
+            if (dst != Vector3.zero)
             {
-                _stuckTimer = 0f;
-                SwitchState(State.Idle);
+                BeginMove(dst, runSpeed, State.Flee);
+                return;
             }
         }
-        else _stuckTimer = 0f;
+        // fallback – просто блуждаем
+        BeginMove(RandomSafePoint(transform.position, wanderRadius), walkSpeed, State.Wander);
     }
 
-    /* ────────────── helpers ────────────── */
+    /* -- utilities ----------------------------------------------- */
+    float DistToPlayer() => Vector3.Distance(transform.position, _player.position);
+    Vector3 DirToPlayer() => (transform.position - _player.position).normalized;
 
-    private void LookAtPlayer()
+    Vector3 RandomSafePoint(Vector3 origin, float radius, int attempts = 8)
     {
-        Vector3 dir = _player.position - transform.position;
-        dir.y = 0;
-        if (dir.sqrMagnitude > 0.1f)
-            transform.rotation = Quaternion.RotateTowards(
-                transform.rotation, Quaternion.LookRotation(dir), 180f * Time.deltaTime);
+        for (int i = 0; i < attempts; i++)
+        {
+            Vector3 cand = origin + Random.insideUnitSphere * radius;
+            if (NavMesh.SamplePosition(cand, out var hit, radius, NavMesh.AllAreas) &&
+                !NearEdge(hit.position))
+                return hit.position;
+        }
+        return ClampToNavMesh(origin);
     }
 
-    private static Vector3 RandomNavSphere(Vector3 origin, float radius)
-    {
-        Vector3 rand = Random.insideUnitSphere * radius + origin;
-        NavMesh.SamplePosition(rand, out NavMeshHit hit, radius, NavMesh.AllAreas);
-        return hit.position;
-    }
+    Vector3 SafePointNear(Vector3 desired) =>
+        NearEdge(desired) ? RandomSafePoint(desired, wanderRadius * .5f)
+                          : ClampToNavMesh(desired);
 
-    /// <summary>Коротко: та же выборка, но гарантированно возвращает точку на навмеш‑карте.</summary>
-    private static Vector3 ClampToNavMesh(Vector3 pos, float probe = 4f)
+    bool NearEdge(Vector3 pos) =>
+        NavMesh.FindClosestEdge(pos, out var hit, NavMesh.AllAreas) && hit.distance < edgeAvoidDistance;
+
+    Vector3 ClampToNavMesh(Vector3 pos, float probe = 4f) =>
+        NavMesh.SamplePosition(pos, out var hit, probe, NavMesh.AllAreas) ? hit.position : pos;
+
+    /* -- animation ----------------------------------------------- */
+    void Animate(float dt)
     {
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(pos, out hit, probe, NavMesh.AllAreas))
-            return hit.position;
-        return pos;        // fallback — хоть куда‑то
+        float speedNorm = _agent.velocity.magnitude / runSpeed;
+        _anim.SetFloat("Speed", speedNorm, 0.1f, dt);
     }
 }
