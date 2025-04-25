@@ -5,6 +5,8 @@ public class NewGameButton : MonoBehaviour
 {
     [SerializeField] private GameObject newGamePanel;
 
+    public static event System.Action NewGameStarted;
+
     private SaveLoadManager _saveLoadManager;
     private void Awake()
     {
@@ -45,6 +47,7 @@ public class NewGameButton : MonoBehaviour
             // —бросить все сохранЄнные данные, чтобы нова€ игра начиналась с чистого листа
             _saveLoadManager.ClearSavs();
         }
+        NewGameStarted?.Invoke();        // оповестили всех подписчиков
         LoadingScreenManager.Instance.LoadScene("StartDay");
     }
     public void HideNewGamePanel()
