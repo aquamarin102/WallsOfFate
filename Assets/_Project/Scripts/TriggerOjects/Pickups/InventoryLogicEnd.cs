@@ -10,7 +10,8 @@ public class InventoryLogicEnd : MonoBehaviour
     [SerializeField] private string _pickupType;
 
     [Header("Button Settings")]
-    [SerializeField] private GameObject _buttonObject; // Ссылка на объект-кнопку
+    [SerializeField] private GameObject _buttonObject; 
+    [SerializeField] private GameObject _inventoryObj; 
 
     private List<Pickup> _currentPickupsOfType = new List<Pickup>();
     private int _displayedImagesCount = 0;

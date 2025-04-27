@@ -8,9 +8,8 @@
         "Complite": false,
         "OpenNPS": "Messenger",
         "CurrentTaskId": 0,
-        //Refugee/RefugeeForgeMobilisationQuest/
-        //Messager/MessagerDialogMainRoom/
         "OpenDialog": "Messager/MessagerDialogMainRoom/",
+        "Prime": false,
         "Tasks": [
           {
             "Id": 0,
@@ -68,12 +67,23 @@
               "CastleStrength": 0
             }
           },
+        ]       
+      },
+      {
+        "Id": 1,
+        "InProgress": false,
+        "Complite": false,
+        "OpenNPS": "Messenger",
+        "CurrentTaskId": 0,
+        "OpenDialog": "Messager/MessagerDialogMainRoom/",
+        "Prime": false,
+        "Tasks": [
           {
-            "Id": 4,
+            "Id": 0,
             "TaskInfo": "Поговорить с главой стражи",
             "IsDone": false,
             "ForNPS": "ChiefGuard",
-            "RequeredTasksIds": [0, 1, 3],
+            "RequeredTasksIds": [],
             "RequeredDialog": "ChiefGuard/GuardForgeGuardQuestDialog/",
             "Resources": {
               "Gold": 0,
@@ -83,11 +93,11 @@
             }
           },
           {
-            "Id": 5,
+            "Id": 1,
             "TaskInfo": "Найти беженца",
             "IsDone": false,
             "ForNPS": "Refugee",
-            "RequeredTasksIds": [0, 1, 3, 4],
+            "RequeredTasksIds": [0],
             "RequeredDialog": "Refugee/RefugeeForgeMobilisationQuest/",
             "Resources": {
               "Gold": 0,
@@ -97,11 +107,11 @@
             }
           },
           {
-            "Id": 6,
+            "Id": 2,
             "TaskInfo": "Вернуться в тронный зал",
             "IsDone": false,
             "ForNPS": "MainroomDoor",
-            "RequeredTasksIds": [0, 1, 3, 4, 5],
+            "RequeredTasksIds": [0, 1],
             "RequeredDialog": "",
             "Resources": {
               "Gold": 0,
@@ -110,12 +120,23 @@
               "CastleStrength": 0
             }
           },
+        ]       
+      }
+      {
+        "Id": 2,
+        "InProgress": false,
+        "Complite": false,
+        "OpenNPS": "Messenger",
+        "CurrentTaskId": 0,
+        "OpenDialog": "Messager/MessagerDialogMainRoom/",
+        "Prime": true,
+        "Tasks": [
           {
-            "Id": 7,
+            "Id": 0,
             "TaskInfo": " Узнать у гонца новости",
             "IsDone": false,
             "ForNPS": "Messenger",
-            "RequeredTasksIds": [0, 1, 3, 4, 5, 6],
+            "RequeredTasksIds": [],
             "RequeredDialog": "",
             "Resources": {
               "Gold": 0,
@@ -125,11 +146,11 @@
             }
           },
           {
-            "Id": 8,
+            "Id": 1,
             "TaskInfo": "Пойти на склад",
             "IsDone": false,
             "ForNPS": "StorageDoor",
-            "RequeredTasksIds": [0, 1, 3, 4, 5, 6, 7],
+            "RequeredTasksIds": [0],
             "RequeredDialog": "Messager/MessagerMainRoomStorageQuest/",
             "Resources": {
               "Gold": 0,
