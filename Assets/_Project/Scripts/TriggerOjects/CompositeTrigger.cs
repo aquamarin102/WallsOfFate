@@ -31,16 +31,19 @@ public class CompositeTrigger : MonoBehaviour, ITriggerable
 
         // Обработка активных квестов
         var activeGroups = QuestCollection.GetActiveQuestGroups();
-        for ( int i = 0; i < activeGroups.Count; i++)
+        var groupToUpdate = activeGroups.FirstOrDefault(g =>
+            g.GetCurrentTask() != null &&
+            CanTriggerTask(g.GetCurrentTask()));
+
+        if (groupToUpdate != null)
         {
-            var currentTask = QuestCollection.GetCurrentTaskForGroup(activeGroups[i]);
-            if (currentTask != null && CanTriggerTask(currentTask))
-            {
-                currentTask.CompleteTask();
-                activeGroups[i] = UpdateGroupState(activeGroups[i]);
-                QuestCollection.UpdateQuestGroup(activeGroups[i]);
-                return;
-            }
+            groupToUpdate.GetCurrentTask().CompleteTask();
+            groupToUpdate = UpdateGroupState(groupToUpdate);
+
+            var originalGroup = QuestCollection.GetAllQuestGroups()
+                .FirstOrDefault(g => g.Id == groupToUpdate.Id);
+
+            originalGroup?.CopyFrom(groupToUpdate);
         }
     }
 

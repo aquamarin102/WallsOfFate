@@ -31,18 +31,20 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
         }
 
         // Обработка активных квестов
-        var activeGroups = QuestCollection.GetActiveQuestGroups();
-        for (int i = 0; i < activeGroups.Count; i++)
+       var activeGroups = QuestCollection.GetActiveQuestGroups();
+        var groupToUpdate = activeGroups.FirstOrDefault(g =>
+            g.GetCurrentTask() != null &&
+            CanTriggerTask(g.GetCurrentTask(), out var dialogue));
+
+        if (groupToUpdate != null)
         {
-            var currentTask = QuestCollection.GetCurrentTaskForGroup(activeGroups[i]);
-            if (currentTask != null && CanTriggerTask(currentTask, out var dialogue))
-            {
-                currentTask.CompleteTask();
-                activeGroups[i] = UpdateGroupState(activeGroups[i]);
-                DialogueManager.GetInstance().EnterDialogueMode(currentTask.RequeredDialog);
-                QuestCollection.UpdateQuestGroup(activeGroups[i]);
-                return;
-            }
+            groupToUpdate.GetCurrentTask().CompleteTask();
+            groupToUpdate = UpdateGroupState(groupToUpdate);
+
+            var originalGroup = QuestCollection.GetAllQuestGroups()
+                .FirstOrDefault(g => g.Id == groupToUpdate.Id);
+
+            originalGroup?.CopyFrom(groupToUpdate);
         }
 
         // Дефолтный диалог
