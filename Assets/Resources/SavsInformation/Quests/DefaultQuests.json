@@ -1,166 +1,113 @@
-[
-  {
-    "Day": 1,
-    "Quests": [
-      {
-        "Id": 0,
-        "InProgress": false,
-        "Complite": false,
-        "OpenNPS": "Messenger",
-        "CurrentTaskId": 0,
-        "OpenDialog": "Messager/MessagerDialogMainRoom/",
-        "Prime": false,
-        "Tasks": [
-          {
-            "Id": 0,
-            "TaskInfo": "Выйти из главного зала",
-            "IsDone": false,
-            "ForNPS": "ForgeDoor",
-            "RequeredTasksIds": [],
-            "RequeredDialog": "",
-            "Resources": {
-              "Gold": 0,
-              "Food": 0,
-              "PeopleSatisfaction": 0,
-              "CastleStrength": 0
+{
+  "CurrentDay": 0,
+  "Days": [
+    {
+      "Day": 0,
+      "Quests": [
+        {
+          "Id": 0,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Messenger",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Messager/MessagerDialogMainRoom/",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": [
+            {
+              "Id": 0,
+              "TaskInfo": "Выйти из главного зала",
+              "IsDone": false,
+              "ForNPS": "ForgeDoor",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            },
+            {
+              "Id": 1,
+              "TaskInfo": "Поговорить с кузнецом",
+              "IsDone": false,
+              "ForNPS": "Blacksmith",
+              "RequeredTasksIds": [0],
+              "RequeredDialog": "Blacksmith/SmithyForgeDialoge/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
             }
+          ]
+        },
+        {
+          "Id": 2,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Messenger",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Messager/MessagerMainRoomStorageQuest/",
+          "Evidence": {
+            "EvidenceType": "---",
+            "Dialoge": "Messager/MessagerMainRoomStorageQuest/",
+            "DialogePlayed": false,
+            "Picture": "UI/Inventory/UIPrefabs/ItemsImages/forest",
+            "Description": "Пахнет лесом..."
           },
-          {
-            "Id": 1,
-            "TaskInfo": "Поговорить с кузнецом",
-            "IsDone": false,
-            "ForNPS": "Blacksmith",
-            "RequeredTasksIds": [0],
-            "RequeredDialog": "Blacksmith/SmithyForgeDialoge/",
-            "Resources": {
-              "Gold": 0,
-              "Food": 0,
-              "PeopleSatisfaction": 0,
-              "CastleStrength": 0
+          "Prime": true,
+          "Tasks": [
+            {
+              "Id": 0,
+              "TaskInfo": "Пойти на склад",
+              "IsDone": false,
+              "ForNPS": "StorageDoor",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Messager/MessagerMainRoomStorageQuest/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
             }
-          },
-          {
-            "Id": 2,
-            "TaskInfo": "Найти молот",
-            "IsDone": false,
-            "ForNPS": "Chest",
-            "RequeredTasksIds": [0, 1],
-            "RequeredDialog": "",
-            "Resources": {
-              "Gold": 0,
-              "Food": 0,
-              "PeopleSatisfaction": 0,
-              "CastleStrength": 0
+          ]
+        }
+      ]
+    },
+    {
+      "Day": 1,
+      "Quests": [
+        {
+          "Id": 1,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "ChiefGuard",
+          "CurrentTaskId": 0,
+          "OpenDialog": "ChiefGuard/GuardForgeGuardQuestDialog/",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": [
+            {
+              "Id": 0,
+              "TaskInfo": "Найти беженца",
+              "IsDone": false,
+              "ForNPS": "Refugee",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Refugee/RefugeeForgeMobilisationQuest/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
             }
-          },
-          {
-            "Id": 3,
-            "TaskInfo": "Поговорить с кузнецом",
-            "IsDone": false,
-            "ForNPS": "Blacksmith",
-            "RequeredTasksIds": [0, 1, 2],
-            "RequeredDialog": "Blacksmith/SmithyWithHummerDialog/",
-            "Resources": {
-              "Gold": 0,
-              "Food": 0,
-              "PeopleSatisfaction": 0,
-              "CastleStrength": 0
-            }
-          },
-        ]       
-      },
-      {
-        "Id": 1,
-        "InProgress": false,
-        "Complite": false,
-        "OpenNPS": "Messenger",
-        "CurrentTaskId": 0,
-        "OpenDialog": "Messager/MessagerDialogMainRoom/",
-        "Prime": false,
-        "Tasks": [
-          {
-            "Id": 0,
-            "TaskInfo": "Поговорить с главой стражи",
-            "IsDone": false,
-            "ForNPS": "ChiefGuard",
-            "RequeredTasksIds": [],
-            "RequeredDialog": "ChiefGuard/GuardForgeGuardQuestDialog/",
-            "Resources": {
-              "Gold": 0,
-              "Food": 0,
-              "PeopleSatisfaction": 0,
-              "CastleStrength": 0
-            }
-          },
-          {
-            "Id": 1,
-            "TaskInfo": "Найти беженца",
-            "IsDone": false,
-            "ForNPS": "Refugee",
-            "RequeredTasksIds": [0],
-            "RequeredDialog": "Refugee/RefugeeForgeMobilisationQuest/",
-            "Resources": {
-              "Gold": 0,
-              "Food": 0,
-              "PeopleSatisfaction": 0,
-              "CastleStrength": 0
-            }
-          },
-          {
-            "Id": 2,
-            "TaskInfo": "Вернуться в тронный зал",
-            "IsDone": false,
-            "ForNPS": "MainroomDoor",
-            "RequeredTasksIds": [0, 1],
-            "RequeredDialog": "",
-            "Resources": {
-              "Gold": 0,
-              "Food": 0,
-              "PeopleSatisfaction": 0,
-              "CastleStrength": 0
-            }
-          },
-        ]       
-      }
-      {
-        "Id": 2,
-        "InProgress": false,
-        "Complite": false,
-        "OpenNPS": "Messenger",
-        "CurrentTaskId": 0,
-        "OpenDialog": "Messager/MessagerDialogMainRoom/",
-        "Prime": true,
-        "Tasks": [
-          {
-            "Id": 0,
-            "TaskInfo": " Узнать у гонца новости",
-            "IsDone": false,
-            "ForNPS": "Messenger",
-            "RequeredTasksIds": [],
-            "RequeredDialog": "",
-            "Resources": {
-              "Gold": 0,
-              "Food": 0,
-              "PeopleSatisfaction": 0,
-              "CastleStrength": 0
-            }
-          },
-          {
-            "Id": 1,
-            "TaskInfo": "Пойти на склад",
-            "IsDone": false,
-            "ForNPS": "StorageDoor",
-            "RequeredTasksIds": [0],
-            "RequeredDialog": "Messager/MessagerMainRoomStorageQuest/",
-            "Resources": {
-              "Gold": 0,
-              "Food": 0,
-              "PeopleSatisfaction": 0,
-              "CastleStrength": 0
-            }
-          },
-        ]       
-      }
-    ]
-  }
-]
+          ]
+        }
+      ]
+    }
+  ]
+}

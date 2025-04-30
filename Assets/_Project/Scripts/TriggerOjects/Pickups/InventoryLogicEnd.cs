@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Quest;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class InventoryLogicEnd : MonoBehaviour
 {
@@ -57,10 +59,10 @@ public class InventoryLogicEnd : MonoBehaviour
         if (_buttonObject == null) return;
 
         // Находим первый неотрендеренный пикап
-        var nonRenderedPickup = FindFirstNonRenderedPickup(_pickupType);
+        //var nonRenderedPickup = FindFirstNonRenderedPickup(_pickupType);
 
         // Если все пикапы отрендерены и есть что показывать
-        bool allDisplayed = nonRenderedPickup == null && _displayedImagesCount >= 3;
+        bool allDisplayed = /*nonRenderedPickup == null && */_displayedImagesCount >= 3;
         _buttonObject.SetActive(allDisplayed);
     }
 
@@ -87,15 +89,46 @@ public class InventoryLogicEnd : MonoBehaviour
 
     public void ChangeVisibility(string pickupType)
     {
-        Pickup pickup = FindFirstNonRenderedPickup(pickupType);
-        pickup.Rendered = true;
-        RefreshPanel();
+        var completedEvidenceQuests = QuestCollection.GetAllQuestGroups()
+            .Where(q => q.Evidence != null &&
+                       !string.IsNullOrEmpty(q.Evidence.EvidenceType))
+            .ToList();
+
+        // Проверяем, что такой квест ровно один
+        bool hasSingleCompletedEvidenceQuest = completedEvidenceQuests.Count == 1;
+        QuestGroup quest = null;
+        if (hasSingleCompletedEvidenceQuest) quest = completedEvidenceQuests[0];
+
+        if (quest.Evidence.EvidenceType != "" && hasSingleCompletedEvidenceQuest)
+        {
+            if(!quest.Evidence.DialogePlayed)
+            {
+                _inventoryObj.SetActive(false);
+                DialogueManager.GetInstance().EnterDialogueMode(quest.Evidence.Dialoge);
+                quest.Evidence.DialogePlayed = true;
+            }
+            else
+            {
+                GameObject imagePannel = GameObject.FindWithTag("ImageField");
+                GameObject textField = GameObject.FindWithTag("TextField");
+
+                TMPro.TextMeshProUGUI textMeshProComponent = textField.GetComponent<TMPro.TextMeshProUGUI>();
+                Sprite loadedSprite = Resources.Load<Sprite>(quest.Evidence.Picture);
+
+                UnityEngine.UI.Image targetImage = imagePannel.GetComponent<UnityEngine.UI.Image>();
+                    
+                textMeshProComponent.text = quest.Evidence.Description;
+                targetImage.sprite = loadedSprite;
+
+            }
+        }
+
     }
 
     private void UpdatePanelFromPickup(GameObject panel, Pickup pickup)
     {
         var panelPickup = panel.GetComponent<Pickup>();
-        var panelImage = panel.transform.Find("Image")?.GetComponent<Image>();
+        var panelImage = panel.transform.Find("Image")?.GetComponent<UnityEngine.UI.Image>();
 
         if (panelPickup == null) return;
 
@@ -129,7 +162,7 @@ public class InventoryLogicEnd : MonoBehaviour
         }
     }
 
-    private void LoadAndSetSprite(string path, Image targetImage)
+    private void LoadAndSetSprite(string path, UnityEngine.UI.Image targetImage)
     {
         Sprite loadedSprite = Resources.Load<Sprite>(path);
         if (loadedSprite != null)

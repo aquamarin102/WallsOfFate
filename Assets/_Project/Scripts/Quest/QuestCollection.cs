@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Overlays;
 using UnityEngine;
 
 namespace Quest
@@ -16,55 +17,72 @@ namespace Quest
         public int CastleStrength;
     }
 
+    [System.Serializable]
+    public class QuestSaveData
+    {
+        public int CurrentDay;
+        public List<DayData> Days = new List<DayData>();
+    }
+
     public static class QuestCollection
     {
-        private static List<DayData> Days = new List<DayData>();
-
-        public static void AddDay(DayData day) => Days.Add(day);
-        public static void ClearQuests() => Days.Clear();
-        public static List<DayData> GetAllDays() => new List<DayData>(Days);
-
-        public static List<QuestGroup> GetActiveQuestGroups()
-        {
-            return Days
-                .SelectMany(d => d.Quests)
-                .Where(q => q.InProgress && !q.Complite)
-                .ToList();
-        }
-
-        public static QuestTask GetCurrentTaskForGroup(QuestGroup group)
-        {
-            QuestTask currentTask = group.Tasks.First(t => t.Id == group.CurrentTaskId && !t.IsDone);
-            return currentTask;
-        }
-
-        public static void UpdateQuestGroup(QuestGroup updatedGroup)
-        {
-            // Итерируем по всем дням
-            foreach (var day in Days)
-            {
-                // Ищем группу с нужным ID в текущем дне
-                var index = day.Quests.FindIndex(g => g.Id == updatedGroup.Id);
-                if (index != -1)
-                {
-                    // Заменяем старую версию группы на обновленную
-                    day.Quests[index] = updatedGroup;
-                    return; // Предполагаем уникальность ID групп
-                }
-            }
-
-            Debug.LogWarning($"Quest group with ID {updatedGroup.Id} not found!");
-        }
+        private static QuestSaveData _saveData = new QuestSaveData();
 
         public static int CurrentDayNumber
         {
-            get
-            {
-                if (Days.Count == 0) return -1;
-                return Days[Days.Count - 1].Day;
-            }
+            get => _saveData.CurrentDay;
+            private set => _saveData.CurrentDay = value;
+        }
+
+        public static void Initialize(QuestSaveData saveData = null)
+        {
+            _saveData = saveData ?? new QuestSaveData();
+            if (_saveData.Days == null) _saveData.Days = new List<DayData>();
+        }
+
+        public static void AddDay(DayData day)
+        {
+            _saveData.Days.Add(day);
+            CurrentDayNumber = day.Day;
+        }
+
+        public static void ClearQuests() => _saveData.Days.Clear();
+        public static List<DayData> GetAllDays() => new List<DayData>(_saveData.Days);
+
+        public static void IncreaseCurrentDay()
+        {
+            CurrentDayNumber++;
+        }
+
+        private static DayData GetCurrentDayData()
+        {
+            return _saveData.Days.FirstOrDefault(d => d.Day == CurrentDayNumber);
+        }
+
+        public static List<QuestGroup> GetActiveQuestGroups()
+        {
+            var currentDay = GetCurrentDayData();
+            return currentDay?.Quests.Where(q => q.InProgress && !q.Complite).ToList()
+                   ?? new List<QuestGroup>();
+        }
+
+        public static List<QuestGroup> GetAllQuestGroups()
+        {
+            var currentDay = GetCurrentDayData();
+            return currentDay?.Quests ?? new List<QuestGroup>();
+        }
+
+        public static string SaveToJson()
+        {
+            return JsonConvert.SerializeObject(_saveData, Formatting.Indented);
+        }
+
+        public static void LoadFromJson(string json)
+        {
+            _saveData = JsonConvert.DeserializeObject<QuestSaveData>(json);
         }
     }
+
 
     [System.Serializable]
     public class DayData
@@ -81,7 +99,9 @@ namespace Quest
         public bool Complite;
         public string OpenNPS;
         public String OpenDialog;
+        public Evidence Evidence;
         public int CurrentTaskId;
+        public bool Prime;
         public List<QuestTask> Tasks = new List<QuestTask>();
 
         public bool CheckOpen(string npcName)
@@ -94,6 +114,67 @@ namespace Quest
             InProgress = true;
             CurrentTaskId = Tasks.FirstOrDefault()?.Id ?? -1;
         }
+        public void CopyFrom(QuestGroup source)
+        {
+            if (source == null) return;
+
+            // Копируем простые поля
+            Id = source.Id;
+            InProgress = source.InProgress;
+            Complite = source.Complite;
+            OpenNPS = source.OpenNPS;
+            OpenDialog = source.OpenDialog;
+            CurrentTaskId = source.CurrentTaskId;
+            Prime = source.Prime;
+
+            // Копируем Evidence (с проверкой на null)
+            if (source.Evidence != null)
+            {
+                Evidence = new Evidence
+                {
+                    EvidenceType = source.Evidence.EvidenceType,
+                    Dialoge = source.Evidence.Dialoge,
+                    DialogePlayed = source.Evidence.DialogePlayed,
+                    Picture = source.Evidence.Picture,
+                    Description = source.Evidence.Description
+                };
+            }
+            else
+            {
+                Evidence = null;
+            }
+
+            // Копируем список Tasks (с глубоким копированием)
+            Tasks = source.Tasks.Select(task => new QuestTask
+            {
+                Id = task.Id,
+                TaskInfo = task.TaskInfo,
+                IsDone = task.IsDone,
+                ForNPS = task.ForNPS,
+                RequeredTasksIds = task.RequeredTasksIds?.ToArray(), // Копируем массив
+                RequeredDialog = task.RequeredDialog,
+                Resources = new QuestResources
+                {
+                    Gold = task.Resources.Gold,
+                    Food = task.Resources.Food,
+                    PeopleSatisfaction = task.Resources.PeopleSatisfaction,
+                    CastleStrength = task.Resources.CastleStrength
+                }
+            }).ToList();
+        }
+
+        public int GetCurrentTaskId() => CurrentTaskId;
+        public QuestTask GetCurrentTask() => Tasks[CurrentTaskId];
+    }
+
+    [System.Serializable]
+    public class Evidence
+    {
+        public string EvidenceType;
+        public string Dialoge;
+        public bool DialogePlayed;
+        public string Picture;
+        public string Description;
     }
 
     [System.Serializable]
@@ -131,12 +212,5 @@ namespace Quest
             GameResources.GameResources.ChangePeopleSatisfaction(Resources.PeopleSatisfaction);
             GameResources.GameResources.ChangeCastleStrength(Resources.CastleStrength);
         }
-
-
-    }
-
-    [JsonArray]
-    public class QuestSaveData : List<DayData>
-    {
     }
 }
