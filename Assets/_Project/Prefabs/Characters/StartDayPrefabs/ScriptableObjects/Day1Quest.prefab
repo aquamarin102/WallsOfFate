@@ -5109,7 +5109,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _defaultDialogue: Messager/DialogMainRoom
-  _npcName: Messager
+  _npcName: Messenger
 --- !u!54 &-2152221844647822888
 Rigidbody:
   m_ObjectHideFlags: 0

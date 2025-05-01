@@ -8,14 +8,10 @@ namespace Quest
     {
         public bool LoadData()
         {
-            if (Repository.TryGetData("QuestSchedule", out List<DayData> saveData))
+            if (Repository.TryGetData("QuestSchedule", out QuestSaveData saveData))
             {
-                QuestCollection.ClearQuests();
-                foreach (var day in saveData)
-                {
-                    QuestCollection.AddDay(day);
-                }
-                Debug.Log($"Loaded {saveData.Count} days");
+                QuestCollection.Initialize(saveData);
+                Debug.Log($"Loaded quest data for day {saveData.CurrentDay}");
                 return true;
             }
             return false;
@@ -36,26 +32,36 @@ namespace Quest
                 {
                     ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
                     NullValueHandling = NullValueHandling.Ignore,
-                    MissingMemberHandling = MissingMemberHandling.Error
+                    MissingMemberHandling = MissingMemberHandling.Ignore // Изменили на Ignore для большей устойчивости
                 };
 
-                var defaultData = JsonConvert.DeserializeObject<List<DayData>>(textAsset.text, settings);
-                QuestCollection.ClearQuests();
-                foreach (var day in defaultData)
+                var defaultData = JsonConvert.DeserializeObject<QuestSaveData>(textAsset.text, settings);
+
+                if (defaultData == null)
                 {
-                    QuestCollection.AddDay(day);
+                    Debug.LogError("Failed to deserialize default quest data");
+                    return;
                 }
+
+                QuestCollection.Initialize(defaultData);
+                Debug.Log($"Loaded default quest data for day {defaultData.CurrentDay} with {defaultData.Days.Count} days");
             }
             catch (JsonException ex)
             {
-                Debug.LogError($"JSON error: {ex.Message}");
+                Debug.LogError($"JSON error: {ex.Message}\n{ex.StackTrace}");
             }
         }
 
         public void SaveData()
         {
-            Repository.SetData("QuestSchedule", QuestCollection.GetAllDays());
-            Debug.Log($"Saved {QuestCollection.GetAllDays().Count} days");
+            var saveData = new QuestSaveData
+            {
+                CurrentDay = QuestCollection.CurrentDayNumber,
+                Days = QuestCollection.GetAllDays()
+            };
+
+            Repository.SetData("QuestSchedule", saveData);
+            Debug.Log($"Saved quest data for day {saveData.CurrentDay} with {saveData.Days.Count} days");
         }
     }
 }
