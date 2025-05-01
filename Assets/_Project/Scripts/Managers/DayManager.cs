@@ -29,6 +29,7 @@ public class DayManager : MonoBehaviour
     // Публичный метод для начала нового дня
     public void StartNewDay()
     {
+        PlayerSpawnData.ClearData();
         if (_inventoryLogicEnd != null)
         {
             // Обновляем панель инвентаря
@@ -42,7 +43,7 @@ public class DayManager : MonoBehaviour
         QuestCollection.IncreaseCurrentDay();
 
         // Загружаем сцену начала дня
-        SceneManager.LoadScene("StartDay");
+        LoadingScreenManager.Instance.LoadScene("StartDay");
 
         // Дополнительные действия при начале нового дня
         Debug.Log("Начинается новый день!");
