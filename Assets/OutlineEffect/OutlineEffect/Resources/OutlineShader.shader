@@ -95,7 +95,6 @@ Shader "Hidden/OutlineEffect"
 				bool red = sample1.r > h || sample2.r > h || sample3.r > h || sample4.r > h;
 				bool green = sample1.g > h || sample2.g > h || sample3.g > h || sample4.g > h;
 				bool blue = sample1.b > h || sample2.b > h || sample3.b > h || sample4.b > h;
-				bool 123 = sample1.b > h || sample2.b > h || sample3.b > h || sample4.b > h;
 				 
 				if ((red && blue) || (green && blue) || (red && green))
 					return float4(0,0,0,0);
