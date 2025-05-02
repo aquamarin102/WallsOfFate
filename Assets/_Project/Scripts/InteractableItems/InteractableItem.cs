@@ -9,14 +9,23 @@ public class InteractableItem : MonoBehaviour, ITriggerable
 {
     public ResourceType resourceType;
     public int amount = 1;
-    [TextArea] public string message = "+1 resource";
+
+    [TextArea]
+    public string message = "+1 resource";
+
     public GameObject floatingTextPrefab;
 
     [Header("Смещение точки спавна текста")]
     [Tooltip("Смещение от позиции игрока до точки, где должен появиться текст")]
     public Vector3 spawnOffset = new Vector3(0f, 2.5f, 0f);
 
+    [Header("Поведение после взаимодействия")]
+    [Tooltip("Если true — объект удалится после взаимодействия. Иначе — отключится, но останется.")]
+    public bool destroyAfterUse = true;
+
     private Transform _player;
+    private bool _hasBeenUsed = false;
+    public bool HasBeenUsed => _hasBeenUsed;
 
     [Inject]
     private void Construct(PlayerMoveController player)
@@ -24,9 +33,14 @@ public class InteractableItem : MonoBehaviour, ITriggerable
         _player = player.transform;
     }
 
+
     public void Interact()
     {
-        // 1) ресурсы
+        if (_hasBeenUsed) return;
+
+        _hasBeenUsed = true;
+
+        // 1) Изменяем ресурсы
         switch (resourceType)
         {
             case ResourceType.Gold:
@@ -43,26 +57,39 @@ public class InteractableItem : MonoBehaviour, ITriggerable
                 break;
         }
 
-        // 2) спавним текст
+        // 2) Спавним текст
         if (floatingTextPrefab != null && _player != null)
         {
-            // позиция появления относительно мировой (можно настроить через spawnOffset)
             Vector3 worldPos = _player.position + spawnOffset;
-            // Instantiate(prefab, position, rotation, parent) — с этой перегрузкой
-            // ваш текст сразу станет ребёнком _player и при этом сохранит мировую позицию worldPos
             GameObject ftGO = Instantiate(floatingTextPrefab, worldPos, Quaternion.identity, _player);
-
-            // Если хотите, чтобы при этом локальная позиция была именно spawnOffset:
-            // ftGO.transform.localPosition = spawnOffset;
-
-            // Задаём текст
             var ft = ftGO.GetComponent<FloatingText>();
             if (ft != null)
                 ft.SetText(message);
         }
 
-        // 3) удаляем предмет
-        Destroy(gameObject);
+        // 3) Реакция после взаимодействия
+        if (destroyAfterUse)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            // Отключаем коллайдер и (по желанию) визуальный эффект подсветки
+            Collider col = GetComponent<Collider>();
+            if (col != null)
+                col.enabled = false;
+
+            // Если есть подсветка — отключаем, например:
+            var ps = GetComponentInChildren<ParticleSystem>();
+            if (ps != null)
+                ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
+
+        var outlines = GetComponentsInChildren<cakeslice.Outline>();
+        foreach (var outline in outlines)
+        {
+            outline.enabled = false;
+        }
     }
 
     public void Triggered() => Interact();

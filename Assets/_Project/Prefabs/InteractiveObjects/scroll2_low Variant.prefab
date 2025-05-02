@@ -48,6 +48,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3126207040717238407, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
+      propertyPath: startDelay.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3126207040717238407, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 3126207040717238407, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 0.37
+      objectReference: {fileID: 0}
     - target: {fileID: 8042731928459727838, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
       propertyPath: m_Name
       value: ItemIndicator
@@ -66,11 +78,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117314352634165041, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
       propertyPath: m_BoundingSphereOverride.y
-      value: 37
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9117314352634165041, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
       propertyPath: m_BoundingSphereOverride.z
-      value: 12
+      value: 3.4e-44
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -195,6 +207,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _textInd: {fileID: 0}
+  _spritePath: 
 --- !u!114 &-9214414042760643287
 MonoBehaviour:
   m_ObjectHideFlags: 0

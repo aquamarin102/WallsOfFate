@@ -4,6 +4,7 @@ using cakeslice;
 public class OutlineTrigger : MonoBehaviour
 {
     private Outline[] outlines;
+    private InteractableItem interactable;
 
     void Start()
     {
@@ -15,11 +16,14 @@ public class OutlineTrigger : MonoBehaviour
         {
             outline.enabled = false;
         }
+
+        // Ищем скрипт взаимодействия
+        interactable = GetComponent<InteractableItem>();
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("Player") && interactable != null && !interactable.HasBeenUsed)
         {
             foreach (var outline in outlines)
             {
