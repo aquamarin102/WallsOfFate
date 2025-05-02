@@ -144,9 +144,19 @@ public class InteractManager : MonoBehaviour
     // Пытаемся активировать конкретный триггер, если он еще не был активирован (либо если это Box)
     private void TryTrigger(ITriggerable trigger)
     {
+        // если еще не срабатывали (или это Box — можем повторять)
         if (!triggeredSet.Contains(trigger) || trigger is Box)
         {
-            trigger.Triggered();
+            // если это наш интерактивный предмет — просто Interact()
+            if (trigger is InteractableItem item)
+            {
+                item.Interact();
+            }
+            else
+            {
+                // любая другая логика
+                trigger.Triggered();
+            }
             triggeredSet.Add(trigger);
         }
         else

@@ -20,6 +20,8 @@ TagManager:
   - PickupBody
   - Chest
   - AudienceTrigger
+  - asteroid
+  - ship
   layers:
   - Default
   - TransparentFX
@@ -56,6 +58,9 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: UI
+    uniqueID: 2891714427
     locked: 0
   m_RenderingLayers:
   - Default
