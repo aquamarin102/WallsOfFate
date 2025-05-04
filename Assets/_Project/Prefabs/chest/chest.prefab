@@ -85,6 +85,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 56aeacee097f54545a07b5dc6b902e90, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3193528699088873577}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 56aeacee097f54545a07b5dc6b902e90, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4276808589213752708}
     - targetCorrespondingSourceObject: {fileID: -4327823178384824310, guid: 56aeacee097f54545a07b5dc6b902e90, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1855454775005674718}
@@ -267,3 +270,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246c04dfc0ad72d4d947b4c8da3b71df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4276808589213752708
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5574770098997398007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65393348ff72ffd4381fa218907a33d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  resourceType: 0
+  amount: 1
+  message: "\u041F\u043E\u0445\u043E\u0436\u0435 \u043D\u0430 \u043C\u043E\u043B\u043E\u0442,
+    \u0447\u0442\u043E \u0438\u0441\u043A\u0430\u043B \u043A\u0443\u0437\u043D\u0435\u0446."
+  floatingTextPrefab: {fileID: 4848396624485697127, guid: b674c6ddfaf88fa4c8200c48bc74b5fa, type: 3}
+  spawnOffset: {x: 0, y: 2.3, z: 0}
+  destroyAfterUse: 0

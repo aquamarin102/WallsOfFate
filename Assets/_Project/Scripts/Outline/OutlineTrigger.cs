@@ -17,17 +17,21 @@ public class OutlineTrigger : MonoBehaviour
             outline.enabled = false;
         }
 
-        // Ищем скрипт взаимодействия
+        // Ищем скрипт взаимодействия (может отсутствовать!)
         interactable = GetComponent<InteractableItem>();
     }
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player") && interactable != null && !interactable.HasBeenUsed)
+        if (other.CompareTag("Player"))
         {
-            foreach (var outline in outlines)
+            // Проверка: если есть InteractableItem, то подсвечиваем только если не использован
+            if (interactable == null || !interactable.HasBeenUsed)
             {
-                outline.enabled = true;
+                foreach (var outline in outlines)
+                {
+                    outline.enabled = true;
+                }
             }
         }
     }

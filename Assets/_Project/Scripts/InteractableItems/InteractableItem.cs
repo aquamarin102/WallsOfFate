@@ -70,7 +70,7 @@ public class InteractableItem : MonoBehaviour, ITriggerable
         // 3) Реакция после взаимодействия
         if (destroyAfterUse)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
         else
         {
