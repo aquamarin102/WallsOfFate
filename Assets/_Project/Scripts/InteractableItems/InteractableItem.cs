@@ -1,6 +1,7 @@
 using UnityEngine;
 using GameResources;
 using Zenject;
+using Zenject.SpaceFighter;
 
 public enum ResourceType { Gold, Food, PeopleSatisfaction, CastleStrength }
 
@@ -27,10 +28,15 @@ public class InteractableItem : MonoBehaviour, ITriggerable
     private bool _hasBeenUsed = false;
     public bool HasBeenUsed => _hasBeenUsed;
 
-    [Inject]
-    private void Construct(PlayerMoveController player)
+
+    private void Start()
     {
-        _player = player.transform;
+        if (!_player)
+        {
+            var go = GameObject.FindGameObjectWithTag("Player");
+            if (go) _player = go.transform;
+            else Debug.LogError("Player not found — тегните объект игрока как 'Player'.");
+        }
     }
 
 

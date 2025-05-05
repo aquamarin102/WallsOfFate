@@ -336,7 +336,7 @@ CharacterController:
   m_Height: 1.8
   m_Radius: 0.4
   m_SlopeLimit: 45
-  m_StepOffset: 0.1
+  m_StepOffset: 0.2
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
@@ -352,11 +352,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcca926d9c972d4596bc2eba7022fa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grabRadius: 2
-  grabAction: {fileID: 7060275564721094829, guid: 19d04aaacdc84114ca140a207fbe0af5, type: 3}
-  maxPushSpeed: 3
-  accel: 8
-  turnSpeed: 50
+  grabRange: 2
+  grabKey: 101
+  maxSpeed: 5
+  attachedBox: {fileID: 0}
 --- !u!136 &-4248748749519651901
 CapsuleCollider:
   m_ObjectHideFlags: 0

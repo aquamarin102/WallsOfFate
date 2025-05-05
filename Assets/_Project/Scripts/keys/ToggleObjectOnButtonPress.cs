@@ -6,21 +6,20 @@ using Zenject;
 
 public class ToggleObjectOnButtonPress : MonoBehaviour
 {
-    // Сериализуемое поле для кнопок и их состояний
     [System.Serializable]
     public class ToggleButton
     {
-        public KeyCode keyCode; // Клавиша
-        public bool setActive;  // Состояние, в которое нужно перевести объект
+        public KeyCode keyCode;  // Клавиша, на которую реагируем
+        public bool setActive;   // В какое состояние переводим TargetObject
     }
 
-    // Список кнопок и их состояний
-    [SerializeField] private List<ToggleButton> toggleButtons = new List<ToggleButton>();
+    [SerializeField]
+    private List<ToggleButton> toggleButtons = new List<ToggleButton>();
 
-    // Сериализуемое поле для объекта, который будем включать/выключать
-    [field: SerializeField] public GameObject TargetObject { get; private set; }
-    [SerializeField] private GameObject _objectToDisable;
+    [field: SerializeField]
+    public GameObject TargetObject { get; private set; }
 
+    private GameObject _objectToDisable;
     private bool _isPaused = false;
 
     [Inject]
@@ -31,6 +30,10 @@ public class ToggleObjectOnButtonPress : MonoBehaviour
 
     void Update()
     {
+        // ★ Если загрузочный экран активен — выходим и не обрабатываем Esc/другие кнопки
+        if (LoadingScreenManager.Instance != null && LoadingScreenManager.Instance.IsLoading)
+            return;
+
         foreach (var button in toggleButtons)
         {
             if (Input.GetKeyDown(button.keyCode))
@@ -39,16 +42,15 @@ public class ToggleObjectOnButtonPress : MonoBehaviour
             }
         }
     }
+
     public void Activate(bool station)
     {
-        if (station)
-        {
-            TargetObject.SetActive(!TargetObject.activeSelf);
-        }
-        else
-        {
-            TargetObject.SetActive(false);
-        }
-    }
+        // Здесь можно ещё добавить защиту от двойного срабатывания:
+        // if (LoadingScreenManager.Instance != null && LoadingScreenManager.Instance.IsLoading) return;
 
+        if (station)
+            TargetObject.SetActive(!TargetObject.activeSelf);
+        else
+            TargetObject.SetActive(false);
+    }
 }

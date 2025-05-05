@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,26 +8,62 @@ public class ButtonsController : MonoBehaviour
 {
     [SerializeField] private GameObject firstButton;
 
-    private bool usingKeyboard = true;
+    private bool canAcceptInput = true;
 
-    void OnEnable()
+    private void OnEnable()
     {
-        SetSelected(firstButton);
+        // Убираем автоматическую установку первого выделения
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.LoadingStarted += OnLoadingStarted;
+            LoadingScreenManager.Instance.LoadingFinished += OnLoadingFinished;
+        }
     }
 
-    void Update()
+    private void OnDisable()
     {
+        if (LoadingScreenManager.Instance != null)
+        {
+            LoadingScreenManager.Instance.LoadingStarted -= OnLoadingStarted;
+            LoadingScreenManager.Instance.LoadingFinished -= OnLoadingFinished;
+        }
+    }
+
+    private void OnLoadingStarted()
+    {
+        canAcceptInput = false;
+    }
+
+    private void OnLoadingFinished()
+    {
+        StartCoroutine(EnableInputWithDelay(1f));
+    }
+
+    private IEnumerator EnableInputWithDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        canAcceptInput = true;
+        // Не устанавливаем фокус автоматически — появится при первом навигационном вводе
+    }
+
+    private void Update()
+    {
+        // Блoкируем весь ввод, пока идёт загрузка или не истёк delay
+        if (!canAcceptInput ||
+            (LoadingScreenManager.Instance != null && LoadingScreenManager.Instance.IsLoading))
+            return;
+
         // Обнаружение мыши
         if (Input.GetAxis("Mouse X") != 0 || Input.GetAxis("Mouse Y") != 0)
         {
             if (InputModeTracker.UsingKeyboard)
             {
                 InputModeTracker.NotifyMouseInput();
-                EventSystem.current.SetSelectedGameObject(null); // сброс
+                EventSystem.current.SetSelectedGameObject(null);
             }
         }
 
-        // Обнаружение клавиатуры
+        // Обнаружение клавиатуры (стрелки или W/S)
         if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.DownArrow)
             || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.S))
         {
@@ -35,48 +72,45 @@ public class ButtonsController : MonoBehaviour
 
             ClearMouseHoverEffect();
 
+            // При первом навигационном вводе назначаем фокус на первую кнопку
             if (EventSystem.current.currentSelectedGameObject == null)
                 SetSelected(firstButton);
         }
 
-        // Enter или Space
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.E))
+        // Enter, Space или E
+        if (Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.E))
         {
-            GameObject selected = EventSystem.current.currentSelectedGameObject;
+            var selected = EventSystem.current.currentSelectedGameObject;
             if (selected != null)
             {
-                Button btn = selected.GetComponent<Button>();
+                var btn = selected.GetComponent<Button>();
                 if (btn != null)
                     btn.onClick.Invoke();
             }
         }
     }
 
-  
-
-    void ClearMouseHoverEffect()
+    private void ClearMouseHoverEffect()
     {
-        PointerEventData pointerData = new PointerEventData(EventSystem.current)
+        var pointerData = new PointerEventData(EventSystem.current)
         {
             position = Input.mousePosition
         };
 
-        var raycastResults = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(pointerData, raycastResults);
+        var results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, results);
 
-        foreach (var result in raycastResults)
+        foreach (var res in results)
         {
-            var effect = result.gameObject.GetComponent<UIButtonEffects>();
+            var effect = res.gameObject.GetComponent<UIButtonEffects>();
             if (effect != null)
-            {
-                effect.ForceExit(); // Принудительно сбрасываем эффект наведения
-            }
+                effect.ForceExit();
         }
     }
 
-    void SetSelected(GameObject go)
+    private void SetSelected(GameObject go)
     {
-        EventSystem.current.SetSelectedGameObject(null); // сброс перед установкой
+        EventSystem.current.SetSelectedGameObject(null);
         EventSystem.current.SetSelectedGameObject(go);
     }
 }

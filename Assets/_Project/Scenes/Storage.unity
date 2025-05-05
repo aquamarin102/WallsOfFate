@@ -10993,7 +10993,6 @@ MonoBehaviour:
   - keyCode: 103
     setActive: 1
   <TargetObject>k__BackingField: {fileID: 1822668983}
-  _objectToDisable: {fileID: 0}
 --- !u!114 &244297670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15755,7 +15754,6 @@ MonoBehaviour:
   - keyCode: 27
     setActive: 0
   <TargetObject>k__BackingField: {fileID: 356086422}
-  _objectToDisable: {fileID: 0}
 --- !u!114 &356086425
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26440,6 +26438,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   exitPanel: {fileID: 355096574}
+  confirmButton: {fileID: 1059068093}
 --- !u!114 &583749814
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26456,7 +26455,6 @@ MonoBehaviour:
   - keyCode: 27
     setActive: 1
   <TargetObject>k__BackingField: {fileID: 100739734}
-  _objectToDisable: {fileID: 0}
 --- !u!1 &584478475 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: c710922d4be20d842b5307edcf0ab8c9, type: 3}
@@ -78062,7 +78060,6 @@ MonoBehaviour:
   - keyCode: 27
     setActive: 0
   <TargetObject>k__BackingField: {fileID: 1695242865}
-  _objectToDisable: {fileID: 0}
 --- !u!114 &1695242867
 MonoBehaviour:
   m_ObjectHideFlags: 0
