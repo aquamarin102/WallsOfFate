@@ -8,6 +8,7 @@ public class ExitConfirmation : MonoBehaviour
     [SerializeField] private GameObject exitPanel;
     [SerializeField] private Button confirmButton;  // кнопка подтверждения выхода
 
+
     private void Start()
     {
         exitPanel.SetActive(false);
@@ -29,6 +30,9 @@ public class ExitConfirmation : MonoBehaviour
         // Убираем текущее выделение, затем выбираем кнопку «Подтвердить»
         EventSystem.current.SetSelectedGameObject(null);
         confirmButton.Select();
+
+        if (ButtonsController.Instance != null)
+            ButtonsController.Instance.BlockInputFor(1f);
     }
 
     public void HideExitPanel()

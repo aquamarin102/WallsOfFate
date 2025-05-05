@@ -6,13 +6,26 @@ using UnityEngine.UI;
 
 public class ButtonsController : MonoBehaviour
 {
+    public static ButtonsController Instance { get; private set; }
+
     [SerializeField] private GameObject firstButton;
+
+    // Интервал, в течение которого повторные нажатия Enter/Space/E игнорируются
+    [SerializeField] private float submitCooldown = 1f;
+    private float lastSubmitTime = -Mathf.Infinity;
 
     private bool canAcceptInput = true;
 
+    private float blockInputUntil = 0f;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
+
     private void OnEnable()
     {
-        // Убираем автоматическую установку первого выделения
         if (LoadingScreenManager.Instance != null)
         {
             LoadingScreenManager.Instance.LoadingStarted += OnLoadingStarted;
@@ -43,14 +56,21 @@ public class ButtonsController : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         canAcceptInput = true;
-        // Не устанавливаем фокус автоматически — появится при первом навигационном вводе
+    }
+
+    public void BlockInputFor(float seconds)
+    {
+        blockInputUntil = Time.unscaledTime + seconds;
     }
 
     private void Update()
     {
-        // Блoкируем весь ввод, пока идёт загрузка или не истёк delay
+        // Блокируем ввод, пока идёт загрузка или не истёк начальный delay
         if (!canAcceptInput ||
             (LoadingScreenManager.Instance != null && LoadingScreenManager.Instance.IsLoading))
+            return;
+
+        if (Time.unscaledTime < blockInputUntil)
             return;
 
         // Обнаружение мыши
@@ -72,14 +92,20 @@ public class ButtonsController : MonoBehaviour
 
             ClearMouseHoverEffect();
 
-            // При первом навигационном вводе назначаем фокус на первую кнопку
             if (EventSystem.current.currentSelectedGameObject == null)
                 SetSelected(firstButton);
         }
 
-        // Enter, Space или E
-        if (Input.GetKeyUp(KeyCode.Return) || Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.E))
+        // Enter, Space или E — с задержкой 1 секунда между нажатиями
+        if (Input.GetKeyUp(KeyCode.Return)
+            || Input.GetKeyUp(KeyCode.Space)
+            || Input.GetKeyUp(KeyCode.E))
         {
+            if (Time.unscaledTime - lastSubmitTime < submitCooldown)
+                return;
+
+            lastSubmitTime = Time.unscaledTime;
+
             var selected = EventSystem.current.currentSelectedGameObject;
             if (selected != null)
             {
