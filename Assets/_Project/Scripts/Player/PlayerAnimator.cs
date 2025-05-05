@@ -19,6 +19,7 @@ public class PlayerAnimator : MonoBehaviour
     [Header("Pushing Box")]
     [Tooltip("Tag that marks objects the player can push.")]
     [SerializeField] private string boxTag = "Box";
+    [SerializeField] private float pushAnimationSpeed = 1.5f;
 
     [Tooltip("Minimal speed (m/s) at which the pushing animation starts to blend in.")]
     [SerializeField] private float pushMoveThreshold = 0.05f;
@@ -57,29 +58,41 @@ public class PlayerAnimator : MonoBehaviour
     #region Locomotion
     private void UpdateLocomotion()
     {
-        // Calculate world‑space speed since last rendered frame
+        // 1) вычисляем текущую скорость и нормализуем
         float rawSpeed = (transform.position - lastPos).magnitude / Mathf.Max(Time.deltaTime, 0.0001f);
-        float targetNormalised = Mathf.Clamp01(rawSpeed / maxSpeed);
+        float targetNorm = Mathf.Clamp01(rawSpeed / maxSpeed);
+        currentSpeedParam = Mathf.SmoothDamp(currentSpeedParam, targetNorm, ref speedRef, speedSmoothTime);
 
-        // Low‑pass filter to remove jitter when character stops / starts
-        currentSpeedParam = Mathf.SmoothDamp(currentSpeedParam, targetNormalised, ref speedRef, speedSmoothTime);
+        // 2) определяем состояние толкания
+        bool isPushing = transform.parent != null
+                         && transform.parent.CompareTag(boxTag);
 
-        bool isPushing = transform.parent != null && transform.parent.CompareTag(boxTag);
+        // 3) вычисляем параметр PushSpeed (0 или 1)
+        float pushSpeedParam = isPushing
+            ? (currentSpeedParam >= pushMoveThreshold ? 1f : 0f)
+            : 0f;
 
-        if (isPushing)
+        // 4) отправляем параметры в аниматор
+        animator.SetBool("IsPushing", isPushing);
+        animator.SetFloat("PushSpeed", pushSpeedParam);
+
+        // 5) Останавливаем анимацию, если толкаем, но скорость нулевая
+        if (isPushing && pushSpeedParam == 0f)
         {
-            animator.SetBool("IsPushing", true);
-            animator.SetFloat("PushSpeed", currentSpeedParam >= pushMoveThreshold ? 1f : 0f);
+            animator.speed = 0f;
         }
         else
         {
-            animator.SetBool("IsPushing", false);
-            animator.SetFloat("Speed", currentSpeedParam);
-        }
+            // во всех остальных случаях включаем аниматор и, если не толкаем,
+            // обновляем параметр Speed для blend-tree передвижения
+            animator.speed = pushAnimationSpeed;
 
-        // Do NOT globally scale the whole controller – sudden jumps in Animator.speed
-        // are the #1 cause of visual jitter, especially at low framerates.
-        animator.speed = 1f;
+            if (!isPushing)
+            {
+                animator.SetFloat("Speed", currentSpeedParam);
+                animator.SetBool("IsPushing", false);
+            }
+        }
     }
     #endregion
 

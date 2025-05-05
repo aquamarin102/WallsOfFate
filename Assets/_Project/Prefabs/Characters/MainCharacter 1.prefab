@@ -191,6 +191,7 @@ MonoBehaviour:
   maxSpeed: 4.5
   speedSmoothTime: 0.1
   boxTag: Box
+  pushAnimationSpeed: 1.7
   pushMoveThreshold: 0.05
   footstepSource: {fileID: 0}
   walkStepClips: []
@@ -355,7 +356,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fcca926d9c972d4596bc2eba7022fa9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grabRange: 0.8
+  grabRange: 0.4
   grabKey: 101
   maxSpeed: 2
   attachedBox: {fileID: 0}

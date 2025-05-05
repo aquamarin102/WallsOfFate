@@ -188,6 +188,7 @@ MonoBehaviour:
   maxSpeed: 4.5
   speedSmoothTime: 0.1
   boxTag: Box
+  pushAnimationSpeed: 1.7
   pushMoveThreshold: 0.05
   footstepSource: {fileID: 0}
   walkStepClips: []
