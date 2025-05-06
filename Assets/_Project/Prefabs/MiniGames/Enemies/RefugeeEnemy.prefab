@@ -126,14 +126,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9ca5c2987e88b74aaf4f0ec5a6382bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerName: Enemy
-  maxHealth: 30
-  health: 30
-  damage: 2
+  playerName: RefugeeEnemy
+  maxHealth: 80
+  health: 80
+  minDamage: 5
+  damage: 8
   speed: 3.5
   speedModifier: 1
-  healingAmount: 1
+  minHealingAmount: 8
+  healingAmount: 12
   isDead: 0
+  floatingTextWorldPrefab: {fileID: 8503380163757038419, guid: 2fd5f98ba8460eb4a99e6a13faa9fc55, type: 3}
+  playerRenderer: {fileID: 1863916843032510309}
+  flashDuration: 0.1
+  initialBuffPulseDuration: 1
+  initialDebuffPulseDuration: 1
+  minPulseDuration: 0.2
+  pulseDecayFactor: 0.8
 --- !u!114 &5375676945649985666
 MonoBehaviour:
   m_ObjectHideFlags: 0

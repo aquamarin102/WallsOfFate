@@ -87,6 +87,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 535037910687784377}
   m_SourcePrefab: {fileID: 100100000, guid: d34d1db622cb00f47b490974a936e036, type: 3}
+--- !u!23 &4740986561959723536 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: d34d1db622cb00f47b490974a936e036, type: 3}
+  m_PrefabInstance: {fileID: 6199991626637516436}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6542501386556089285 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: d34d1db622cb00f47b490974a936e036, type: 3}
@@ -144,13 +149,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerName: Player
-  maxHealth: 50
-  health: 50
-  damage: 4
+  maxHealth: 120
+  health: 120
+  minDamage: 10
+  damage: 15
   speed: 5
   speedModifier: 2
-  healingAmount: 2
+  minHealingAmount: 5
+  healingAmount: 8
   isDead: 0
+  floatingTextWorldPrefab: {fileID: 8503380163757038419, guid: 2fd5f98ba8460eb4a99e6a13faa9fc55, type: 3}
+  playerRenderer: {fileID: 4740986561959723536}
+  flashDuration: 0.1
+  initialBuffPulseDuration: 1
+  initialDebuffPulseDuration: 1
+  minPulseDuration: 0.2
+  pulseDecayFactor: 0.8
 --- !u!114 &825348345072677039
 MonoBehaviour:
   m_ObjectHideFlags: 0

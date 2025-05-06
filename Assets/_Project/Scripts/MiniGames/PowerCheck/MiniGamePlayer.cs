@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 public class MiniGamePlayer : MonoBehaviour
@@ -6,16 +7,42 @@ public class MiniGamePlayer : MonoBehaviour
     // ============================
     // Настройки игровых параметров игрока
     // ============================
-    [SerializeField] private string playerName;  // Имя игрока
-    [SerializeField] private uint maxHealth;     // Максимальное здоровье
-    [SerializeField] private uint health;        // Текущее здоровье
-    [SerializeField] private uint damage;        // Урон
-    [SerializeField] private float speed;        // Скорость
-    [SerializeField] private float speedModifier;// Скорость
-    [SerializeField] private uint healingAmount; // Количество лечения
-    /*[SerializeField] private*/public bool isDead = false;// Количество лечения
+    [SerializeField] private string playerName;      // Имя игрока
+    [SerializeField] private uint maxHealth;         // Максимальное здоровье
+    [SerializeField] private uint health;            // Текущее здоровье
 
-    private bool underDebufff;
+    // Новый: минимальное и максимальное значения урона
+    [Header("Damage Range")]
+    [SerializeField] private uint minDamage = 1;     // Нижняя граница урона
+    [SerializeField] private uint damage = 1;        // Верхняя граница урона (раньше — просто damage)
+
+    // Базовая скорость
+    [SerializeField] private float speed;
+    [SerializeField] private float speedModifier;
+
+    // Новый: минимальное и максимальное значения лечения
+    [Header("Healing Range")]
+    [SerializeField] private uint minHealingAmount = 1;  // Нижняя граница лечения
+    [SerializeField] private uint healingAmount = 1;     // Верхняя граница лечения (раньше — просто healingAmount)
+
+    public bool isDead = false;                     // Флаг смерти
+
+    // ============================
+    // Настройки VFX
+    // ============================
+    [Header("World-Prefab VFX")]
+    [SerializeField] private GameObject floatingTextWorldPrefab;
+    [SerializeField] private Renderer playerRenderer;
+    [SerializeField] private float flashDuration = 0.2f;
+
+    [Header("Pulse Effect")]
+    [SerializeField] private float initialBuffPulseDuration = 1.0f;
+    [SerializeField] private float initialDebuffPulseDuration = 1.0f;
+    [SerializeField] private float minPulseDuration = 0.2f;
+    [SerializeField] private float pulseDecayFactor = 0.8f;
+
+    private bool underDebuff;
+    private Coroutine pulseCoroutine;
 
     public string Name
     {
@@ -29,24 +56,34 @@ public class MiniGamePlayer : MonoBehaviour
         get => health;
         set => health = value;
     }
-    public uint Damage => damage;
+
+    // Теперь свойство Damage возвращает случайное значение в заданном диапазоне [minDamage; damage]
+    public uint Damage
+    {
+        get
+        {
+            if (damage <= minDamage)
+                return damage;
+            int min = (int)minDamage;
+            int maxExclusive = (int)damage + 1;
+            return (uint)UnityEngine.Random.Range(min, maxExclusive);
+        }
+    }
 
     public float SpeedModifier
     {
         get => speedModifier;
         set
         {
-            //Debug.Log($"Setting speed: {value}, current speed: {speed}");
             speedModifier = value;
-            OnSpeedChanged?.Invoke(speedModifier, underDebufff); // Вызываем событие при изменении скорости
+            OnSpeedChanged?.Invoke(speedModifier, underDebuff);
         }
     }
 
-    public float Speed
-    {
-        get => speed;
-    }
+    public float Speed => speed;
 
+    // HealingAmount теперь хранит верхнюю границу,
+    // реальное лечение считается внутри метода TakeHeal
     public uint HealingAmount => healingAmount;
 
     public event Action<float, bool> OnSpeedChanged;
@@ -56,42 +93,146 @@ public class MiniGamePlayer : MonoBehaviour
         ResetHealth();
     }
 
-    // Unity-метод для начальной инициализации
-    private void Start()
+    public void TakeDamage(uint dmg)
     {
-        //this.health = this.maxHealth;
-        //Debug.Log($"{Name} создан с {health} здоровья и скоростью {speed}");
-    }
-
-    public void Initialize(string playerName, uint maxHp, uint startHealth, uint dmg, float initialSpeed, uint healAmount)
-    {
-        Name = playerName;
-        maxHealth = maxHp;
-        health = startHealth;
-        damage = dmg;
-        speedModifier = initialSpeed;
-        healingAmount = healAmount;
-    }
-
-    public void TakeDamage(uint damage)
-    {
-        health = health >= damage ? health - damage : 0;
-        //Debug.Log($"{Name} получил урон. Здоровье: {health}");
+        health = health >= dmg ? health - dmg : 0;
+        SpawnFloatingText($"-{dmg}", Color.red);
+        StartCoroutine(FlashRoutine(Color.red));
     }
 
     public void TakeHeal()
     {
-        health += healingAmount;
-        if (health > maxHealth) health = maxHealth;
-        //Debug.Log($"{Name} отхилился. Здоровье: {health}");
+        // Вычисляем случайное лечение в диапазоне [minHealingAmount; healingAmount]
+        uint healValue;
+        if (healingAmount <= minHealingAmount)
+        {
+            healValue = healingAmount;
+        }
+        else
+        {
+            int min = (int)minHealingAmount;
+            int maxExc = (int)healingAmount + 1;
+            healValue = (uint)UnityEngine.Random.Range(min, maxExc);
+        }
+
+        health += healValue;
+        if (health > maxHealth)
+            health = maxHealth;
+
+        SpawnFloatingText($"+{healValue}", Color.green);
+        StartCoroutine(FlashRoutine(Color.green));
     }
 
     public void TakeSpeedboost(float speedMultiplier, bool isDebuff)
     {
-        underDebufff = isDebuff;
-        //Debug.Log($"{Name} получил скоростной баф {speedMultiplier}");
-        SpeedModifier = (float)speedMultiplier; // Изменяем скорость, вызывая событие
-        //Debug.Log($"{Name} новая скорость {Speed}");
+        underDebuff = isDebuff;
+        SpeedModifier = speedMultiplier;
+
+        if (pulseCoroutine != null)
+        {
+            StopCoroutine(pulseCoroutine);
+            pulseCoroutine = null;
+            if (playerRenderer != null)
+                playerRenderer.material.color = Color.white;
+        }
+
+        if (!isDebuff)
+            SpawnFloatingText("SPEED+", new Color(0f, 1f, 1f));
+        else
+            SpawnFloatingText("STUN", Color.magenta);
+
+        if (Mathf.Abs(speedMultiplier - 1f) > 0.001f)
+        {
+            float startDuration = isDebuff ? initialDebuffPulseDuration : initialBuffPulseDuration;
+            Color pulseColor = isDebuff ? Color.magenta : new Color(0f, 1f, 1f);
+            if (!isDebuff)
+                pulseCoroutine = StartCoroutine(DelayedPulseRoutine(pulseColor, startDuration, flashDuration));
+            else
+                pulseCoroutine = StartCoroutine(PulseRoutine(pulseColor, startDuration));
+        }
+    }
+
+    private IEnumerator FlashRoutine(Color flashColor)
+    {
+        if (playerRenderer == null || flashDuration <= 0f)
+            yield break;
+
+        var mat = playerRenderer.material;
+        var original = mat.color;
+        float halfDur = flashDuration * 0.5f;
+        float timer = 0f;
+
+        while (timer < halfDur)
+        {
+            mat.color = Color.Lerp(original, flashColor, timer / halfDur);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        mat.color = flashColor;
+
+        timer = 0f;
+        while (timer < halfDur)
+        {
+            mat.color = Color.Lerp(flashColor, original, timer / halfDur);
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        mat.color = original;
+    }
+
+    private IEnumerator PulseRoutine(Color pulseColor, float duration)
+    {
+        if (playerRenderer == null)
+            yield break;
+
+        var mat = playerRenderer.material;
+        var original = mat.color;
+        float currentDur = duration;
+
+        while (currentDur >= minPulseDuration)
+        {
+            float half = currentDur * 0.5f;
+            float timer = 0f;
+            while (timer < half)
+            {
+                mat.color = Color.Lerp(original, pulseColor, timer / half);
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            mat.color = pulseColor;
+
+            timer = 0f;
+            while (timer < half)
+            {
+                mat.color = Color.Lerp(pulseColor, original, timer / half);
+                timer += Time.deltaTime;
+                yield return null;
+            }
+            mat.color = original;
+            currentDur *= pulseDecayFactor;
+        }
+
+        mat.color = original;
+        pulseCoroutine = null;
+    }
+
+    private IEnumerator DelayedPulseRoutine(Color pulseColor, float duration, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        yield return PulseRoutine(pulseColor, duration);
+    }
+
+    private void SpawnFloatingText(string text, Color color)
+    {
+        if (floatingTextWorldPrefab == null)
+            return;
+
+        var go = Instantiate(floatingTextWorldPrefab,
+            transform.position + Vector3.up * 1.5f,
+            Quaternion.identity);
+        var ft = go.GetComponent<FloatingTextMinigame>();
+        if (ft != null)
+            ft.Setup(text, color);
     }
 
     private void ResetHealth()
