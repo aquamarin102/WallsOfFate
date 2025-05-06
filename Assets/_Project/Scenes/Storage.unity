@@ -99668,12 +99668,20 @@ PrefabInstance:
       propertyPath: InitialModule.startLifetime.scalar
       value: 0.3
       objectReference: {fileID: 0}
+    - target: {fileID: 7323594498175917718, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8042731928459727838, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
       propertyPath: m_Name
       value: ItemIndicator
       objectReference: {fileID: 0}
     - target: {fileID: 8042731928459727838, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8042731928459727838, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
+      propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9117314352634165041, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
@@ -100049,12 +100057,20 @@ PrefabInstance:
       propertyPath: InitialModule.startLifetime.scalar
       value: 0.3
       objectReference: {fileID: 0}
+    - target: {fileID: 7323594498175917718, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8042731928459727838, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
       propertyPath: m_Name
       value: ItemIndicator
       objectReference: {fileID: 0}
     - target: {fileID: 8042731928459727838, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8042731928459727838, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
+      propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9117314352634165041, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
@@ -100882,12 +100898,20 @@ PrefabInstance:
       propertyPath: InitialModule.startLifetime.scalar
       value: 0.3
       objectReference: {fileID: 0}
+    - target: {fileID: 7323594498175917718, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8042731928459727838, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
       propertyPath: m_Name
       value: ItemIndicator
       objectReference: {fileID: 0}
     - target: {fileID: 8042731928459727838, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8042731928459727838, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
+      propertyPath: m_StaticEditorFlags
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9117314352634165041, guid: 6251fe2709de2ac4fb0e58361f1df4f6, type: 3}
