@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -8,44 +7,45 @@ using Zenject;
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class PlayerMoveController : MonoBehaviour
 {
     [Header("Movement Settings")]
-    [SerializeField] private float moveSpeed = 3f;         // Базовая скорость
-    [SerializeField] private float runMultiplier = 1.5f;     // Множитель скорости при беге (Shift)
-    [SerializeField] private float rotationSpeed = 10f;      // Скорость поворота
-    [SerializeField] private float gravity = 9.81f;          // Гравитация (если уровень плоский – можно уменьшить)
-    [SerializeField] private Transform cameraTransform;      // Ссылка на камеру (обычно Main Camera)
+    [SerializeField] private float moveSpeed = 3f;
+    [SerializeField] private float runMultiplier = 1.5f;
+    [SerializeField] private float rotationSpeed = 10f;
+    [SerializeField] private float gravity = 9.81f;
+    [SerializeField] private Transform cameraTransform;
     [SerializeField] private LayerMask groundMask;
 
-    [Header("Click-to-Move Settings")]
+    [Header("Mouse-Follow & Click Settings")]
     [SerializeField] private float stopThreshold = 0.1f;
-    [SerializeField] private float clickRunThreshold = 0.3f; // max interval для двойного клика, сек.
-    private bool isClickMove = false;
-    private bool isClickRun = false;
-    private Vector3 clickTarget;
+    [SerializeField] private float clickRunThreshold = 0.3f;  // макс. интервал для double-click
+    [SerializeField] private float holdThreshold = 0.2f;  // время удержания, чтобы перейти в follow-режим
+
+    private bool isHoldMove = false;  // удерживаем правую кнопку
+    private bool isClickRun = false;  // бег по двойному клику
     private float lastClickTime = -1f;
+    private float mouseDownTime = 0f;
+    private Vector3 clickTarget;
 
     [Header("Footstep Settings")]
-    // Звуки для конкретных сцен (заполняются из Resources) – для каждой сцены два аудиоклипа (левый и правый)
-    private Dictionary<string, List<AudioClip>> sceneFootstepSounds = new Dictionary<string, List<AudioClip>>();
+    private Dictionary<string, List<AudioClip>> sceneFootstepSounds = new();
+    private AudioClip leftFootstepClip, rightFootstepClip;
 
     [Header("Pitch Settings")]
-    [SerializeField] private float walkingPitch = 1.0f;   // Базовый pitch при ходьбе
-    [SerializeField] private float runningPitch = 1.5f;   // Pitch при беге (ускоренное воспроизведение звука)
+    [SerializeField] private float walkingPitch = 1f;
+    [SerializeField] private float runningPitch = 1.5f;
 
+    // ссылки на компоненты
     private CharacterController characterController;
     private NavMeshAgent agent;
     private AudioSource footstepSource;
+    private NavMeshPath navMeshPath;
 
-    // Клипы для левой и правой ноги
-    private AudioClip leftFootstepClip;
-    private AudioClip rightFootstepClip;
-
+    // внутренняя логика движения
     private Vector3 moveDirection;
     private float verticalVelocity;
-
-    // Для отслеживания движения игрока
     private Vector3 lastPosition;
     private bool isLeftFootStep = true;
 
@@ -62,13 +62,13 @@ public class PlayerMoveController : MonoBehaviour
         footstepSource = GetComponent<AudioSource>();
         lastPosition = transform.position;
 
-        // Отключаем автоматическое обновление позиции/вращения у агента:
+        // NavMeshAgent — только для расчёта пути
         agent.updatePosition = false;
         agent.updateRotation = false;
 
-        // Инициализация звуков шагов для разных сцен.
-        // В Resources должны быть аудиоклипы с именами, например:
-        // "Footsteps/WoodLeft", "Footsteps/WoodRight", "Footsteps/GrassLeft", "Footsteps/GrassRight", "Footsteps/StoneLeft", "Footsteps/StoneRight"
+        navMeshPath = new NavMeshPath();
+
+        // Инициализация звуков
         sceneFootstepSounds.Add("MainRoom", new List<AudioClip>()
         {
             Resources.Load<AudioClip>("Footsteps/wood1"),
@@ -96,38 +96,70 @@ public class PlayerMoveController : MonoBehaviour
 
     private void Update()
     {
-        HandleClickInput();
+        HandleMouseInput();
         HandleMovement();
         UpdateAnimator();
         lastPosition = transform.position;
     }
 
-    private void HandleClickInput()
+    private void HandleMouseInput()
     {
-        if (Input.GetMouseButtonDown(1) &&
-            DialogueManager.GetInstance()?.DialogueIsPlaying == false)
-        {
-            float time = Time.time;
-            // Детект двойного клика
-            if (time - lastClickTime <= clickRunThreshold)
-                isClickRun = true;
-            else
-                isClickRun = false;
-            lastClickTime = time;
+        if (DialogueManager.GetInstance()?.DialogueIsPlaying == true)
+            return;
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 100f, groundMask))
+        // 1) Нажатие правой кнопки:
+        if (Input.GetMouseButtonDown(1))
+        {
+            float now = Time.time;
+            // проверка на двойной клик
+            isClickRun = (now - lastClickTime) <= clickRunThreshold;
+            lastClickTime = now;
+            mouseDownTime = now;
+        }
+
+        // 2) Удержание кнопки:
+        if (Input.GetMouseButton(1))
+        {
+            // если уже держим достаточно долго — переходим в follow-режим
+            if (!isHoldMove && Time.time - mouseDownTime >= holdThreshold)
             {
-                clickTarget = hit.point;
-                isClickMove = true;
-                agent.SetDestination(clickTarget);
-                agent.isStopped = false;
+                isHoldMove = true;
             }
+        }
+
+        // 3) Отпуск правой кнопки:
+        if (Input.GetMouseButtonUp(1))
+        {
+            float holdTime = Time.time - mouseDownTime;
+
+            // если отпустили раньше, чем holdThreshold — это щелчок
+            if (holdTime < holdThreshold)
+            {
+                // пробиваем цель по щелчку
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out var hit, 100f, groundMask))
+                {
+                    // проверяем, что путь полный
+                    bool valid = agent.CalculatePath(hit.point, navMeshPath)
+                                 && navMeshPath.status == NavMeshPathStatus.PathComplete;
+                    if (valid)
+                    {
+                        clickTarget = hit.point;
+                        isHoldMove = false;
+                        agent.SetDestination(clickTarget);
+                        agent.isStopped = false;
+                    }
+                }
+            }
+
+            // сбрасываем follow-режим, но не isClickRun — он понадобится для скорости
+            isHoldMove = false;
         }
     }
 
     private void HandleMovement()
     {
+        // если идёт диалог — только гравитация
         if (DialogueManager.GetInstance()?.DialogueIsPlaying == true)
         {
             moveDirection = new Vector3(0, moveDirection.y, 0);
@@ -136,14 +168,13 @@ public class PlayerMoveController : MonoBehaviour
             return;
         }
 
-        // WASD ввод
+        // 0) Если есть ручной WASD — сразу прерываем любой клик-режим
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
         Vector3 input = new Vector3(h, 0, v);
-
         if (input.sqrMagnitude > 0.01f)
         {
-            isClickMove = false;
+            isHoldMove = false;
             isClickRun = false;
             agent.isStopped = true;
             agent.ResetPath();
@@ -151,19 +182,35 @@ public class PlayerMoveController : MonoBehaviour
 
         Vector3 desiredMove = Vector3.zero;
 
-        if (isClickMove && !agent.pathPending)
+        // 1) Follow-режим (удержание кнопки)
+        if (isHoldMove)
         {
-            // NavMeshAgent.desiredVelocity обходят препятствия
-            Vector3 vel = agent.desiredVelocity;
-            desiredMove = new Vector3(vel.x, 0, vel.z).normalized;
-
-            if (Vector3.Distance(transform.position, clickTarget) <= stopThreshold)
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 100f, groundMask))
             {
-                isClickMove = false;
-                isClickRun = false;
-                agent.isStopped = true;
+                if (agent.CalculatePath(hit.point, navMeshPath)
+                    && navMeshPath.status == NavMeshPathStatus.PathComplete)
+                {
+                    clickTarget = hit.point;
+                    agent.SetDestination(clickTarget);
+                    agent.isStopped = false;
+                    Vector3 vel = agent.desiredVelocity;
+                    desiredMove = new Vector3(vel.x, 0, vel.z).normalized;
+                }
             }
         }
+        // 2) Click-to-point (статичная цель послe щелчка)
+        else if (agent.hasPath && !agent.isStopped)
+        {
+            Vector3 vel = agent.desiredVelocity;
+            desiredMove = new Vector3(vel.x, 0, vel.z).normalized;
+            if (Vector3.Distance(transform.position, clickTarget) <= stopThreshold)
+            {
+                agent.isStopped = true;
+                isClickRun = false;
+            }
+        }
+        // 3) Обычное WASD/камерное движение
         else if (input.sqrMagnitude > 0.01f)
         {
             Vector3 camF = cameraTransform.forward; camF.y = 0; camF.Normalize();
@@ -175,70 +222,60 @@ public class PlayerMoveController : MonoBehaviour
         if (desiredMove != Vector3.zero)
         {
             Quaternion targetRot = Quaternion.LookRotation(desiredMove);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation, targetRot, rotationSpeed * Time.deltaTime
+            );
         }
 
-        // Скорость (учитываем double-click run)
-        float speed = moveSpeed;
-        bool isRunning = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || isClickRun;
-        if (isRunning) speed *= runMultiplier;
+        // Скорость (учитываем Shift или double-click run)
+        bool isRunning = Input.GetKey(KeyCode.LeftShift)
+                         || Input.GetKey(KeyCode.RightShift)
+                         || isClickRun;
+        float speed = moveSpeed * (isRunning ? runMultiplier : 1f);
         moveDirection = desiredMove * speed;
 
         // Гравитация
-        if (characterController.isGrounded) verticalVelocity = -1f;
-        else verticalVelocity -= gravity * Time.deltaTime;
+        verticalVelocity = characterController.isGrounded
+            ? -1f
+            : verticalVelocity - gravity * Time.deltaTime;
         moveDirection.y = verticalVelocity;
 
+        // Перемещаем CharacterController
         characterController.Move(moveDirection * Time.deltaTime);
 
-        // Синхронизируем агента с позицией игрока
+        // Синхронизация позиции агента
         agent.nextPosition = transform.position;
-    }
-
-    private void RotateTowards(Vector3 dir)
-    {
-        if (dir != Vector3.zero)
-        {
-            Quaternion targetRot = Quaternion.LookRotation(dir);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
-        }
     }
 
     private void UpdateAnimator()
     {
-        if (DialogueManager.GetInstance() != null && DialogueManager.GetInstance().DialogueIsPlaying)
+        if (DialogueManager.GetInstance()?.DialogueIsPlaying == true)
             return;
 
-        if (Vector3.Distance(transform.position, lastPosition) > 0.001f)
+        if (Vector3.Distance(transform.position, lastPosition) > 0.001f
+            && !footstepSource.isPlaying)
         {
-            if (!footstepSource.isPlaying)
-            {
-                PlayFootstep();
-            }
+            PlayFootstep();
         }
     }
 
     private void PlayFootstep()
     {
-        // Перед воспроизведением выставляем pitch в зависимости от режима (бег/ходьба)
-        bool isRunning = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-        footstepSource.pitch = isRunning ? runningPitch : walkingPitch;
+        bool running = Input.GetKey(KeyCode.LeftShift)
+                       || Input.GetKey(KeyCode.RightShift)
+                       || isClickRun;
+        footstepSource.pitch = running ? runningPitch : walkingPitch;
 
         if (leftFootstepClip != null && rightFootstepClip != null)
         {
-            if (isLeftFootStep)
-            {
-                footstepSource.PlayOneShot(leftFootstepClip);
-            }
-            else
-            {
-                footstepSource.PlayOneShot(rightFootstepClip);
-            }
+            footstepSource.PlayOneShot(
+                isLeftFootStep ? leftFootstepClip : rightFootstepClip
+            );
             isLeftFootStep = !isLeftFootStep;
         }
         else
         {
-            Debug.LogWarning("Звуки шагов для текущей сцены не настроены!");
+            Debug.LogWarning("Звуки шагов не настроены!");
         }
     }
 
@@ -249,16 +286,16 @@ public class PlayerMoveController : MonoBehaviour
 
     private void UpdateFootstepSounds(string sceneName)
     {
-        if (sceneFootstepSounds.ContainsKey(sceneName) && sceneFootstepSounds[sceneName].Count >= 2)
+        if (sceneFootstepSounds.TryGetValue(sceneName, out var list)
+            && list.Count >= 2)
         {
-            leftFootstepClip = sceneFootstepSounds[sceneName][0];
-            rightFootstepClip = sceneFootstepSounds[sceneName][1];
+            leftFootstepClip = list[0];
+            rightFootstepClip = list[1];
         }
         else
         {
-            leftFootstepClip = null;
-            rightFootstepClip = null;
-            Debug.LogWarning($"Для сцены \"{sceneName}\" не заданы два звука шагов.");
+            leftFootstepClip = rightFootstepClip = null;
+            Debug.LogWarning($"Для сцены «{sceneName}» звуки шагов не заданы.");
         }
     }
 }
