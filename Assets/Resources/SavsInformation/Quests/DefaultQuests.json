@@ -73,7 +73,22 @@
                 "PeopleSatisfaction": 0,
                 "CastleStrength": 0
               }
-            }
+            },
+            {
+              "Id": 1,
+              "TaskInfo": "Пойти в главный зал",
+              "IsDone": false,
+              "ForNPS": "ForgeDoor",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Messager/MessagerMainRoomStorageQuest/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            },
+
           ]
         }
       ]
