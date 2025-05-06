@@ -24,11 +24,12 @@ public class InventoryLogicEnd : MonoBehaviour
 
         var newPickups = AssembledPickups.GetPickupsByType(_pickupType).ToList();
 
+        UpdatePanelsVisibility();
+        CheckAllImagesDisplayed();
+
         if (!PickupListsEqual(_currentPickupsOfType, newPickups))
         {
             _currentPickupsOfType = newPickups;
-            UpdatePanelsVisibility();
-            CheckAllImagesDisplayed();
         }
     }
 
