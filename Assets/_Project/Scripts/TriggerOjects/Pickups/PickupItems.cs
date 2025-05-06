@@ -53,13 +53,42 @@ namespace Assets.Scripts.TriggerOjects
 
             if (_pickup != null)
             {
-                AssembledPickups.AddPickup(_pickup);
+                // Создаем копию объекта с учетом разных случаев
+                Pickup pickupCopy = CreatePickupCopy();
+
+                // Добавляем копию в коллекцию
+                AssembledPickups.AddPickup(pickupCopy);
                 LogAllPickups();
 
                 if (_pickup.RenderedOnScreen)
                 {
                     HandleScreenRendering();
                 }
+            }
+        }
+
+        private Pickup CreatePickupCopy()
+        {
+            // Если это компонент GameObject
+            if (_pickup is Component component)
+            {
+                // Создаем копию всего GameObject
+                GameObject copyObject = Instantiate(component.gameObject);
+
+                // Делаем копию неуничтожаемой при загрузке новых сцен
+                DontDestroyOnLoad(copyObject);
+
+                // Деактивируем копию
+                copyObject.SetActive(false);
+
+                // Возвращаем компонент Pickup с копии
+                return copyObject.GetComponent<Pickup>();
+            }
+            else
+            {
+                // Если это ScriptableObject или другой не-компонент
+                Pickup pickupCopy = Instantiate(_pickup);
+                return pickupCopy;
             }
         }
 
@@ -105,6 +134,13 @@ namespace Assets.Scripts.TriggerOjects
                     Debug.LogError($"Не удалось загрузить спрайт по пути: Resources/{_spritePath}");
                 }
             }
+        }
+
+        private void OnDestroy()
+        {
+            // Очищаем ссылки при уничтожении объекта
+            _pickup = null;
+            _toggleScript = null;
         }
     }
 }
