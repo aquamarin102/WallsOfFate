@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 using Zenject;
 
@@ -15,6 +16,15 @@ public class PlayerMoveController : MonoBehaviour
     [SerializeField] private float rotationSpeed = 10f;      // Скорость поворота
     [SerializeField] private float gravity = 9.81f;          // Гравитация (если уровень плоский – можно уменьшить)
     [SerializeField] private Transform cameraTransform;      // Ссылка на камеру (обычно Main Camera)
+    [SerializeField] private LayerMask groundMask;
+
+    [Header("Click-to-Move Settings")]
+    [SerializeField] private float stopThreshold = 0.1f;
+    [SerializeField] private float clickRunThreshold = 0.3f; // max interval для двойного клика, сек.
+    private bool isClickMove = false;
+    private bool isClickRun = false;
+    private Vector3 clickTarget;
+    private float lastClickTime = -1f;
 
     [Header("Footstep Settings")]
     // Звуки для конкретных сцен (заполняются из Resources) – для каждой сцены два аудиоклипа (левый и правый)
@@ -25,6 +35,7 @@ public class PlayerMoveController : MonoBehaviour
     [SerializeField] private float runningPitch = 1.5f;   // Pitch при беге (ускоренное воспроизведение звука)
 
     private CharacterController characterController;
+    private NavMeshAgent agent;
     private AudioSource footstepSource;
 
     // Клипы для левой и правой ноги
@@ -47,8 +58,13 @@ public class PlayerMoveController : MonoBehaviour
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
+        agent = GetComponent<NavMeshAgent>();
         footstepSource = GetComponent<AudioSource>();
         lastPosition = transform.position;
+
+        // Отключаем автоматическое обновление позиции/вращения у агента:
+        agent.updatePosition = false;
+        agent.updateRotation = false;
 
         // Инициализация звуков шагов для разных сцен.
         // В Resources должны быть аудиоклипы с именами, например:
@@ -80,63 +96,112 @@ public class PlayerMoveController : MonoBehaviour
 
     private void Update()
     {
+        HandleClickInput();
         HandleMovement();
         UpdateAnimator();
         lastPosition = transform.position;
     }
 
+    private void HandleClickInput()
+    {
+        if (Input.GetMouseButtonDown(1) &&
+            DialogueManager.GetInstance()?.DialogueIsPlaying == false)
+        {
+            float time = Time.time;
+            // Детект двойного клика
+            if (time - lastClickTime <= clickRunThreshold)
+                isClickRun = true;
+            else
+                isClickRun = false;
+            lastClickTime = time;
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out var hit, 100f, groundMask))
+            {
+                clickTarget = hit.point;
+                isClickMove = true;
+                agent.SetDestination(clickTarget);
+                agent.isStopped = false;
+            }
+        }
+    }
+
     private void HandleMovement()
     {
-        if (DialogueManager.GetInstance() != null && DialogueManager.GetInstance().DialogueIsPlaying)
+        if (DialogueManager.GetInstance()?.DialogueIsPlaying == true)
         {
-            moveDirection.x = 0;
-            moveDirection.z = 0;
-            characterController.Move(new Vector3(0, moveDirection.y, 0) * Time.deltaTime);
+            moveDirection = new Vector3(0, moveDirection.y, 0);
+            characterController.Move(moveDirection * Time.deltaTime);
+            agent.isStopped = true;
             return;
         }
 
-        float horizontal = Input.GetAxisRaw("Horizontal");
-        float vertical = Input.GetAxisRaw("Vertical");
-        Vector3 input = new Vector3(horizontal, 0, vertical);
+        // WASD ввод
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
+        Vector3 input = new Vector3(h, 0, v);
 
-        float currentSpeed = moveSpeed;
-        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+        if (input.sqrMagnitude > 0.01f)
         {
-            currentSpeed *= runMultiplier;
+            isClickMove = false;
+            isClickRun = false;
+            agent.isStopped = true;
+            agent.ResetPath();
         }
 
         Vector3 desiredMove = Vector3.zero;
-        if (input.sqrMagnitude > 0.01f)
+
+        if (isClickMove && !agent.pathPending)
         {
-            Vector3 camForward = cameraTransform.forward;
-            camForward.y = 0;
-            camForward.Normalize();
-            Vector3 camRight = cameraTransform.right;
-            camRight.y = 0;
-            camRight.Normalize();
+            // NavMeshAgent.desiredVelocity обходят препятствия
+            Vector3 vel = agent.desiredVelocity;
+            desiredMove = new Vector3(vel.x, 0, vel.z).normalized;
 
-            desiredMove = (camForward * vertical + camRight * horizontal).normalized;
-
-            if (desiredMove != Vector3.zero)
+            if (Vector3.Distance(transform.position, clickTarget) <= stopThreshold)
             {
-                Quaternion targetRotation = Quaternion.LookRotation(desiredMove);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+                isClickMove = false;
+                isClickRun = false;
+                agent.isStopped = true;
             }
         }
-
-        moveDirection = desiredMove * currentSpeed;
-
-        if (characterController.isGrounded)
+        else if (input.sqrMagnitude > 0.01f)
         {
-            verticalVelocity = -1f;
+            Vector3 camF = cameraTransform.forward; camF.y = 0; camF.Normalize();
+            Vector3 camR = cameraTransform.right; camR.y = 0; camR.Normalize();
+            desiredMove = (camF * v + camR * h).normalized;
         }
-        else
+
+        // Поворот
+        if (desiredMove != Vector3.zero)
         {
-            verticalVelocity -= gravity * Time.deltaTime;
+            Quaternion targetRot = Quaternion.LookRotation(desiredMove);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
         }
+
+        // Скорость (учитываем double-click run)
+        float speed = moveSpeed;
+        bool isRunning = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || isClickRun;
+        if (isRunning) speed *= runMultiplier;
+        moveDirection = desiredMove * speed;
+
+        // Гравитация
+        if (characterController.isGrounded) verticalVelocity = -1f;
+        else verticalVelocity -= gravity * Time.deltaTime;
         moveDirection.y = verticalVelocity;
 
         characterController.Move(moveDirection * Time.deltaTime);
+
+        // Синхронизируем агента с позицией игрока
+        agent.nextPosition = transform.position;
+    }
+
+    private void RotateTowards(Vector3 dir)
+    {
+        if (dir != Vector3.zero)
+        {
+            Quaternion targetRot = Quaternion.LookRotation(dir);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
+        }
     }
 
     private void UpdateAnimator()
