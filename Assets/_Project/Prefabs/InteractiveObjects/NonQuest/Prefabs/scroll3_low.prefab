@@ -189,6 +189,7 @@ MonoBehaviour:
   floatingTextPrefab: {fileID: 4848396624485697127, guid: b674c6ddfaf88fa4c8200c48bc74b5fa, type: 3}
   spawnOffset: {x: 0, y: 2.3, z: 0}
   destroyAfterUse: 1
+  approachDistance: 1.5
 --- !u!1 &7539571816735998210
 GameObject:
   m_ObjectHideFlags: 0
