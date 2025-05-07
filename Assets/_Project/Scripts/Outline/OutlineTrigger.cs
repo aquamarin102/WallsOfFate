@@ -1,40 +1,70 @@
 using UnityEngine;
 using cakeslice;
 
-[RequireComponent(typeof(Collider))]  // Убедитесь, что на том же объекте есть Collider (не обязательно Trigger)
+[RequireComponent(typeof(Collider))]
 public class OutlineTrigger : MonoBehaviour
 {
+    [Header("Hover Settings")]
+    [Tooltip("Максимальная дистанция, на которой мы проверяем наведение курсора")]
+    [SerializeField] private float hoverCheckDistance = 100f;
+    [Tooltip("Слой(и) для проверки наведения")]
+    [SerializeField] private LayerMask hoverLayerMask = ~0;
+
     private Outline[] outlines;
+    private Collider[] colliders;
     private InteractableItem interactable;
 
-    // состояния
-    private bool isPlayerInTrigger = false;
-    private bool isMouseOver = false;
+    private bool isPlayerInTrigger;
+    private bool isMouseOver;
 
-    void Start()
+    private void Start()
     {
-        // Берём все Outline в детях
+        // Получаем все Outline-ы и Collider-ы на объекте и его дочерних объектах
         outlines = GetComponentsInChildren<Outline>(true);
-
-        // Отключаем
-        foreach (var o in outlines) o.enabled = false;
-
-        // Ваш скрипт взаимодействия (может быть null)
+        colliders = GetComponentsInChildren<Collider>(true);
         interactable = GetComponent<InteractableItem>();
+
+        // Отключаем подсветку по умолчанию
+        foreach (var o in outlines)
+            o.enabled = false;
+    }
+
+    private void Update()
+    {
+        // Кастомная проверка наведения на любой из коллайдеров
+        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        bool hitThis = false;
+
+        foreach (var col in colliders)
+        {
+            // Фильтруем по слою
+            if (((1 << col.gameObject.layer) & hoverLayerMask) == 0) continue;
+
+            // Проверяем попадание луча в конкретный коллайдер
+            if (col.Raycast(ray, out _, hoverCheckDistance))
+            {
+                hitThis = true;
+                break;
+            }
+        }
+
+        if (hitThis != isMouseOver)
+        {
+            isMouseOver = hitThis;
+            UpdateOutlineState();
+        }
     }
 
     private void UpdateOutlineState()
     {
-        // можно ли подсвечивать?
-        bool canHighlight = (interactable == null || !interactable.HasBeenUsed);
+        bool canHighlight = interactable == null || !interactable.HasBeenUsed;
         bool shouldBeOn = canHighlight && (isPlayerInTrigger || isMouseOver);
 
         foreach (var o in outlines)
             o.enabled = shouldBeOn;
     }
 
-    // ——— триггер игрока ———
-    void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
@@ -43,26 +73,12 @@ public class OutlineTrigger : MonoBehaviour
         }
     }
 
-    void OnTriggerExit(Collider other)
+    private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
             isPlayerInTrigger = false;
             UpdateOutlineState();
         }
-    }
-
-    // ——— мышь над объектом ———
-    // Эти события будут вызываться, если у этого же GameObject есть Collider (не обязательно isTrigger)
-    void OnMouseEnter()
-    {
-        isMouseOver = true;
-        UpdateOutlineState();
-    }
-
-    void OnMouseExit()
-    {
-        isMouseOver = false;
-        UpdateOutlineState();
     }
 }

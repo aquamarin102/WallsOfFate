@@ -20,25 +20,24 @@ public class PlayerMoveController : MonoBehaviour
     [SerializeField] private LayerMask groundMask;
 
     [Header("Mouse & Click Settings")]
-    [SerializeField] private float stopThreshold = 0.1f; // для статичных целей
-    [SerializeField] private float clickRunThreshold = 0.3f;  // двойной клик
-    [SerializeField] private float holdThreshold = 0.2f;  // удержание для follow
+    [SerializeField] private float stopThreshold = 0.1f;     // статичные цели
+    [SerializeField] private float clickRunThreshold = 0.3f; // двойной клик
+    [SerializeField] private float holdThreshold = 0.2f;     // follow курсора
 
-    private bool isHoldMove = false;
-    private bool isClickRun = false;
+    private bool isHoldMove;
+    private bool isClickRun;
     private float lastClickTime = -1f;
-    private float mouseDownTime = 0f;
-    private Vector3 clickTarget;
+    private float mouseDownTime;
 
-    // динамическая цель (бегущая курица и т.п.)
-    private Transform dynamicTarget = null;
-    private float dynamicStopDist = 1f;
+    private Vector3 clickTarget;
+    private Transform dynamicTarget;
+    private float dynamicStopDist;
 
     private Action _onArriveAction;
 
     [Header("Footstep Settings")]
     private readonly Dictionary<string, List<AudioClip>> sceneFootstepSounds = new();
-    private AudioClip leftFootstepClip, rightFootstepClip;
+    private AudioClip leftClip, rightClip;
 
     [Header("Pitch Settings")]
     [SerializeField] private float walkingPitch = 1f;
@@ -52,12 +51,18 @@ public class PlayerMoveController : MonoBehaviour
     private Vector3 moveDirection;
     private float verticalVelocity;
     private Vector3 lastPosition;
-    private bool isLeftFootStep = true;
+    private bool isLeftFoot = true;
 
-    [Inject]
-    private void Construct(Transform camTransform)
+    private InteractManager interactManager;   // ссылка на менеджер взаимодействия
+
+    // --------------------------------------------------
+    [Inject] private void Construct(Transform camTransform) => cameraTransform = camTransform;
+
+    private void Awake()
     {
-        cameraTransform = camTransform;
+        interactManager = GetComponent<InteractManager>();
+        if (!interactManager)
+            Debug.LogError("PlayerMoveController: InteractManager missing!");
     }
 
     private void Start()
@@ -65,11 +70,10 @@ public class PlayerMoveController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         agent = GetComponent<NavMeshAgent>();
         footstepSource = GetComponent<AudioSource>();
-        lastPosition = transform.position;
         navMeshPath = new NavMeshPath();
+        lastPosition = transform.position;
 
-        // NavMeshAgent только для расчёта пути
-        agent.updatePosition = false;
+        agent.updatePosition = false;     // Agent используется только как path‑finder
         agent.updateRotation = false;
         agent.stoppingDistance = stopThreshold;
 
@@ -94,26 +98,22 @@ public class PlayerMoveController : MonoBehaviour
         UpdateFootstepSounds(SceneManager.GetActiveScene().name);
     }
 
-    private void OnDestroy()
-    {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
+    private void OnDestroy() => SceneManager.sceneLoaded -= OnSceneLoaded;
 
     private void Update()
     {
         HandleMouseInput();
         HandleMovement();
-        UpdateAnimator();
+        UpdateFootstep();
         lastPosition = transform.position;
     }
 
+    // ==================================================
     #region Mouse Input
     private void HandleMouseInput()
     {
-        if (DialogueManager.GetInstance()?.DialogueIsPlaying == true)
-            return;
+        if (DialogueManager.GetInstance()?.DialogueIsPlaying == true) return;
 
-        // 1) фиксируем нажатие ЛКМ и проверяем двойной клик
         if (Input.GetMouseButtonDown(0))
         {
             float now = Time.time;
@@ -122,72 +122,54 @@ public class PlayerMoveController : MonoBehaviour
             mouseDownTime = now;
         }
 
-        // 2) удержание ЛКМ переключает нас в follow‑режим
-        if (Input.GetMouseButton(0))
-        {
-            if (!isHoldMove && Time.time - mouseDownTime >= holdThreshold)
-                isHoldMove = true;
-        }
+        if (Input.GetMouseButton(0) && !isHoldMove && Time.time - mouseDownTime >= holdThreshold)
+            isHoldMove = true;
 
-        // 3) отпуск ЛКМ — клик или завершение удержания
         if (Input.GetMouseButtonUp(0))
         {
             float held = Time.time - mouseDownTime;
-            dynamicTarget = null; // кликом по земле сбрасываем преследование
+            dynamicTarget = null;                     // сброс преследования
 
-            if (held < holdThreshold)
-            {
-                // RaycastAll, чтобы сперва ловить IInteractable
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                var hits = Physics.RaycastAll(ray, 100f);
-                Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
-
-                bool actionTaken = false;
-                foreach (var hit in hits)
-                {
-                    // 1) Попали во взаимодействуемый предмет?
-                    if (hit.collider.TryGetComponent<InteractableItem>(out var item) && !item.HasBeenUsed)
-                    {
-                        // Преследуем живой предмет (Transform) или идём к точке
-                        if (item.GetComponent<NavMeshAgent>())
-                        {
-                            MoveToAndCallback(
-                                item.transform,
-                                isClickRun,
-                                () => item.Interact(),
-                                1.2f);
-                        }
-                        else
-                        {
-                            MoveToAndCallback(
-                                hit.point,
-                                isClickRun,
-                                () => item.Interact(),
-                                1.2f);
-                        }
-                        actionTaken = true;
-                        break;
-                    }
-                    // 2) Клик по земле
-                    else if (((1 << hit.collider.gameObject.layer) & groundMask) != 0)
-                    {
-                        if (agent.CalculatePath(hit.point, navMeshPath) && navMeshPath.status == NavMeshPathStatus.PathComplete)
-                        {
-                            MoveToAndCallback(hit.point, isClickRun, null);
-                        }
-                        actionTaken = true;
-                        break;
-                    }
-                }
-                if (!actionTaken)
-                    isHoldMove = false;
-            }
+            if (held < holdThreshold) ProcessClick();
             isHoldMove = false;
+        }
+    }
+
+    private void ProcessClick()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        var hits = Physics.RaycastAll(ray, 100f);
+        Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));
+
+        foreach (var hit in hits)
+        {
+            // 1) Любой объект, реализующий ITriggerable
+            if (hit.collider.TryGetComponent<ITriggerable>(out var trigger) && interactManager)
+            {
+                // если уже активирован и не повторяется — пропускаем
+                if (interactManager.HasTriggerBeenActivated(trigger) && trigger is not Box)
+                    continue;
+
+                float stopDist = 1.2f;
+                if (hit.collider.TryGetComponent<NavMeshAgent>(out _))
+                    MoveToAndCallback(hit.collider.transform, isClickRun, () => interactManager.InteractWith(trigger), stopDist);
+                else
+                    MoveToAndCallback(hit.point, isClickRun, () => interactManager.InteractWith(trigger), stopDist);
+                return;
+            }
+            // 2) Плоскость земли
+            if (((1 << hit.collider.gameObject.layer) & groundMask) != 0)
+            {
+                if (agent.CalculatePath(hit.point, navMeshPath) && navMeshPath.status == NavMeshPathStatus.PathComplete)
+                    MoveToAndCallback(hit.point, isClickRun, null);
+                return;
+            }
         }
     }
     #endregion
 
-    #region Movement
+    // ==================================================
+    #region Movement Core
     private void HandleMovement()
     {
         if (DialogueManager.GetInstance()?.DialogueIsPlaying == true)
@@ -198,94 +180,72 @@ public class PlayerMoveController : MonoBehaviour
             return;
         }
 
-        // прерываем мышиный режим при вводе WASD
+        // ---- WASD breaks mouse modes ----
         float h = Input.GetAxisRaw("Horizontal");
         float v = Input.GetAxisRaw("Vertical");
         Vector3 input = new(h, 0, v);
         if (input.sqrMagnitude > 0.01f)
         {
-            isHoldMove = false;
-            isClickRun = false;
-            dynamicTarget = null;
-            agent.isStopped = true;
-            agent.ResetPath();
+            isHoldMove = false; isClickRun = false; dynamicTarget = null;
+            agent.isStopped = true; agent.ResetPath();
         }
 
-        Vector3 desiredMove = Vector3.zero;
+        Vector3 desired = Vector3.zero;
 
-        // A) преследуем динамическую цель
-        if (dynamicTarget != null)
+        // A) Преследование динамической цели
+        if (dynamicTarget)
         {
-            if (!dynamicTarget.gameObject.activeInHierarchy)
-            {
-                StopMovement();
-            }
+            if (!dynamicTarget.gameObject.activeInHierarchy) StopMovement();
             else
             {
-                Vector3 tgtPos = dynamicTarget.position;
-                if (agent.destination != tgtPos)
-                    agent.SetDestination(tgtPos);
-
-                desiredMove = agent.desiredVelocity.WithY(0).normalized;
+                if (agent.destination != dynamicTarget.position)
+                    agent.SetDestination(dynamicTarget.position);
+                desired = agent.desiredVelocity.WithY(0).normalized;
 
                 if (!agent.pathPending && agent.remainingDistance <= dynamicStopDist + 0.05f)
                 {
-                    agent.isStopped = true;
-                    isClickRun = false;
-                    var cb = _onArriveAction;
-                    ClearDynamicTarget();
-                    cb?.Invoke();
+                    agent.isStopped = true; isClickRun = false;
+                    var cb = _onArriveAction; ClearDynamic(); cb?.Invoke();
                 }
             }
         }
-        // B) follow‑режим (удержание ЛКМ)
+        // B) Follow‑режим (удержание)
         else if (isHoldMove)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out var hit, 100f, groundMask))
+            if (Physics.Raycast(ray, out var hit, 100f, groundMask) &&
+                agent.CalculatePath(hit.point, navMeshPath) && navMeshPath.status == NavMeshPathStatus.PathComplete)
             {
-                if (agent.CalculatePath(hit.point, navMeshPath) && navMeshPath.status == NavMeshPathStatus.PathComplete)
-                {
-                    clickTarget = hit.point;
-                    agent.SetDestination(clickTarget);
-                    agent.isStopped = false;
-                    desiredMove = agent.desiredVelocity.WithY(0).normalized;
-                }
+                clickTarget = hit.point; agent.SetDestination(clickTarget); agent.isStopped = false;
+                desired = agent.desiredVelocity.WithY(0).normalized;
             }
         }
-        // C) click‑to‑point
+        // C) Click‑to‑point
         else if (agent.hasPath && !agent.isStopped)
         {
-            desiredMove = agent.desiredVelocity.WithY(0).normalized;
+            desired = agent.desiredVelocity.WithY(0).normalized;
             if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.05f)
             {
-                agent.isStopped = true;
-                isClickRun = false;
-                _onArriveAction?.Invoke();
-                _onArriveAction = null;
+                agent.isStopped = true; isClickRun = false; _onArriveAction?.Invoke(); _onArriveAction = null;
             }
         }
-        // D) WASD
+        // D) WASD прямое движение
         else if (input.sqrMagnitude > 0.01f)
         {
-            Vector3 camF = cameraTransform.forward; camF.y = 0; camF.Normalize();
-            Vector3 camR = cameraTransform.right; camR.y = 0; camR.Normalize();
-            desiredMove = (camF * v + camR * h).normalized;
+            Vector3 f = cameraTransform.forward; f.y = 0; f.Normalize();
+            Vector3 r = cameraTransform.right; r.y = 0; r.Normalize();
+            desired = (f * v + r * h).normalized;
         }
 
-        // поворот
-        if (desiredMove != Vector3.zero)
-        {
-            Quaternion tgt = Quaternion.LookRotation(desiredMove);
-            transform.rotation = Quaternion.Slerp(transform.rotation, tgt, rotationSpeed * Time.deltaTime);
-        }
+        // Поворот
+        if (desired != Vector3.zero)
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desired), rotationSpeed * Time.deltaTime);
 
-        // скорость
-        bool isRunning = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || isClickRun;
-        float speed = moveSpeed * (isRunning ? runMultiplier : 1f);
-        moveDirection = desiredMove * speed;
+        // Скорость + гравитация
+        bool running = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || isClickRun;
+        float speed = moveSpeed * (running ? runMultiplier : 1f);
+        moveDirection = desired * speed;
 
-        // гравитация
         verticalVelocity = characterController.isGrounded ? -1f : verticalVelocity - gravity * Time.deltaTime;
         moveDirection.y = verticalVelocity;
 
@@ -294,72 +254,46 @@ public class PlayerMoveController : MonoBehaviour
     }
     #endregion
 
+    // ==================================================
     #region Public API
-    // статическая цель (точка на земле / рядом с предметом)
     public void MoveToAndCallback(Vector3 target, bool run, Action onArrive, float stopDistance = 0.1f)
     {
-        dynamicTarget = null;
-        clickTarget = target;
-        isClickRun = run;
-        isHoldMove = false;
-
-        agent.stoppingDistance = stopDistance;
-        agent.SetDestination(clickTarget);
-        agent.isStopped = false;
-
+        dynamicTarget = null; clickTarget = target; isClickRun = run; isHoldMove = false;
+        agent.stoppingDistance = stopDistance; agent.SetDestination(target); agent.isStopped = false;
         _onArriveAction = onArrive;
     }
 
-    // динамическая цель (бегущая курица и т.д.)
     public void MoveToAndCallback(Transform target, bool run, Action onArrive, float stopDistance = 1f)
     {
-        dynamicTarget = target;
-        dynamicStopDist = stopDistance;
-        isClickRun = run;
-        isHoldMove = false;
+        dynamicTarget = target; dynamicStopDist = stopDistance; isClickRun = run; isHoldMove = false;
+        agent.stoppingDistance = stopDistance; agent.SetDestination(target.position); agent.isStopped = false;
         _onArriveAction = onArrive;
-
-        agent.stoppingDistance = stopDistance;
-        agent.SetDestination(target.position);
-        agent.isStopped = false;
     }
 
     public void StopMovement()
     {
-        agent.isStopped = true;
-        agent.ResetPath();
-        isHoldMove = false;
-        isClickRun = false;
-        clickTarget = Vector3.zero;
-        ClearDynamicTarget();
+        agent.isStopped = true; agent.ResetPath(); isHoldMove = false; isClickRun = false; clickTarget = Vector3.zero; ClearDynamic();
     }
     #endregion
 
+    // ==================================================
     #region Helpers
-    private void ClearDynamicTarget()
-    {
-        dynamicTarget = null;
-        _onArriveAction = null;
-    }
+    private void ClearDynamic() { dynamicTarget = null; _onArriveAction = null; }
 
-    private void UpdateAnimator()
+    private void UpdateFootstep()
     {
         if (DialogueManager.GetInstance()?.DialogueIsPlaying == true) return;
         if (Vector3.Distance(transform.position, lastPosition) > 0.001f && !footstepSource.isPlaying)
-        {
             PlayFootstep();
-        }
     }
 
     private void PlayFootstep()
     {
-        bool running = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift) || isClickRun;
-        footstepSource.pitch = running ? runningPitch : walkingPitch;
-
-        if (leftFootstepClip != null && rightFootstepClip != null)
+        footstepSource.pitch = isClickRun ? runningPitch : walkingPitch;
+        if (leftClip && rightClip)
         {
-            footstepSource.PlayOneShot(isLeftFootStep ? leftFootstepClip : rightFootstepClip);
-            isLeftFootStep = !isLeftFootStep;
+            footstepSource.PlayOneShot(isLeftFoot ? leftClip : rightClip);
+            isLeftFoot = !isLeftFoot;
         }
     }
 
@@ -369,17 +303,11 @@ public class PlayerMoveController : MonoBehaviour
     {
         if (sceneFootstepSounds.TryGetValue(sceneName, out var list) && list.Count >= 2)
         {
-            leftFootstepClip = list[0];
-            rightFootstepClip = list[1];
+            leftClip = list[0]; rightClip = list[1];
         }
-        else
-        {
-            leftFootstepClip = rightFootstepClip = null;
-        }
+        else leftClip = rightClip = null;
     }
     #endregion
-    // Extension‑method inside same file for convenience
 }
-public static class Vector3Extensions
-{
-    public static Vector3 WithY(this Vector3 v, float y) => new Vector3(v.x, y, v.z); }
+
+public static class Vector3Ext { public static Vector3 WithY(this Vector3 v, float y) => new(v.x, y, v.z); }

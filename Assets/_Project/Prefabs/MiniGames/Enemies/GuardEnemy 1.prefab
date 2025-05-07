@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 1373658827972778022}
   - component: {fileID: 2904424229923957724}
   - component: {fileID: 8583371996996686135}
+  - component: {fileID: 663886271150170533}
   m_Layer: 0
   m_Name: GuardEnemy 1
   m_TagString: Untagged
@@ -217,3 +218,15 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.30413613, y: 0.52355033, z: 0.31815568}
   m_Center: {x: -0.000000014901161, y: 0.26177517, z: -0.0070097893}
+--- !u!114 &663886271150170533
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 405817722266581316}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bdcf238e11dc2047a92eac1e8348ecb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

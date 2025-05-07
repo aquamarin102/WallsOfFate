@@ -1,42 +1,18 @@
 ﻿using UnityEngine;
 
-public class PlayChestAnimation : MonoBehaviour, ICheckableTrigger
+public class PlayChestAnimation : MonoBehaviour, ITriggerable   // ключевая строка
 {
     [SerializeField] private string animationName = "Armature_Chest|Chest_Open";
-    private Animator _animator;
-    public bool IsDone { get; private set; }
+    private Animator _anim;
+    private bool _opened;
 
-    private void Awake()
-    {
-        // Ищем Animator на этом объекте или его детях
-        _animator = GetComponentInChildren<Animator>();
+    private void Awake() => _anim = GetComponentInChildren<Animator>();
 
-        if (_animator == null)
-        {
-            Debug.LogError("Animator not found on this object or its children!", this);
-        }
-    }
-
+    // вызывается InteractManager-ом через TryTrigger(...)
     public void Triggered()
     {
-        OpenChest();
-    }
-
-    public void OpenChest()
-    {
-        if (_animator != null)
-        {
-            _animator.Play(animationName);
-        }
-    }
-
-    private bool HasParameter(string paramName, Animator animator)
-    {
-        foreach (AnimatorControllerParameter param in animator.parameters)
-        {
-            if (param.name == paramName)
-                return true;
-        }
-        return false;
+        if (_opened) return;
+        _opened = true;
+        if (_anim) _anim.Play(animationName);
     }
 }

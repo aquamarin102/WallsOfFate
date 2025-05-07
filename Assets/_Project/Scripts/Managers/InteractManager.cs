@@ -105,39 +105,8 @@ public class InteractManager : MonoBehaviour
             // Получаем нажатие кнопки взаимодействия через ваш InputManager
             bool isInteract = InputManager.GetInstance().GetInteractPressed();
             if (isInteract)
-            {
-                Debug.Log("Interacting with: " + currentTriggerable);
+                InteractWith(currentTriggerable);
 
-                // Приводим currentTriggerable к MonoBehaviour для доступа к GameObject (предполагается, что ITriggerable – компонент)
-                GameObject triggerObj = (currentTriggerable as MonoBehaviour).gameObject;
-                // В зависимости от тега запускаем соответствующую анимацию
-                if (triggerObj.CompareTag("PickupFloor"))
-                {
-                    playerAnimator.PlayPickupFloor();
-                    TriggerAllEncounteredOnce();
-                }
-                else if (triggerObj.CompareTag("PickupBody"))
-                {
-                    playerAnimator.PlayPickupBody();
-                    TriggerAllEncounteredOnce();
-                }
-                else if (triggerObj.CompareTag("Chest"))
-                {
-                    playerAnimator.PlayOpenChest();
-                    TriggerAllEncounteredOnce();
-                }
-                else
-                {
-                    // Если тип не распознан, активируем все встреченные триггеры стандартно
-                    TriggerAllEncounteredOnce();
-                }
-                hasInteracted = true;
-
-                if (interactionIndicator != null)
-                {
-                    interactionIndicator.SetActive(false);
-                }
-            }
         }
     }
 
@@ -164,6 +133,30 @@ public class InteractManager : MonoBehaviour
             Debug.Log($"Trigger {trigger} already activated, skipping");
         }
     }
+
+    public void InteractWith(ITriggerable trigger)
+    {
+        if (trigger == null) return;
+
+        // получаем MonoBehaviour, на котором висят все ITriggerable-компоненты
+        var mb = trigger as MonoBehaviour;
+        if (!mb) return;                       // на всякий случай
+
+        foreach (var t in mb.GetComponents<ITriggerable>())
+            TryTrigger(t);                     // включает Interact() или Triggered()
+
+        // анимация игрока по тегу — как было
+        GameObject go = mb.gameObject;
+        if (go.CompareTag("PickupFloor")) playerAnimator.PlayPickupFloor();
+        else if (go.CompareTag("PickupBody")) playerAnimator.PlayPickupBody();
+        else if (go.CompareTag("Chest")) playerAnimator.PlayOpenChest();
+
+        hasInteracted = true;
+        if (interactionIndicator) interactionIndicator.SetActive(false);
+    }
+
+
+
 
     // Метод для однократного запуска всех встреченных триггеров
     public void TriggerAllEncounteredOnce()
