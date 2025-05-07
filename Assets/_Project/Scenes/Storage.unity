@@ -33976,7 +33976,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: be66871c36277d144a68a275b209a17b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 6b7bbb8a3b9ccdf4880c24d9795bd3a1, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -46755,7 +46755,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 47408ee0be5593f478a7c17187f4489f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 668f25748c584ec4cbffc9350cb45aa9, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -55124,7 +55124,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 0931e791f6dfa074aa34f038791288d7, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4789dad42a8f651459307870aa43722c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -61806,6 +61806,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246c04dfc0ad72d4d947b4c8da3b71df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverCheckDistance: 100
+  hoverLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &1304069839
 GameObject:
   m_ObjectHideFlags: 0
@@ -73424,7 +73428,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: aabcbf8efe1c74c4ab93ee836e29d493, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ee261f02fb89e8d49a37187c36c6dd9c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -100361,6 +100365,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246c04dfc0ad72d4d947b4c8da3b71df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverCheckDistance: 100
+  hoverLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &3016114098264202597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100379,6 +100387,7 @@ MonoBehaviour:
   floatingTextPrefab: {fileID: 4848396624485697127, guid: b674c6ddfaf88fa4c8200c48bc74b5fa, type: 3}
   spawnOffset: {x: 0, y: 2.5, z: 0}
   destroyAfterUse: 1
+  approachDistance: 1.2
 --- !u!33 &3041336621960001211
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -100972,6 +100981,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246c04dfc0ad72d4d947b4c8da3b71df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverCheckDistance: 100
+  hoverLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &7261355646085172344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101005,6 +101018,7 @@ MonoBehaviour:
   floatingTextPrefab: {fileID: 4848396624485697127, guid: b674c6ddfaf88fa4c8200c48bc74b5fa, type: 3}
   spawnOffset: {x: 0, y: 2.5, z: 0}
   destroyAfterUse: 1
+  approachDistance: 1.2
 --- !u!1001 &7328549147256792698
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -101136,6 +101150,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246c04dfc0ad72d4d947b4c8da3b71df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverCheckDistance: 100
+  hoverLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &8172116814082696336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101168,6 +101186,7 @@ MonoBehaviour:
   floatingTextPrefab: {fileID: 4848396624485697127, guid: b674c6ddfaf88fa4c8200c48bc74b5fa, type: 3}
   spawnOffset: {x: 0, y: 2.5, z: 0}
   destroyAfterUse: 1
+  approachDistance: 1.2
 --- !u!23 &8972194060041252239
 MeshRenderer:
   m_ObjectHideFlags: 0
