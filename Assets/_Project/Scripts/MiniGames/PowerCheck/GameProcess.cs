@@ -32,7 +32,12 @@ public class GameProcess : MonoBehaviour
 
     public event Action<string, string> OnEndGame;
 
-    void Start()
+    private void OnEnable()
+    {
+        InitializeLogic();
+    }
+
+    private void InitializeLogic()
     {
         _mineSpawner = GameObject.FindGameObjectWithTag("MineSpawner").GetComponent<MineSpawner>();
 

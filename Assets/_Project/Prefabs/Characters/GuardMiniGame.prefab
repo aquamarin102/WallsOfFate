@@ -346,6 +346,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246c04dfc0ad72d4d947b4c8da3b71df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverCheckDistance: 100
+  hoverLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!65 &2113098590793066225
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -400,7 +404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0996432d9ec83764eab23e8d27b623a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultDialogue: GuardMiniGame/GuardMiniGame
+  _defaultDialogue: GuardMiniGame/GuardMiniGame/
   _npcName: GuardMiniGame
 --- !u!95 &819538050057397726
 Animator:
