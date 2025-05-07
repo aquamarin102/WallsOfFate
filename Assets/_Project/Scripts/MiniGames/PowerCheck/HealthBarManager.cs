@@ -62,7 +62,7 @@ public class HealthBarManager : MonoBehaviour
     {
         if (_healthBar != null)
         {
-            Destroy(_healthBar.gameObject);
+            _healthBar.gameObject.SetActive(false);
         }
     }
 }

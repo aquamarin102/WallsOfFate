@@ -104,12 +104,17 @@ public class MineSpawner : MonoBehaviour
         _forbiddenSpawnPoints.Add(enemy.transform);
     }
 
-    private void Awake()
+    //private void Awake()
+    //{
+    //    InitializeMines();
+    //}
+
+    private void InitializeMines()
     {
-        healMineList = new MineList(healConfig.maxCount);
-        damageMineList = new MineList(damageConfig.maxCount);
-        buffMineList = new MineList(buffConfig.maxCount);
-        debuffMineList = new MineList(debuffConfig.maxCount);
+        if (healMineList == null) healMineList = new MineList(healConfig.maxCount);
+        if (damageMineList == null) damageMineList = new MineList(damageConfig.maxCount);
+        if (buffMineList == null) buffMineList = new MineList(buffConfig.maxCount);
+        if (debuffMineList == null) debuffMineList = new MineList(debuffConfig.maxCount);
 
         healMineList.InitializeMines(HealMinePrefab, healCooldown, (n, c, go) => new HealMine(n, c, go));
         damageMineList.InitializeMines(DamageMinePrefab, damageCooldown, (n, c, go) => new DamageMine(n, c, go));
@@ -119,13 +124,55 @@ public class MineSpawner : MonoBehaviour
         CacheOriginalScales();
     }
 
+    public void ClearAllMineObjects()
+    {
+        // Удаляем все объекты для каждого типа мин
+        ClearMineObjects(healMineList);
+        ClearMineObjects(damageMineList);
+        ClearMineObjects(buffMineList);
+        ClearMineObjects(debuffMineList);
+
+        // Очищаем кеш масштабов
+        _originalScales.Clear();
+    }
+
+    private void ClearMineObjects(MineList mineList)
+    {
+        foreach (var mine in mineList.Minelist)
+        {
+            if (mine.MineGameObject != null)
+            {
+                Destroy(mine.MineGameObject);
+            }
+        }
+        mineList.Minelist.Clear();
+    }
+
     private void CacheOriginalScales()
     {
         foreach (var mine in EnumerateAllMines())
             _originalScales[mine] = mine.MineGameObject.transform.localScale;
     }
 
+    private void OnEnable()
+    {
+        InitializeMines();
+        StartingSpawn();
+    }
+
+    private void OnDisable()
+    {
+        ClearAllMineObjects();
+        StopAllCoroutines(); // Останавливаем все корутины спавна
+    }
+
     private void Start()
+    {
+        StartingSpawn();
+       
+    }
+
+    private void StartingSpawn()
     {
         SpawnInitialMines(healMineList, 0, healConfig.initialCount);
         SpawnInitialMines(damageMineList, 1, damageConfig.initialCount);

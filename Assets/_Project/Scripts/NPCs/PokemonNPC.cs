@@ -14,112 +14,104 @@ public class PokemonNPC : MonoBehaviour
     private GameObject _winPanel;
     private GameObject _losePanel;
 
-    private bool _isPanelActive = false;
-
-    private bool _isMiniGameActive = false; // Отвечает за старт мини-игры
-    private bool _isMiniGameFinished = false; // Отвечает за конец мини-игры
-    private bool _isWaitingForMiniGame = false; // Флаг ожидания перед стартом мини-игры
+    private bool _isMiniGameActive = false;
+    private bool _isWaitingForMiniGame = false;
+    private bool _canStartMiniGame = true;
 
     private void Start()
     {
         _switch = GetComponentInChildren<CameraSwitch>();
         _miniGameProcessor.OnEndGame += EndMiniGame;
+
+        InitializePanels();
+    }
+
+    private void InitializePanels()
+    {
+        if (_menu != null)
+        {
+            _winPanel = _menu.transform.Find("WinPanel")?.gameObject;
+            _losePanel = _menu.transform.Find("LosePanel")?.gameObject;
+
+            if (_winPanel == null || _losePanel == null)
+            {
+                Debug.LogWarning("WinPanel or LosePanel not found in _menu object.");
+            }
+            else
+            {
+                _winPanel.SetActive(false);
+                _losePanel.SetActive(false);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("_menu object is not assigned.");
+        }
     }
 
     private void Update()
     {
-        if (_isMiniGameActive || _isMiniGameFinished || _isWaitingForMiniGame)
-            return; // Не запускаем мини-игру повторно
+        if (!_canStartMiniGame || _isMiniGameActive || _isWaitingForMiniGame)
+            return;
 
         DialogueManager dialogeManager = DialogueManager.GetInstance();
-
         bool powerCheckStart = ((Ink.Runtime.BoolValue)dialogeManager.GetVariablesState("PowerCheckStart")).value;
 
-        if (!dialogeManager.DialogueIsPlaying)
+        if (!dialogeManager.DialogueIsPlaying && powerCheckStart)
         {
-            if (powerCheckStart)
-            {
-                StartMiniGame();
-            }
-            if (_menu != null)
-            {
-                _winPanel = _menu.transform.Find("WinPanel")?.gameObject;
-                _losePanel = _menu.transform.Find("LosePanel")?.gameObject;
-
-                if (_winPanel == null || _losePanel == null)
-                {
-                    Debug.LogWarning("Панели WinPanel или LosePanel не найдены в объекте _menu.");
-                }
-                else
-                {
-                    // Деактивируем панели при старте
-                    _winPanel.SetActive(false);
-                    _losePanel.SetActive(false);
-                }
-            }
-            else
-            {
-                Debug.LogWarning("Объект _menu не назначен.");
-            }
-
+            StartMiniGame();
+            dialogeManager.SetVariableState("PowerCheckStart", false);
         }
     }
-
-    private void ActivatePanel(GameObject panel)
-    {
-        if (panel != null)
-        {
-            panel.SetActive(!panel.activeSelf); 
-        }
-    }
-
 
     private void StartMiniGame()
     {
+        _isMiniGameActive = true;
+        _canStartMiniGame = false;
+
+        // Деактивируем и сразу активируем мини-игру для "сброса"
+        _miniGame.SetActive(false);
+        _miniGame.SetActive(true);
+
         _switch.SwitchCamera();
         if (_uiPannel.activeSelf) _uiPannel.SetActive(false);
-        _miniGame.SetActive(true);
         _castle.SetActive(false);
-        _isMiniGameActive = true;
     }
 
     public void EndMiniGame(string winnerName, string loserName)
     {
-        if (_isMiniGameFinished) return; // Не вызываем повторно
-
-        // Запускаем корутину для обработки конца игры
         StartCoroutine(EndMiniGameCoroutine(winnerName, loserName));
     }
 
     private IEnumerator EndMiniGameCoroutine(string winnerName, string loserName)
     {
+        _isMiniGameActive = false;
         _miniGame.SetActive(false);
 
-        GameObject currentPannel = null;
-        // Активируем соответствующую панель
-        if (winnerName == "Player")
+        // Показываем результат
+        GameObject resultPanel = winnerName == "Player" ? _winPanel : _losePanel;
+        if (resultPanel != null)
         {
-            currentPannel = _winPanel;
+            resultPanel.SetActive(true);
+            yield return new WaitForSeconds(2f);
+            resultPanel.SetActive(false);
         }
-        else
-        {
-            currentPannel = _losePanel;
-        }
-        
-        ActivatePanel(currentPannel);
-        yield return new WaitForSeconds(2f);
-        ActivatePanel(currentPannel);
 
-
-        // Выполняем оставшуюся логику конца игры
+        // Возвращаем основную камеру
         _switch.SwitchCamera();
-        if(!_uiPannel.activeSelf) _uiPannel.SetActive(true);
+        if (!_uiPannel.activeSelf) _uiPannel.SetActive(true);
         _castle.SetActive(true);
-        _isMiniGameFinished = true;
-        DataBetweenLocations.ForgePerfom = true;
 
-
-        Debug.LogWarning("Мини-игра завершена. Победитель: " + winnerName);
+        // Задержка перед возможностью повторного запуска
+        yield return new WaitForSeconds(1f);
+        _canStartMiniGame = true;
     }
 
+    private void OnDestroy()
+    {
+        if (_miniGameProcessor != null)
+        {
+            _miniGameProcessor.OnEndGame -= EndMiniGame;
+        }
+    }
 }

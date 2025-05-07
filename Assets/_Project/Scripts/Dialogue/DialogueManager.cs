@@ -1,4 +1,4 @@
-using System.Collections;
+п»їusing System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -89,7 +89,7 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // Обработка подтверждения выбора
+        // РћР±СЂР°Р±РѕС‚РєР° РїРѕРґС‚РІРµСЂР¶РґРµРЅРёСЏ РІС‹Р±РѕСЂР°
         if (_isSelectingChoice && InputManager.GetInstance().GetInteractPressed())
         {
             GameObject selectedObject = EventSystem.current.currentSelectedGameObject;
@@ -107,7 +107,7 @@ public class DialogueManager : MonoBehaviour
             }
         }
 
-        // Обработка продолжения диалога
+        // РћР±СЂР°Р±РѕС‚РєР° РїСЂРѕРґРѕР»Р¶РµРЅРёСЏ РґРёР°Р»РѕРіР°
         if (_canContinueToNextLine
             && _currentStory.currentChoices.Count == 0
             && InputManager.GetInstance().GetSubmitPressed())
@@ -131,32 +131,32 @@ public class DialogueManager : MonoBehaviour
      {
         if (DialogueIsPlaying)
         {
-            // Защита от двойного запуска
+            // Р—Р°С‰РёС‚Р° РѕС‚ РґРІРѕР№РЅРѕРіРѕ Р·Р°РїСѓСЃРєР°
             StopAllCoroutines();
-            StartCoroutine(ExitDialogueMode());   // мягко закрыть и открыть заново
+            StartCoroutine(ExitDialogueMode());   // РјСЏРіРєРѕ Р·Р°РєСЂС‹С‚СЊ Рё РѕС‚РєСЂС‹С‚СЊ Р·Р°РЅРѕРІРѕ
         }
         //dialogueFileName = dialogueFileName.Replace(".json", "");
-        // Формируем путь к файлу: Dialogue/имя_файла
+        // Р¤РѕСЂРјРёСЂСѓРµРј РїСѓС‚СЊ Рє С„Р°Р№Р»Сѓ: Dialogue/РёРјСЏ_С„Р°Р№Р»Р°
         dialogueFileName = TrimAfterLastSlash(dialogueFileName);
 
 #if UNITY_EDITOR
-        // Полный путь к папке Resources/Dialogue на диске
+        // РџРѕР»РЅС‹Р№ РїСѓС‚СЊ Рє РїР°РїРєРµ Resources/Dialogue РЅР° РґРёСЃРєРµ
         string fullPath = Application.dataPath + $"/Resources/Dialogue/{dialogueFileName}";
-        Debug.Log($"Полный путь на диске: {fullPath}");
+        Debug.Log($"РџРѕР»РЅС‹Р№ РїСѓС‚СЊ РЅР° РґРёСЃРєРµ: {fullPath}");
 
-        // Проверка существования папки
+        // РџСЂРѕРІРµСЂРєР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ РїР°РїРєРё
         if (!Directory.Exists(fullPath))
         {
-            Debug.LogError($"Папка не существует: {fullPath}");
+            Debug.LogError($"РџР°РїРєР° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚: {fullPath}");
             return;
         }
 
-        // Проверка наличия файлов .json в папке
+        // РџСЂРѕРІРµСЂРєР° РЅР°Р»РёС‡РёСЏ С„Р°Р№Р»РѕРІ .json РІ РїР°РїРєРµ
         string[] files = Directory.GetFiles(fullPath, "*.json");
-        Debug.Log($"Найдено файлов .json: {files.Length}");
+        Debug.Log($"РќР°Р№РґРµРЅРѕ С„Р°Р№Р»РѕРІ .json: {files.Length}");
         foreach (string file in files)
         {
-            Debug.Log($"Файл: {file}");
+            Debug.Log($"Р¤Р°Р№Р»: {file}");
         }
 #endif
 

@@ -23,7 +23,6 @@ INCLUDE ../GlobalSettings/global.ink
     # portrait: black_guard
     # layout: left
      ~ PowerCheckStart = true
-
     -> END
 
 === gate2Guard ===

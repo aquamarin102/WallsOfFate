@@ -73,12 +73,12 @@ public class PocemonNPCNew : MonoBehaviour, ITriggerable
     {
         if (_dialogueManager.DialogueIsPlaying) return false;
 
-        //var powerCheckStart = ((Ink.Runtime.BoolValue)_dialogueManager
-        //    .GetVariablesState("PowerCheckStart")).value;
+        var powerCheckStart = ((Ink.Runtime.BoolValue)_dialogueManager
+            .GetVariablesState("PowerCheckStart")).value;
 
-        if (QuestCollection.GetActiveQuestGroups().Count > 0 && QuestCollection.GetActiveQuestGroups()[0].CurrentTaskId == 5) return true;
-        else return false;
-        //return powerCheckStart;
+        //if (QuestCollection.GetActiveQuestGroups().Count > 0 && QuestCollection.GetActiveQuestGroups()[0].CurrentTaskId == 5) return true;
+        //else return false;
+        return powerCheckStart;
     }
 
     private void StartMiniGame()
