@@ -1,52 +1,67 @@
+using System;
 using UnityEngine;
 using GameResources;
 using Zenject;
 using Zenject.SpaceFighter;
+using UnityEngine.AI;
 
 public enum ResourceType { Gold, Food, PeopleSatisfaction, CastleStrength }
 
 [RequireComponent(typeof(Collider))]
 public class InteractableItem : MonoBehaviour, ITriggerable
 {
+    [Header("Resource Settings")]
     public ResourceType resourceType;
     public int amount = 1;
 
     [TextArea]
     public string message = "+1 resource";
 
+    [Header("Floating Text")]
     public GameObject floatingTextPrefab;
-
-    [Header("Смещение точки спавна текста")]
-    [Tooltip("Смещение от позиции игрока до точки, где должен появиться текст")]
     public Vector3 spawnOffset = new Vector3(0f, 2.5f, 0f);
 
-    [Header("Поведение после взаимодействия")]
-    [Tooltip("Если true — объект удалится после взаимодействия. Иначе — отключится, но останется.")]
+    [Header("Post-Use Behavior")]
     public bool destroyAfterUse = true;
+
+    [Header("Move-to settings")]
+    [Tooltip("На каком расстоянии от предмета игрок останавливается")]
+    [SerializeField] private float approachDistance = 1.2f;
 
     private Transform _player;
     private bool _hasBeenUsed = false;
     public bool HasBeenUsed => _hasBeenUsed;
 
-
-    private void Start()
+    void Start()
     {
-        if (!_player)
-        {
-            var go = GameObject.FindGameObjectWithTag("Player");
-            if (go) _player = go.transform;
-            else Debug.LogError("Player not found — тегните объект игрока как 'Player'.");
-        }
+        var go = GameObject.FindGameObjectWithTag("Player");
+        if (go) _player = go.transform;
+        else Debug.LogError("Player not found — please tag the player object as 'Player'.");
     }
 
+    void OnMouseUpAsButton()
+    {
+        if (_hasBeenUsed) return;
+
+        var playerGO = GameObject.FindGameObjectWithTag("Player");
+        var mover = playerGO?.GetComponent<PlayerMoveController>();
+        if (mover == null) return;
+
+        float approach = 1.2f;              // на каком расстоянии хватит
+        mover.MoveToAndCallback(
+            /* target  */ this.transform,
+            /* run     */ true,
+            /* arrive  */ () => Interact(),
+            /* stop    */ approach
+        );
+    }
 
     public void Interact()
     {
         if (_hasBeenUsed) return;
-
         _hasBeenUsed = true;
 
-        // 1) Изменяем ресурсы
+        // 1) Ресурсы
         switch (resourceType)
         {
             case ResourceType.Gold:
@@ -63,39 +78,27 @@ public class InteractableItem : MonoBehaviour, ITriggerable
                 break;
         }
 
-        // 2) Спавним текст
+        // 2) Всплывающий текст
         if (floatingTextPrefab != null && _player != null)
         {
             Vector3 worldPos = _player.position + spawnOffset;
-            GameObject ftGO = Instantiate(floatingTextPrefab, worldPos, Quaternion.identity, _player);
-            var ft = ftGO.GetComponent<FloatingText>();
-            if (ft != null)
+            var ftGO = Instantiate(floatingTextPrefab, worldPos, Quaternion.identity, _player);
+            if (ftGO.TryGetComponent<FloatingText>(out var ft))
                 ft.SetText(message);
         }
 
-        // 3) Реакция после взаимодействия
+        // 3) Убираем объект
         if (destroyAfterUse)
-        {
             gameObject.SetActive(false);
-        }
         else
         {
-            // Отключаем коллайдер и (по желанию) визуальный эффект подсветки
-            Collider col = GetComponent<Collider>();
-            if (col != null)
-                col.enabled = false;
-
-            // Если есть подсветка — отключаем, например:
-            var ps = GetComponentInChildren<ParticleSystem>();
-            if (ps != null)
-                ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            var col = GetComponent<Collider>();
+            if (col) col.enabled = false;
         }
 
-        var outlines = GetComponentsInChildren<cakeslice.Outline>();
-        foreach (var outline in outlines)
-        {
-            outline.enabled = false;
-        }
+        // 4) Отключаем Outline (если был)
+        foreach (var o in GetComponentsInChildren<cakeslice.Outline>())
+            o.enabled = false;
     }
 
     public void Triggered() => Interact();

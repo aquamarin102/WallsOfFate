@@ -1,38 +1,45 @@
 using UnityEngine;
 using cakeslice;
 
+[RequireComponent(typeof(Collider))]  // Убедитесь, что на том же объекте есть Collider (не обязательно Trigger)
 public class OutlineTrigger : MonoBehaviour
 {
     private Outline[] outlines;
     private InteractableItem interactable;
 
+    // состояния
+    private bool isPlayerInTrigger = false;
+    private bool isMouseOver = false;
+
     void Start()
     {
-        // Получаем все Outline компоненты в дочерних объектах
-        outlines = GetComponentsInChildren<Outline>();
+        // Берём все Outline в детях
+        outlines = GetComponentsInChildren<Outline>(true);
 
-        // Выключаем все по умолчанию
-        foreach (var outline in outlines)
-        {
-            outline.enabled = false;
-        }
+        // Отключаем
+        foreach (var o in outlines) o.enabled = false;
 
-        // Ищем скрипт взаимодействия (может отсутствовать!)
+        // Ваш скрипт взаимодействия (может быть null)
         interactable = GetComponent<InteractableItem>();
     }
 
+    private void UpdateOutlineState()
+    {
+        // можно ли подсвечивать?
+        bool canHighlight = (interactable == null || !interactable.HasBeenUsed);
+        bool shouldBeOn = canHighlight && (isPlayerInTrigger || isMouseOver);
+
+        foreach (var o in outlines)
+            o.enabled = shouldBeOn;
+    }
+
+    // ——— триггер игрока ———
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
-            // Проверка: если есть InteractableItem, то подсвечиваем только если не использован
-            if (interactable == null || !interactable.HasBeenUsed)
-            {
-                foreach (var outline in outlines)
-                {
-                    outline.enabled = true;
-                }
-            }
+            isPlayerInTrigger = true;
+            UpdateOutlineState();
         }
     }
 
@@ -40,10 +47,22 @@ public class OutlineTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            foreach (var outline in outlines)
-            {
-                outline.enabled = false;
-            }
+            isPlayerInTrigger = false;
+            UpdateOutlineState();
         }
+    }
+
+    // ——— мышь над объектом ———
+    // Эти события будут вызываться, если у этого же GameObject есть Collider (не обязательно isTrigger)
+    void OnMouseEnter()
+    {
+        isMouseOver = true;
+        UpdateOutlineState();
+    }
+
+    void OnMouseExit()
+    {
+        isMouseOver = false;
+        UpdateOutlineState();
     }
 }
