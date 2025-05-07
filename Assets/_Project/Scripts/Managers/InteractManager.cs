@@ -150,6 +150,12 @@ public class InteractManager : MonoBehaviour
         if (go.CompareTag("PickupFloor")) playerAnimator.PlayPickupFloor();
         else if (go.CompareTag("PickupBody")) playerAnimator.PlayPickupBody();
         else if (go.CompareTag("Chest")) playerAnimator.PlayOpenChest();
+        else if (go.CompareTag("Box"))
+        {
+            var grabber = GetComponent<PlayerBoxGrabber>();
+            if (grabber != null)
+                grabber.ToggleGrab(go.transform);   // единая логика
+        }
 
         hasInteracted = true;
         if (interactionIndicator) interactionIndicator.SetActive(false);
