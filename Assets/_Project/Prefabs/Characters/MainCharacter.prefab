@@ -180,6 +180,7 @@ MonoBehaviour:
   stopThreshold: 0.25
   clickRunThreshold: 0.3
   holdThreshold: 0.2
+  talkDistance: 1.25
   walkingPitch: 1.4
   runningPitch: 1.9
 --- !u!114 &3382583244008469319
@@ -364,8 +365,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   grabRange: 0.4
   grabKey: 101
+  clickRayLength: 100
+  boxMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  autoRunToClickedBox: 1
   maxSpeed: 5
-  attachedBox: {fileID: 0}
 --- !u!136 &-4248748749519651901
 CapsuleCollider:
   m_ObjectHideFlags: 0
