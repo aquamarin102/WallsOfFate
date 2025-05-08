@@ -37,7 +37,18 @@ public class CatAI : MonoBehaviour
     [Header("Turn-in-place")]
     [SerializeField] float turnSpeed = 420f;
     [SerializeField] float turnAngleThreshold = 5f;
+
+    [SerializeField] float arrivalVel = 0.01f;   // м/с²: считаем, что стоит
+    [SerializeField] float arrivalTol = 0.2f;    // м: дойдём хоть чуть-дальше stoppingDistance
+
+    [SerializeField] float arrivalDistance = 0.15f;   // ≥ stoppingDistance
+    [SerializeField] float arrivalSpeedSqr = 0.0025f; // (≈0.05 м/с)²
+
+    const float MinTargetDist = 0.25f;
     #endregion
+
+    float _replanDelay;                 // ❰-- добавляем
+    const float ReplanDelayTime = 1f;
 
     enum State { Idle, Turn, Wander, Approach, Retreat, Flee, Sleep }
     State _state;
@@ -161,10 +172,26 @@ public class CatAI : MonoBehaviour
         }
     }
 
+    bool HasArrived()
+    {
+        // ещё строится путь? → рано
+        if (_agent.pathPending)
+            return false;
+
+        // путь уже "сброшен" Unity'ю → точно на месте
+        if (!_agent.hasPath)
+            return true;
+
+        // близко + почти не двигается
+        bool close = _agent.remainingDistance <= Mathf.Max(_agent.stoppingDistance, arrivalDistance);
+        bool slow = _agent.velocity.sqrMagnitude <= arrivalSpeedSqr;
+        return close && slow;
+    }
+
     void TickWander(float dt)
     {
         AntiStuck(dt);
-        if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
+        if (HasArrived())
             SwitchState(State.Idle);
     }
 
@@ -187,21 +214,14 @@ public class CatAI : MonoBehaviour
     void TickRetreat(float dt)
     {
         AntiStuck(dt);
-        if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
-            SwitchState(State.Wander);
+        if (HasArrived()) SwitchState(State.Wander);
     }
 
     void TickFlee(float dt)
     {
         AntiStuck(dt);
-
-        // ▸ 1. как только добежали до предыдущей точки – строим новую
-        if (!_agent.pathPending && _agent.remainingDistance <= _agent.stoppingDistance)
-            PickFleeDestination();          // ← выберет новую точку «подальше от игрока»
-
-        // ▸ 2. прекращаем убегать, только если игрок окончательно отстал
-        if (DistToPlayer() > fleeEndDistance)
-            EndPlayerInteraction();
+        if (HasArrived()) PickFleeDestination();
+        if (DistToPlayer() > fleeEndDistance) EndPlayerInteraction();
     }
 
     void TickSleep(float dt)
@@ -242,14 +262,20 @@ public class CatAI : MonoBehaviour
     /* -- movement ------------------------------------------------ */
     void BeginMove(Vector3 dest, float speed, State afterTurn)
     {
+        // если цель слишком близко – сразу "прибыли" / репланируем
+        if ((dest - transform.position).sqrMagnitude < MinTargetDist * MinTargetDist)
+        {
+            Replan();                            // или SwitchState(afterTurn);
+            return;
+        }
+
         _pendingDestination = dest;
         _pendingSpeed = speed;
         _afterTurnState = afterTurn;
 
-        _agent.SetDestination(dest); // пусть рассчитывает путь
-        _agent.speed = 0f;       // тормозим на месте
+        _agent.SetDestination(dest);
+        _agent.speed = 0f;
         _agent.isStopped = true;
-
         _state = State.Turn;
     }
 
@@ -269,14 +295,24 @@ public class CatAI : MonoBehaviour
     /* -- anti-stuck ---------------------------------------------- */
     void AntiStuck(float dt)
     {
+
         bool slow = _agent.velocity.sqrMagnitude < stuckSpeed * stuckSpeed;
         bool bad = _agent.pathStatus != NavMeshPathStatus.PathComplete;
-
-        if (slow || bad) _stuckTimer += dt; else _stuckTimer = 0f;
-
-        if (_stuckTimer >= stuckTime)
+        if (bad)                                           // partial / invalid?
         {
-            _stuckTimer = 0f;
+            _replanDelay = ReplanDelayTime;                // мгновенно сработает
+        }
+
+        // если всё плохо — запускаем таймер, иначе сбрасываем
+        if (slow || bad)
+            _replanDelay += dt;
+        else
+            _replanDelay = 0f;
+
+        // когда таймер достиг 1 с — перестраиваемся и обнуляем счётчик
+        if (_replanDelay >= ReplanDelayTime)
+        {
+            _replanDelay = 0f;
             Replan();
         }
     }
@@ -318,6 +354,17 @@ public class CatAI : MonoBehaviour
         BeginMove(RandomSafePoint(transform.position, wanderRadius), walkSpeed, State.Wander);
     }
 
+    bool IsReachable(Vector3 target)
+    {
+        NavMeshPath path = new NavMeshPath();           // или new NavMeshPath()
+        bool ok = NavMesh.CalculatePath(transform.position,
+                                        target,
+                                        _agent.areaMask,
+                                        path)
+                  && path.status == NavMeshPathStatus.PathComplete;                    // если делаете пул
+        return ok;
+    }
+
     /* -- utilities ----------------------------------------------- */
     float DistToPlayer() => Vector3.Distance(transform.position, _player.position);
     Vector3 DirToPlayer() => (transform.position - _player.position).normalized;
@@ -327,16 +374,22 @@ public class CatAI : MonoBehaviour
         for (int i = 0; i < attempts; i++)
         {
             Vector3 cand = origin + Random.insideUnitSphere * radius;
-            if (NavMesh.SamplePosition(cand, out var hit, radius, NavMesh.AllAreas) &&
-                !NearEdge(hit.position))
+            if (NavMesh.SamplePosition(cand, out var hit, radius, _agent.areaMask)
+                && !NearEdge(hit.position)
+                && IsReachable(hit.position))               // ➊ новинка
                 return hit.position;
         }
         return ClampToNavMesh(origin);
     }
 
-    Vector3 SafePointNear(Vector3 desired) =>
-        NearEdge(desired) ? RandomSafePoint(desired, wanderRadius * .5f)
-                          : ClampToNavMesh(desired);
+    Vector3 SafePointNear(Vector3 desired)
+    {
+        Vector3 p = NearEdge(desired)
+                  ? RandomSafePoint(desired, wanderRadius * .5f)
+                  : ClampToNavMesh(desired);
+
+        return IsReachable(p) ? p : Vector3.zero;           // ➋ вернём 0, если «забор»
+    }
 
     bool NearEdge(Vector3 pos) =>
         NavMesh.FindClosestEdge(pos, out var hit, NavMesh.AllAreas) && hit.distance < edgeAvoidDistance;
