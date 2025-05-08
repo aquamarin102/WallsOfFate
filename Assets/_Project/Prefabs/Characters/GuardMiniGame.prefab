@@ -406,6 +406,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultDialogue: GuardMiniGame/GuardMiniGame/
   _npcName: GuardMiniGame
+  PowerCheckPrefab: {fileID: 405817722266581316, guid: 68b817aa0bc5c144ea6ae66364f8ee97, type: 3}
 --- !u!95 &819538050057397726
 Animator:
   serializedVersion: 7

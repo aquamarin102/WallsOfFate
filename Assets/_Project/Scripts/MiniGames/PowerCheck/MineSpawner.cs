@@ -289,6 +289,8 @@ public class MineSpawner : MonoBehaviour
 
     private bool IsPositionFree(Vector3 pos)
     {
+        GameProcess gameProcessor = GameObject.FindGameObjectWithTag("GameProcessor").GetComponent<GameProcess>();
+        if (!_forbiddenSpawnPoints[1] && gameProcessor) _forbiddenSpawnPoints[1] = gameProcessor.EnemyChar.transform;
         foreach (var f in _forbiddenSpawnPoints)
             if (Vector3.Distance(pos, f.position) < allowedDistanseForForrbidenSpawnPoint) return false;
         foreach (var m in EnumerateAllMines())

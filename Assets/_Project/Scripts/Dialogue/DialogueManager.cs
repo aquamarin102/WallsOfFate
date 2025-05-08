@@ -48,6 +48,8 @@ public class DialogueManager : MonoBehaviour
 
     private DialogueVariables _dialogueVariables;
 
+    public GameObject PowerCheckPrefab { get; set; }
+
     private void Awake()
     {
         if (_instance != null)

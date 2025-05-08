@@ -139,6 +139,7 @@ MonoBehaviour:
   floatingTextWorldPrefab: {fileID: 8503380163757038419, guid: 2fd5f98ba8460eb4a99e6a13faa9fc55, type: 3}
   playerRenderer: {fileID: 1818000146201546772}
   flashDuration: 0.2
+  Portrait: DefaultItemPicture
   initialBuffPulseDuration: 1
   initialDebuffPulseDuration: 1
   minPulseDuration: 0.2
@@ -228,5 +229,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.31412074, y: 0.49628255, z: 0.30413613}
-  m_Center: {x: 0.0049922913, y: 0.24814127, z: -0.000000014901161}
+  m_Size: {x: 0.30413613, y: 0.6079296, z: 0.3181557}
+  m_Center: {x: -0.000000019868216, y: 0.21958566, z: -0.0070097847}
