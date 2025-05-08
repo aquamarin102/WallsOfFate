@@ -17,17 +17,41 @@ public class GameProcess : MonoBehaviour
     IReadOnlyList<Mine> _buffMines;
     IReadOnlyList<Mine> _debuffMines;
 
-    private PlayerMove _playerMove;
-    private AIController _enemyMove;
+    private PlayerMove PlayerMove;
+    private AIController EnemyMove;
 
-    private MiniGamePlayer playerChar;
-    private MiniGamePlayer enemyChar;
+    public MiniGamePlayer PlayerChar;
+    public MiniGamePlayer EnemyChar;
 
     [Inject]
     private void Construct([Inject(Id = "Player")] PlayerMove player, [Inject(Id = "Enemy")] AIController enemy)
     {
+        UpdateReferences(player, enemy);
+    }
+
+
+    public void UpdateReferences(PlayerMove player, AIController enemy)
+    {
         Player = player.gameObject;
         Enemy = enemy.gameObject;
+
+        PlayerMove = player;
+        EnemyMove = enemy;
+
+        PlayerChar = Player.GetComponent<MiniGamePlayer>();
+        EnemyChar = Enemy.GetComponent<MiniGamePlayer>();
+
+        // Unsubscribe from previous events if they exist
+        if (PlayerChar != null && PlayerMove != null)
+        {
+            PlayerChar.OnSpeedChanged -= PlayerMove.ChangeSpeed;
+            PlayerChar.OnSpeedChanged += PlayerMove.ChangeSpeed;
+        }
+        if (EnemyChar != null && EnemyMove != null)
+        {
+            EnemyChar.OnSpeedChanged -= EnemyMove.ChangeSpeed;
+            EnemyChar.OnSpeedChanged += EnemyMove.ChangeSpeed;
+        }
     }
 
     public event Action<string, string> OnEndGame;
@@ -39,56 +63,7 @@ public class GameProcess : MonoBehaviour
 
     private void InitializeLogic()
     {
-        if (Enemy != null && DialogueManager.HasInstance && DialogueManager.GetInstance().PowerCheckPrefab != null)
-        {
-            if (Enemy.name != DialogueManager.GetInstance().PowerCheckPrefab.name)
-            {
-                // Сохраняем позицию и вращение текущего врага
-                Vector3 position = Enemy.transform.position;
-                Quaternion rotation = Enemy.transform.rotation;
-                Transform parent = Enemy.transform.parent; // Сохраняем родителя если есть
-
-                // Уничтожаем текущего врага
-                Destroy(Enemy);
-
-                // Создаем нового врага из префаба
-                GameObject newEnemy = Instantiate(
-                    DialogueManager.GetInstance().PowerCheckPrefab,
-                    position,
-                    rotation,
-                    parent
-                );
-
-                // Убираем "(Clone)" из имени
-                newEnemy.name = DialogueManager.GetInstance().PowerCheckPrefab.name;
-
-                // Обновляем ссылки
-                Enemy = newEnemy;
-                _enemyMove = Enemy.GetComponent<AIController>();
-                enemyChar = Enemy.GetComponent<MiniGamePlayer>();
-
-                // Переподписываем события
-                if (enemyChar != null && _enemyMove != null)
-                {
-                    enemyChar.OnSpeedChanged += _enemyMove.ChangeSpeed;
-                }
-                else
-                {
-                    Debug.LogError("Не удалось найти необходимые компоненты на новом враге");
-                }
-            }
-        }
-
         _mineSpawner = GameObject.FindGameObjectWithTag("MineSpawner").GetComponent<MineSpawner>();
-
-        _playerMove = Player.GetComponent<PlayerMove>();
-        _enemyMove = Enemy.GetComponent<AIController>();
-
-        playerChar = Player.GetComponent<MiniGamePlayer>();
-        enemyChar = Enemy.GetComponent<MiniGamePlayer>();
-
-        playerChar.OnSpeedChanged += _playerMove.ChangeSpeed;
-        enemyChar.OnSpeedChanged += _enemyMove.ChangeSpeed;
 
         // Получаем список мин с MineSpawner
         _healMines = _mineSpawner.HealMines;
@@ -105,31 +80,30 @@ public class GameProcess : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //if (_isPanelActive) return;
         SubscribeToMineEvents(_debuffMines);
-        if ((playerChar.Health <= 0 && !playerChar.isDead) || (enemyChar.Health <= 0 && !enemyChar.isDead))
+        if ((PlayerChar.Health <= 0 && !PlayerChar.isDead) || (EnemyChar.Health <= 0 && !EnemyChar.isDead))
         {
             string winner, loser;
-            if (playerChar.Health > 0)
+            if (PlayerChar.Health > 0)
             {
-                winner = playerChar.Name;
-                loser = enemyChar.Name;
+                winner = PlayerChar.Name;
+                loser = EnemyChar.Name;
             }
             else
             {
-                winner = enemyChar.Name;
-                loser = playerChar.Name;
+                winner = EnemyChar.Name;
+                loser = PlayerChar.Name;
             }
 
-            playerChar.Health = 0;
-            enemyChar.Health = 0;
-            playerChar.isDead = true;
-            enemyChar.isDead = true;
+            PlayerChar.Health = 0;
+            EnemyChar.Health = 0;
+            PlayerChar.isDead = true;
+            EnemyChar.isDead = true;
 
             OnEndGame?.Invoke(winner, loser);
         }
     }
-        
+
     private void SubscribeToMineEvents(IEnumerable<Mine> mines)
     {
         foreach (Mine mine in mines)
@@ -204,7 +178,7 @@ public class GameProcess : MonoBehaviour
                 return mine;
             }
         }
-            
+
         return null;
     }
 

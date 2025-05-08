@@ -19,10 +19,10 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
         DialogueManager.GetInstance().PowerCheckPrefab = PowerCheckPrefab;
         //if(QuestCollection.GetActiveQuestGroups().Count > 0 && QuestCollection.GetActiveQuestGroups()[0].CurrentTaskId == 5) return;
         // Проверка на старт новых квестов
-        var availableGroups = QuestCollection.GetAllDays()
-            .SelectMany(d => d.Quests)
-            .Where(q => q.CheckOpen(_npcName))
-            .ToList();
+        var currentDay = QuestCollection.GetCurrentDayData();
+        var availableGroups = currentDay != null
+            ? currentDay.Quests.Where(q => q.CheckOpen(_npcName)).ToList()
+            : new List<QuestGroup>();
 
         if (availableGroups.Count > 0)
         {

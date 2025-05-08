@@ -16,12 +16,20 @@ public class MiniGameInstaller : MonoInstaller
     public Slider PlayerHPBarPrefab;
     public Slider EnemyHPBarPrefab;
 
-    [Header("Enemie Settings")]
+    [Header("Enemy Settings")]
     public Transform SpawnPoint;
     public GameObject EnemyPrefab;
 
     [Header("Game Settings")]
     public MineSpawner MineSpawnerObject;
+
+    private PlayerMove _playerInstance;
+    private AIController _enemyInstance;
+
+    private void OnEnable()
+    {
+        ResetGame();
+    }
 
     public override void InstallBindings()
     {
@@ -31,12 +39,37 @@ public class MiniGameInstaller : MonoInstaller
             return;
         }
 
-        //if (EnemyPrefab != DialogueManager.GetInstance().PowerCheckPrefab) EnemyPrefab = DialogueManager.GetInstance().PowerCheckPrefab;
-
         BindCameraTransform();
-        BindPlayer();
-        BindEnemies();
         BindMineSpawner();
+        BindPlayer();
+        BindEnemy();
+    }
+
+    public void ResetGame()
+    {
+        if (_enemyInstance != null)
+        {
+            Destroy(_enemyInstance.gameObject);
+        }
+
+        GameObject enemyPrefab = EnemyPrefab;
+
+        // dsПроверяем, нужно ли использовать префаб из DialogueManager
+        if (DialogueManager.HasInstance && DialogueManager.GetInstance().PowerCheckPrefab != null)
+        {
+            if (enemyPrefab != DialogueManager.GetInstance().PowerCheckPrefab)
+            {
+                enemyPrefab = DialogueManager.GetInstance().PowerCheckPrefab;
+            }
+        }
+
+        InstantiateEnemies(enemyPrefab, SpawnPoint);
+
+        var gameProcess = FindObjectOfType<GameProcess>();
+        if (gameProcess != null)
+        {
+            gameProcess.UpdateReferences(_playerInstance, _enemyInstance);
+        }
     }
 
     private void BindMineSpawner()
@@ -52,44 +85,66 @@ public class MiniGameInstaller : MonoInstaller
             return;
         }
 
-        PlayerMove player = Container.InstantiatePrefabForComponent<PlayerMove>(
-            PlayerPrefab, StartPoint.position, PlayerPrefab.transform.rotation, Parent);
+        InstantiatePlayer();
 
-        Container.Bind<PlayerMove>().WithId("Player").FromInstance(player).AsSingle();
+        Container.Bind<PlayerMove>().WithId("Player").FromInstance(_playerInstance).AsSingle();
+    }
 
+    private void InstantiatePlayer()
+    {
+        _playerInstance = Instantiate(PlayerPrefab, StartPoint.position, PlayerPrefab.transform.rotation, Parent)
+            .GetComponent<PlayerMove>();
 
         // Создаем и передаем HealthBar
         Slider playerHealthBar = Instantiate(PlayerHPBarPrefab, CanvasTransform);
 
-        HealthBarManager healthBarManager = player.GetComponent<HealthBarManager>();
+        HealthBarManager healthBarManager = _playerInstance.GetComponent<HealthBarManager>();
         if (healthBarManager != null)
         {
             healthBarManager.SetHealthBar(playerHealthBar);
         }
     }
 
-    private void BindEnemies()
+    private void BindEnemy()
     {
         Transform spawnPoint = SpawnPoint;
         GameObject enemyPrefab = EnemyPrefab;
-        AIController enemy = Container.InstantiatePrefabForComponent<AIController>(enemyPrefab, spawnPoint.position, spawnPoint.rotation, Parent);
-        Container.Bind<AIController>().WithId("Enemy").FromInstance(enemy).AsSingle();
 
-        HealthBarManager healthBarManager = enemy.GetComponent<HealthBarManager>();
+        // dsПроверяем, нужно ли использовать префаб из DialogueManager
+        if (DialogueManager.HasInstance && DialogueManager.GetInstance().PowerCheckPrefab != null)
+        {
+            if (enemyPrefab != DialogueManager.GetInstance().PowerCheckPrefab)
+            {
+                enemyPrefab = DialogueManager.GetInstance().PowerCheckPrefab;
+            }
+        }
+
+        InstantiateEnemies(enemyPrefab, spawnPoint);
+
+        Container.Bind<AIController>().WithId("Enemy").FromInstance(_enemyInstance).AsSingle();
+    }
+
+    private void InstantiateEnemies(GameObject enemyPrefab, Transform spawnPoint)
+    {
+        _enemyInstance = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation, Parent)
+            .GetComponent<AIController>();
+
+        // Убираем "(Clone)" из имени
+        _enemyInstance.gameObject.name = enemyPrefab.name;
+
+        HealthBarManager healthBarManager = _enemyInstance.GetComponent<HealthBarManager>();
         if (healthBarManager != null)
         {
             Slider enemyHealthBar = Instantiate(EnemyHPBarPrefab, CanvasTransform);
-
             healthBarManager.SetHealthBar(enemyHealthBar);
         }
     }
+
     private void BindCameraTransform()
     {
         Container
             .Bind<Transform>()
-            //.WithId("PwerCheckCamera")
             .FromInstance(CameraTransform)
             .WhenInjectedInto<PlayerMove>();
     }
-
 }

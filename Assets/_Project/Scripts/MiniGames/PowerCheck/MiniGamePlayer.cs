@@ -34,6 +34,7 @@ public class MiniGamePlayer : MonoBehaviour
     [SerializeField] private GameObject floatingTextWorldPrefab;
     [SerializeField] private Renderer playerRenderer;
     [SerializeField] private float flashDuration = 0.2f;
+    [SerializeField] public string Portrait = "";
 
     [Header("Pulse Effect")]
     [SerializeField] private float initialBuffPulseDuration = 1.0f;

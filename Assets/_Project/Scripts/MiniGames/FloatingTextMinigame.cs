@@ -19,6 +19,13 @@ public class FloatingTextMinigame : MonoBehaviour
 
     private void LateUpdate()
     {
+        // Check for null references and destroy the GameObject if any are found
+        if (tmp == null || mainCam == null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         // 1) Поднимаем
         transform.position += Vector3.up * riseSpeed * Time.deltaTime;
 

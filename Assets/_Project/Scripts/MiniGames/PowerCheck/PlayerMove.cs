@@ -39,6 +39,8 @@ public class PlayerMove : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!_cameraTrnsform) _cameraTrnsform = GameObject.FindGameObjectWithTag("PowerCheckCamera").transform;
+
         if (_underDebuff && _debuffEffect != null)
         {
             _debuffEffect.SetActive(true);

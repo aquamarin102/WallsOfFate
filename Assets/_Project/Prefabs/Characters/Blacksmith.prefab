@@ -2597,6 +2597,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultDialogue: Blacksmith/SmithyDefaultDialoge/
   _npcName: Blacksmith
+  PowerCheckPrefab: {fileID: 3815471161015022797, guid: 0cdd81bd79d38f94aa60000d05ec907d, type: 3}
 --- !u!114 &4875527140525067641
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2609,6 +2610,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246c04dfc0ad72d4d947b4c8da3b71df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverCheckDistance: 100
+  hoverLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &5218791320707356900
 GameObject:
   m_ObjectHideFlags: 0

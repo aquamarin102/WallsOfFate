@@ -22,6 +22,8 @@ TagManager:
   - AudienceTrigger
   - asteroid
   - ship
+  - GameProcessor
+  - PowerCheckCamera
   layers:
   - Default
   - TransparentFX

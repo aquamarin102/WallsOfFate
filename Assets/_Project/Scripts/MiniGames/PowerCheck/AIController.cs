@@ -82,10 +82,10 @@ public class AIController : MonoBehaviour
                     Debug.LogError("Не удалось найти GameProcess или Player в GameProcessor");
                 }
             }
-            if (!_mineSpawner) _mineSpawner = FindObjectOfType<MineSpawner>();
-            if (!_thisStats) _thisStats = GetComponent<MiniGamePlayer>();
-            if (!_agent) _agent = GetComponent<NavMeshAgent>();
         }
+        if (!_mineSpawner) _mineSpawner = FindObjectOfType<MineSpawner>();
+        if (!_thisStats) _thisStats = GetComponent<MiniGamePlayer>();
+        if (!_agent) _agent = GetComponent<NavMeshAgent>();
     }
 
     private void Start()
