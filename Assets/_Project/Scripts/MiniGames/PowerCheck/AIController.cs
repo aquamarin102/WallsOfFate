@@ -58,9 +58,34 @@ public class AIController : MonoBehaviour
     // ───────────────────────── LIFECYCLE ─────────────────────────
     private void Awake()
     {
-        if (!_mineSpawner) _mineSpawner = FindObjectOfType<MineSpawner>();
-        if (!_thisStats) _thisStats = GetComponent<MiniGamePlayer>();
-        if (!_agent) _agent = GetComponent<NavMeshAgent>();
+        RefreshFields();
+    }
+
+    private void RefreshFields()
+    {
+        if (!_playerStats || !_playerTf || !_mineSpawner || !_thisStats || !_agent)
+        {
+            GameObject gameProcessor = GameObject.FindGameObjectWithTag("GameProcessor");
+            if (gameProcessor != null)
+            {
+                // Получаем компонент GameProcess (предполагая, что он есть на объекте)
+                GameProcess gameProcess = gameProcessor.GetComponent<GameProcess>();
+
+                if (gameProcess != null && gameProcess.Player != null)
+                {
+                    // Получаем компоненты из Player
+                    if (!_playerStats) _playerStats = gameProcess.Player.GetComponent<MiniGamePlayer>();
+                    if (!_playerTf) _playerTf = gameProcess.Player.transform;
+                }
+                else
+                {
+                    Debug.LogError("Не удалось найти GameProcess или Player в GameProcessor");
+                }
+            }
+            if (!_mineSpawner) _mineSpawner = FindObjectOfType<MineSpawner>();
+            if (!_thisStats) _thisStats = GetComponent<MiniGamePlayer>();
+            if (!_agent) _agent = GetComponent<NavMeshAgent>();
+        }
     }
 
     private void Start()
@@ -81,6 +106,7 @@ public class AIController : MonoBehaviour
 
     private void Update()
     {
+        RefreshFields();
         _agent.speed = Mathf.Lerp(_agent.speed, _targetSpeed, Time.deltaTime / _speedSmoothTime);
 
         if (!_agent.pathPending && (_targets.Count == 0 || PickUpsChanged()))

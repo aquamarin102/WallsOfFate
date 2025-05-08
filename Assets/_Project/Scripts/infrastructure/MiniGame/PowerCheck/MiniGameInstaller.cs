@@ -31,6 +31,8 @@ public class MiniGameInstaller : MonoInstaller
             return;
         }
 
+        //if (EnemyPrefab != DialogueManager.GetInstance().PowerCheckPrefab) EnemyPrefab = DialogueManager.GetInstance().PowerCheckPrefab;
+
         BindCameraTransform();
         BindPlayer();
         BindEnemies();

@@ -35,6 +35,11 @@ public class HealthBarManager : MonoBehaviour
     {
         RemoveHealthBar();
     }
+    
+    void OnEnable()
+    {
+        AddHealthBar();
+    }
 
     void Update()
     {
@@ -63,6 +68,13 @@ public class HealthBarManager : MonoBehaviour
         if (_healthBar != null)
         {
             _healthBar.gameObject.SetActive(false);
+        }
+    }
+    public void AddHealthBar()
+    {
+        if (_healthBar != null)
+        {
+            _healthBar.gameObject.SetActive(true);
         }
     }
 }

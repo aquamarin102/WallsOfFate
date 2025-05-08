@@ -9,8 +9,8 @@ using Zenject;
 public class GameProcess : MonoBehaviour
 {
     [SerializeField] private MineSpawner _mineSpawner;
-    [SerializeField] private GameObject _player;
-    [SerializeField] private GameObject _enemy;
+    public GameObject Player;
+    public GameObject Enemy;
 
     IReadOnlyList<Mine> _healMines;
     IReadOnlyList<Mine> _damageMines;
@@ -26,8 +26,8 @@ public class GameProcess : MonoBehaviour
     [Inject]
     private void Construct([Inject(Id = "Player")] PlayerMove player, [Inject(Id = "Enemy")] AIController enemy)
     {
-        _player = player.gameObject;
-        _enemy = enemy.gameObject;
+        Player = player.gameObject;
+        Enemy = enemy.gameObject;
     }
 
     public event Action<string, string> OnEndGame;
@@ -39,13 +39,53 @@ public class GameProcess : MonoBehaviour
 
     private void InitializeLogic()
     {
+        if (Enemy != null && DialogueManager.HasInstance && DialogueManager.GetInstance().PowerCheckPrefab != null)
+        {
+            if (Enemy.name != DialogueManager.GetInstance().PowerCheckPrefab.name)
+            {
+                // Сохраняем позицию и вращение текущего врага
+                Vector3 position = Enemy.transform.position;
+                Quaternion rotation = Enemy.transform.rotation;
+                Transform parent = Enemy.transform.parent; // Сохраняем родителя если есть
+
+                // Уничтожаем текущего врага
+                Destroy(Enemy);
+
+                // Создаем нового врага из префаба
+                GameObject newEnemy = Instantiate(
+                    DialogueManager.GetInstance().PowerCheckPrefab,
+                    position,
+                    rotation,
+                    parent
+                );
+
+                // Убираем "(Clone)" из имени
+                newEnemy.name = DialogueManager.GetInstance().PowerCheckPrefab.name;
+
+                // Обновляем ссылки
+                Enemy = newEnemy;
+                _enemyMove = Enemy.GetComponent<AIController>();
+                enemyChar = Enemy.GetComponent<MiniGamePlayer>();
+
+                // Переподписываем события
+                if (enemyChar != null && _enemyMove != null)
+                {
+                    enemyChar.OnSpeedChanged += _enemyMove.ChangeSpeed;
+                }
+                else
+                {
+                    Debug.LogError("Не удалось найти необходимые компоненты на новом враге");
+                }
+            }
+        }
+
         _mineSpawner = GameObject.FindGameObjectWithTag("MineSpawner").GetComponent<MineSpawner>();
 
-        _playerMove = _player.GetComponent<PlayerMove>();
-        _enemyMove = _enemy.GetComponent<AIController>();
+        _playerMove = Player.GetComponent<PlayerMove>();
+        _enemyMove = Enemy.GetComponent<AIController>();
 
-        playerChar = _player.GetComponent<MiniGamePlayer>();
-        enemyChar = _enemy.GetComponent<MiniGamePlayer>();
+        playerChar = Player.GetComponent<MiniGamePlayer>();
+        enemyChar = Enemy.GetComponent<MiniGamePlayer>();
 
         playerChar.OnSpeedChanged += _playerMove.ChangeSpeed;
         enemyChar.OnSpeedChanged += _enemyMove.ChangeSpeed;
@@ -171,8 +211,8 @@ public class GameProcess : MonoBehaviour
     private void HandleMineTriggered(Mine givedMine, GameObject givedPlayer)
     {
         MiniGamePlayer givedPlayerChar = givedPlayer.GetComponent<MiniGamePlayer>();
-        MiniGamePlayer playerChar = _player.GetComponent<MiniGamePlayer>();
-        MiniGamePlayer enemyChar = _enemy.GetComponent<MiniGamePlayer>();
+        MiniGamePlayer playerChar = Player.GetComponent<MiniGamePlayer>();
+        MiniGamePlayer enemyChar = Enemy.GetComponent<MiniGamePlayer>();
 
         if (givedMine is HealMine healMine)
         {
@@ -187,7 +227,7 @@ public class GameProcess : MonoBehaviour
         }
         else if (givedMine is BuffSpeedMine buffSpeedMine)
         {
-            MineExplosion(buffSpeedMine, _player, _enemy);
+            MineExplosion(buffSpeedMine, Player, Enemy);
         }
 
         givedMine.SetActive(false);

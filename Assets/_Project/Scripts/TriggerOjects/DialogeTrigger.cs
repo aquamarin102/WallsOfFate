@@ -10,11 +10,13 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
     [Header("Dialogue Settings")]
     [SerializeField] private string _defaultDialogue;
     [SerializeField] private string _npcName;
+    public GameObject PowerCheckPrefab;
 
     public bool IsDone { get; private set; }
 
     public void Triggered()
     {
+        DialogueManager.GetInstance().PowerCheckPrefab = PowerCheckPrefab;
         //if(QuestCollection.GetActiveQuestGroups().Count > 0 && QuestCollection.GetActiveQuestGroups()[0].CurrentTaskId == 5) return;
         // Проверка на старт новых квестов
         var availableGroups = QuestCollection.GetAllDays()
