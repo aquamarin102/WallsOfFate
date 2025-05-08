@@ -53,7 +53,7 @@ namespace Quest
             CurrentDayNumber++;
         }
 
-        private static DayData GetCurrentDayData()
+        public static DayData GetCurrentDayData()
         {
             return _saveData.Days.FirstOrDefault(d => d.Day == CurrentDayNumber);
         }
