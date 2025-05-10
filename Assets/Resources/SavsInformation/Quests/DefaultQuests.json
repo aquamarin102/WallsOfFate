@@ -41,6 +41,34 @@
                 "PeopleSatisfaction": 0,
                 "CastleStrength": 0
               }
+            },
+            {
+              "Id": 2,
+              "TaskInfo": "Найти молот",
+              "IsDone": false,
+              "ForNPS": "Chest",
+              "RequeredTasksIds": [0,1],
+              "RequeredDialog": "Blacksmith/SmithyForgeDialoge/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            },
+            {
+              "Id": 3,
+              "TaskInfo": "Поговорить с кузнецом",
+              "IsDone": false,
+              "ForNPS": "Blacksmith",
+              "RequeredTasksIds": [0,1,2],
+              "RequeredDialog": "Blacksmith/SmithyWithHummerDialog/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
             }
           ]
         },
