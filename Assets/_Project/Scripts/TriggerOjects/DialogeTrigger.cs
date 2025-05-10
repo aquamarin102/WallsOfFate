@@ -40,6 +40,7 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
 
         if (groupToUpdate != null)
         {
+            QuestTask taskForDiaog = groupToUpdate.GetCurrentTask();
             groupToUpdate.GetCurrentTask().CompleteTask();
             groupToUpdate = UpdateGroupState(groupToUpdate);
 
@@ -47,6 +48,8 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
                 .FirstOrDefault(g => g.Id == groupToUpdate.Id);
 
             originalGroup?.CopyFrom(groupToUpdate);
+            DialogueManager.GetInstance().EnterDialogueMode(taskForDiaog.RequeredDialog);
+            return;
         }
 
         // Дефолтный диалог
