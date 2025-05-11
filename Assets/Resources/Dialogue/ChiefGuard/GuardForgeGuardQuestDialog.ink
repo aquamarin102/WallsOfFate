@@ -13,5 +13,5 @@
 
 
 === skip_quest ===
-Вы — наш лидер, Ваша Светлость. Народ смотрит на Вас, и Ваше слово решающее для них… speaker:Стражник #portrait:GuardPortrait #layout:right
+Вы — наш лидер, Ваша Светлость. Народ смотрит на Вас, и Ваше слово решающее для них… #speaker:Стражник #portrait:GuardPortrait #layout:right
 -> DONE
