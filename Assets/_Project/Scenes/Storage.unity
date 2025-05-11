@@ -58357,7 +58357,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &1374022391
 Light:
   m_ObjectHideFlags: 0
@@ -81047,9 +81047,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4276808589213752708, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}
       propertyPath: message
-      value: "\xAB\u041F\u0443\u0441\u0442\u043E. \u041A\u0442\u043E-\u0442\u043E
-        \u0437\u0430\u0431\u0440\u0430\u043B \u0441\u0432\u043E\u0451 \u0441\u0447\u0430\u0441\u0442\u044C\u0435
-        \u0440\u0430\u043D\u044C\u0448\u0435 \u043C\u0435\u043D\u044F\u2026"
+      value: "\u041F\u0443\u0441\u0442\u043E. \u041A\u0442\u043E-\u0442\u043E \u0437\u0430\u0431\u0440\u0430\u043B
+        \u0441\u0432\u043E\u0451 \u0441\u0447\u0430\u0441\u0442\u044C\u0435 \u0440\u0430\u043D\u044C\u0448\u0435
+        \u043C\u0435\u043D\u044F\u2026"
       objectReference: {fileID: 0}
     - target: {fileID: 5050328978687382349, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}
       propertyPath: m_LocalPosition.x
