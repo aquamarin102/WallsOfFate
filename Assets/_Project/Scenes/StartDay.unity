@@ -6674,9 +6674,9 @@ MonoBehaviour:
   foodText: {fileID: 535660736}
   satisfactionText: {fileID: 1086071987}
   strengthText: {fileID: 785254993}
-  colourFadeDuration: 0.25
-  colourReturnDuration: 0.4
-  valueStepDelay: 0.015
+  colourFadeDuration: 0.701
+  colourReturnDuration: 0.701
+  valueStepDelay: 0.0501
   increaseColour: {r: 0, g: 1, b: 0, a: 1}
   decreaseColour: {r: 1, g: 0, b: 0, a: 1}
   normalColour: {r: 1, g: 1, b: 1, a: 1}
@@ -20742,8 +20742,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _mineSpawner: {fileID: 2734983099725842061}
-  _player: {fileID: 6542501386556089285, guid: 0732e6a9f7def7444a67411c12e1898e, type: 3}
-  _enemy: {fileID: 8418896094125835111, guid: 626fece81f25b5346810350236088ec0, type: 3}
+  Player: {fileID: 0}
+  Enemy: {fileID: 0}
+  PlayerChar: {fileID: 0}
+  EnemyChar: {fileID: 0}
 --- !u!4 &7436151427201834837
 Transform:
   m_ObjectHideFlags: 0

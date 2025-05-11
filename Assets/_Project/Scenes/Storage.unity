@@ -26082,9 +26082,9 @@ MonoBehaviour:
   foodText: {fileID: 1280308198}
   satisfactionText: {fileID: 471458505}
   strengthText: {fileID: 577045727}
-  colourFadeDuration: 0.25
-  colourReturnDuration: 0.4
-  valueStepDelay: 0.015
+  colourFadeDuration: 0.701
+  colourReturnDuration: 0.701
+  valueStepDelay: 0.0501
   increaseColour: {r: 0, g: 1, b: 0, a: 1}
   decreaseColour: {r: 1, g: 0, b: 0, a: 1}
   normalColour: {r: 1, g: 1, b: 1, a: 1}
