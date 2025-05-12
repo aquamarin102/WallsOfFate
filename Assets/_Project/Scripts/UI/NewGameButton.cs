@@ -48,7 +48,7 @@ public class NewGameButton : MonoBehaviour
             _saveLoadManager.ClearSavs();
         }
         NewGameStarted?.Invoke();        // оповестили всех подписчиков
-        LoadingScreenManager.Instance.LoadScene("StartDay");
+        LoadingScreenManager.Instance.OnConfirmEndOfDay();
     }
     public void HideNewGamePanel()
     {

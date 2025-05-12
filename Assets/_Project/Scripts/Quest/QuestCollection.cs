@@ -162,6 +162,16 @@ namespace Quest
             }).ToList();
         }
 
+        public void TryCompleteGroup()
+        {
+            if (Tasks.All(t => t.IsDone))
+            {
+                Complite = true;
+                InProgress = false;
+                // можно тут ещё отправить событие, лог, звук и т.п.
+            }
+        }
+
         public int GetCurrentTaskId() => CurrentTaskId;
         public QuestTask GetCurrentTask() => Tasks[CurrentTaskId];
     }

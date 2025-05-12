@@ -313,9 +313,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textMesh: {fileID: 2547311876753807345}
   backgroundSR: {fileID: 2845084463022345391}
-  scaleFactorX: 1.5
+  scaleFactorX: 2
   scaleFactorY: 2
-  lifeTime: 2
+  lifeTime: 3
 --- !u!210 &2170132941022028192
 SortingGroup:
   m_ObjectHideFlags: 0
