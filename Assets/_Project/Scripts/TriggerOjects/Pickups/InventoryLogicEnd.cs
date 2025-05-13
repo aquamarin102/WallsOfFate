@@ -16,7 +16,22 @@ public class InventoryLogicEnd : MonoBehaviour
     [SerializeField] private GameObject _inventoryObj; 
 
     private List<Pickup> _currentPickupsOfType = new List<Pickup>();
-    private int _displayedImagesCount = 0;
+    private int _displayedImagesCount = 0; 
+    private GameObject _ratObject;
+    private void Start()
+    {
+        // Ищем объект с тегом "Rat" при старте
+        _ratObject = GameObject.FindWithTag("Rat");
+        if (_ratObject == null)
+        {
+            Debug.LogWarning("Объект с тегом 'Rat' не найден!");
+        }
+        else
+        {
+            // Устанавливаем объект неактивным при старте (если нужно)
+            _ratObject.SetActive(false);
+        }
+    }
 
     private void Update()
     {
@@ -31,6 +46,21 @@ public class InventoryLogicEnd : MonoBehaviour
         {
             _currentPickupsOfType = newPickups;
         }
+
+        if (AllPanelsOpened())
+        {
+            if (_ratObject != null)
+            {
+                _ratObject.SetActive(true);
+            }
+        }
+    }
+
+    private bool AllPanelsOpened()
+    {
+        return pickupPanels.All(panel =>
+            panel != null &&
+            panel.transform.Find("Image")?.gameObject.activeSelf == true);
     }
 
     private void UpdatePanelsVisibility()
