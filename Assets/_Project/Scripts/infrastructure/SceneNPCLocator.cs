@@ -104,8 +104,8 @@ namespace Assets.Scripts.infrastructure
 
                 // Проверяем, есть ли квесты с OpenNPS или ForNPS, равным _npcName
                 bool hasMatchingQuest = currentDayData.Quests.Any(q =>
-                    (q.OpenNPS == npcName && !q.InProgress && !q.Complite) ||
-                    q.Tasks.Any(t => t.ForNPS == npcName && !t.IsDone));
+                    (q.OpenNPS == npcName) ||
+                    q.Tasks.Any(t => t.ForNPS == npcName));
 
                 if (!hasMatchingQuest)
                 {

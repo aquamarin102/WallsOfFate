@@ -76,28 +76,28 @@
           "Id": 1,
           "InProgress": false,
           "Complite": false,
-          "OpenNPS": "Blacksmith",
+          "OpenNPS": "ChiefGuard",
           "CurrentTaskId": 0,
-          "OpenDialog": "Blacksmith/LostNails/",
+          "OpenDialog": "ChiefGuard/GuardForgeGuardQuestDialog/",
           "Evidence": null,
           "Prime": false,
           "Tasks": [
             {
               "Id": 0,
-              "TaskInfo": "Поговорить с главой стражи на счет преступника",
+              "TaskInfo": "Найти беженца",
               "IsDone": false,
-              "ForNPS": "ChiefGuard",
+              "ForNPS": "Refugee",
               "RequeredTasksIds": [],
-              "RequeredDialog": "ChiefGuard/LostNails/",
+              "RequeredDialog": "Refugee/RefugeeForgeMobilisationQuest/",
               "Resources": {
                 "Gold": 0,
                 "Food": 0,
                 "PeopleSatisfaction": 0,
                 "CastleStrength": 0
-              },
+              }
             }
           ]
-        },
+        },      
         {
           "Id": 2,
           "InProgress": false,
@@ -175,11 +175,67 @@
             },
             {
               "Id": 2,
-              "TaskInfo": "Найдите улики открыть инвентарь на G",
+              "TaskInfo": "Найдите улики. Открыть инвентарь на G",
               "IsDone": false,
-              "ForNPS": "CastleConditionReport",
+              "ForNPS": "Evidence",
               "RequeredTasksIds": [0, 1],
               "RequeredDialog": "Messages/StorageRoge/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            },
+            {
+              "Id": 3,
+              "TaskInfo": "Найдите улики. Открыть инвентарь на G",
+              "IsDone": false,
+              "ForNPS": "Evidence",
+              "RequeredTasksIds": [0, 1],
+              "RequeredDialog": "Messages/StorageRoge/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            },
+            {
+              "Id": 4,
+              "TaskInfo": "Найдите улики. Открыть инвентарь на G",
+              "IsDone": false,
+              "ForNPS": "Evidence",
+              "RequeredTasksIds": [0, 1],
+              "RequeredDialog": "Messages/StorageRoge/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            },
+            {
+              "Id": 5,
+              "TaskInfo": "Найдите предателя.",
+              "IsDone": false,
+              "ForNPS": "Ratter",
+              "RequeredTasksIds": [0, 1, 2, 3, 4],
+              "RequeredDialog": "Ratter/StorageDialoge/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            },
+            {
+              "Id": 6,
+              "TaskInfo": "Поговорить с главой стражи",
+              "IsDone": false,
+              "ForNPS": "Ratter",
+              "RequeredTasksIds": [0, 1, 2, 3, 4, 5],
+              "RequeredDialog": "ChiefGuard/StorageRoge/",
               "Resources": {
                 "Gold": 0,
                 "Food": 0,
@@ -193,25 +249,25 @@
           "Id": 1,
           "InProgress": false,
           "Complite": false,
-          "OpenNPS": "ChiefGuard",
+          "OpenNPS": "Blacksmith",
           "CurrentTaskId": 0,
-          "OpenDialog": "ChiefGuard/GuardForgeGuardQuestDialog/",
+          "OpenDialog": "Blacksmith/LostNails/",
           "Evidence": null,
           "Prime": false,
           "Tasks": [
             {
               "Id": 0,
-              "TaskInfo": "Найти беженца",
+              "TaskInfo": "Поговорить с главой стражи на счет преступника",
               "IsDone": false,
-              "ForNPS": "Refugee",
+              "ForNPS": "ChiefGuard",
               "RequeredTasksIds": [],
-              "RequeredDialog": "Refugee/RefugeeForgeMobilisationQuest/",
+              "RequeredDialog": "ChiefGuard/LostNails/",
               "Resources": {
                 "Gold": 0,
                 "Food": 0,
                 "PeopleSatisfaction": 0,
                 "CastleStrength": 0
-              }
+              },
             }
           ]
         },
@@ -227,7 +283,7 @@
           "Tasks": [
             {
               "Id": 0,
-              "TaskInfo": "Найти беженца",
+              "TaskInfo": "Найти сокровище",
               "IsDone": false,
               "ForNPS": "TeasureChest",
               "RequeredTasksIds": [],
@@ -242,41 +298,42 @@
           ]
         },
       ]
-    },
-    {
-      "Day": 2,
-      "Quests": [
-        {
-          "Id": 0,
-          "InProgress": false,
-          "Complite": false,
-          "OpenNPS": "Messenger",
-          "CurrentTaskId": 0,
-          "OpenDialog": "Messager/HelpNeighbor/",
-          "Evidence": {
-            "EvidenceType": "---",
-            "Dialoge": "Messager/MessagerMainRoomStorageQuest/",
-            "DialogePlayed": false,
-            "Picture": "UI/Inventory/UIPrefabs/ItemsImages/forest",
-            "Description": "Пахнет лесом..."
-          },
-          "Prime": true,
-          "Tasks": [
-          ]
-        },
-        {
-          "Id": 1,
-          "InProgress": false,
-          "Complite": false,
-          "OpenNPS": "ChiefArmy",
-          "CurrentTaskId": 0,
-          "OpenDialog": "ChiefArmy/Discussion/",
-          "Evidence": null,
-          "Prime": false,
-          "Tasks": [
-          ]
-        }
-      ]
     }
+    // ,
+    // {
+    //   "Day": 2,
+    //   "Quests": [
+    //     {
+    //       "Id": 0,
+    //       "InProgress": false,
+    //       "Complite": false,
+    //       "OpenNPS": "Messenger",
+    //       "CurrentTaskId": 0,
+    //       "OpenDialog": "Messager/HelpNeighbor/",
+    //       "Evidence": {
+    //         "EvidenceType": "---",
+    //         "Dialoge": "Messager/MessagerMainRoomStorageQuest/",
+    //         "DialogePlayed": false,
+    //         "Picture": "UI/Inventory/UIPrefabs/ItemsImages/forest",
+    //         "Description": "Пахнет лесом..."
+    //       },
+    //       "Prime": true,
+    //       "Tasks": [
+    //       ]
+    //     },
+    //     {
+    //       "Id": 1,
+    //       "InProgress": false,
+    //       "Complite": false,
+    //       "OpenNPS": "ChiefArmy",
+    //       "CurrentTaskId": 0,
+    //       "OpenDialog": "ChiefArmy/Discussion/",
+    //       "Evidence": null,
+    //       "Prime": false,
+    //       "Tasks": [
+    //       ]
+    //     }
+    //   ]
+    // }
   ]
 }

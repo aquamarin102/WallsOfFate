@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 8479242543674551022}
   - component: {fileID: 995906516631179433}
   - component: {fileID: 6802245928008003865}
+  - component: {fileID: 1683462465103907927}
   m_Layer: 0
   m_Name: kulon
   m_TagString: PickupBody
@@ -219,6 +220,19 @@ MonoBehaviour:
   spawnOffset: {x: 0, y: 2.5, z: 0}
   destroyAfterUse: 1
   approachDistance: 1.2
+--- !u!114 &1683462465103907927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5535076611407859519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adccd2b93e2f15e44a65da412c269bd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _selfName: Evidence
 --- !u!1001 &6225540413727393204
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -2583,12 +2583,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8962330537170480382}
-  - component: {fileID: 5136724802865598431}
   - component: {fileID: 7450974185834198213}
   - component: {fileID: 358929716508629787}
   - component: {fileID: 3855495381272695926}
-  - component: {fileID: 7253260143015432934}
-  - component: {fileID: 1230821922497703156}
   - component: {fileID: 5925082074130505282}
   m_Layer: 0
   m_Name: Ratter
@@ -2596,7 +2593,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8962330537170480382
 Transform:
   m_ObjectHideFlags: 0
@@ -2621,21 +2618,6 @@ Transform:
   - {fileID: 1452911663561283673}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5136724802865598431
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5287994788729229247}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0996432d9ec83764eab23e8d27b623a2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _defaultDialogue: StartDay/NPC3/NPC3
-  _npcName: NPC3
-  PowerCheckPrefab: {fileID: 0}
 --- !u!54 &7450974185834198213
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2708,44 +2690,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!195 &7253260143015432934
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5287994788729229247}
-  m_Enabled: 1
-  m_AgentTypeID: 1
-  m_Radius: 0.5
-  m_Speed: 2
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 0
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 2
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 4
---- !u!114 &1230821922497703156
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5287994788729229247}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 04714461c87c4dd4a8abd5284beb85d9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _rotationSpeed: 360
-  stepClip1: {fileID: 8300000, guid: 41fb45f1ff97f9245a54400add63923b, type: 3}
-  stepClip2: {fileID: 8300000, guid: 0d1a315848dbe12438e2bfb76f718cae, type: 3}
-  baseStepInterval: 0.5
 --- !u!82 &5925082074130505282
 AudioSource:
   m_ObjectHideFlags: 0
