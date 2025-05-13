@@ -24,6 +24,7 @@ TagManager:
   - ship
   - GameProcessor
   - PowerCheckCamera
+  - Rat
   layers:
   - Default
   - TransparentFX
