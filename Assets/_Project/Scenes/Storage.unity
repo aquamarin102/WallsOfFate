@@ -845,12 +845,14 @@ MonoBehaviour:
   - {fileID: 5179246055025782645, guid: b0a9076a91ac51d42ba409ab98e09f78, type: 3}
   - {fileID: 5535076611407859519, guid: 5e4b209ffed4f184696c1a805c7db289, type: 3}
   - {fileID: 869600013806441278, guid: 5b0f1feb5de8eef4c9f4763f55baf3dc, type: 3}
+  - {fileID: 5287994788729229247, guid: ae0815cdbc662dd4d81a34087f2d67db, type: 3}
   Parent: {fileID: 582872662}
   StartPoints:
   - {fileID: 937559992}
   - {fileID: 237262696}
   - {fileID: 1543215523}
-  EnableCheck: 010101
+  - {fileID: 470660103}
+  EnableCheck: 01010101
 --- !u!1001 &23496083
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19174,6 +19176,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 178.23552, y: 1498.0021, z: 1183.2799}
   m_Center: {x: -0.000003814697, y: 0.000091552734, z: 0.0007324219}
+--- !u!1 &470660102
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 470660103}
+  m_Layer: 0
+  m_Name: RatterSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &470660103
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470660102}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: 0.9605719, z: -0, w: 0.2780318}
+  m_LocalPosition: {x: 36.19, y: -0.14499976, z: -19.666}
+  m_LocalScale: {x: 1, y: 1.05, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1069744507}
+  m_LocalEulerAnglesHint: {x: 0, y: 147.714, z: 0}
 --- !u!1 &471458503
 GameObject:
   m_ObjectHideFlags: 0
@@ -45686,6 +45719,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1603920906}
+  - {fileID: 470660103}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1072625679
