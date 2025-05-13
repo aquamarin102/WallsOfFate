@@ -1,3 +1,4 @@
+INCLUDE ../GlobalSettings/global.ink
 #speaker:Кузнец #portrait:SmithyPortrait #layout:right
 О, ваша светлость! Рад видеть вас у своей кузни. 
 #speaker:Кузнец #portrait:SmithyPortrait #layout:left
@@ -7,8 +8,9 @@
 
 *   Хорошо, я принесу его. #speaker:Кузнец #portrait:SmithyPortrait #layout:left
     Благодарю. Скоро работа будет завершена. #speaker:Кузнец #portrait:SmithyPortrait #layout:right
-    -> DONE
+    -> END
 *   Не до того. Зови своего помощника. #speaker:Кузнец #portrait:SmithyPortrait #layout:left
-    Как прикажете… А подмастерье мой с утра как сквозь землю провалился — небось дрыхнет на сеновале. А мне ж и отойти нельзя: коль оставлю наковальню, — металл остынет, и бойцам нечем будет сражаться. #speaker:Кузнец #portrait:SmithyPortrait #layout:right
-    -> DONE
+    Как прикажете… А подмастерье мой с утра как сквозь землю провалился — небось дрыхнет на сеновале. А мне ж и отойти нельзя: коль оставлю наковальню, — металл остынет, и бойцам нечем будет сражаться. #speaker:Кузнец #portrait:SmithyPortrait #layout:right   
+    ~ QuestComplete = true
+    -> END
     

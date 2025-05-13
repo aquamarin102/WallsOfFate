@@ -16,23 +16,6 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
 
     public void Triggered()
     {
-        DialogueManager.GetInstance().PowerCheckPrefab = PowerCheckPrefab;
-        //if(QuestCollection.GetActiveQuestGroups().Count > 0 && QuestCollection.GetActiveQuestGroups()[0].CurrentTaskId == 5) return;
-        // Проверка на старт новых квестов
-        var currentDay = QuestCollection.GetCurrentDayData();
-        var availableGroups = currentDay != null
-            ? currentDay.Quests.Where(q => q.CheckOpen(_npcName)).ToList()
-            : new List<QuestGroup>();
-
-        if (availableGroups.Count > 0)
-        {
-            var group = availableGroups.First();
-            group.StartQuest();
-            DialogueManager.GetInstance().EnterDialogueMode(group.OpenDialog);
-            return;
-        }
-
-        // Обработка активных квестов
        var activeGroups = QuestCollection.GetActiveQuestGroups();
         var groupToUpdate = activeGroups.FirstOrDefault(g =>
             g.GetCurrentTask() != null &&
@@ -48,9 +31,27 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
                 .FirstOrDefault(g => g.Id == groupToUpdate.Id);
 
             originalGroup?.CopyFrom(groupToUpdate);
-            DialogueManager.GetInstance().EnterDialogueMode(taskForDiaog.RequeredDialog);
+            DialogueManager.GetInstance().EnterDialogueMode(taskForDiaog.RequeredDialog, groupToUpdate.Id);
             return;
         }
+
+        DialogueManager.GetInstance().PowerCheckPrefab = PowerCheckPrefab;
+        //if(QuestCollection.GetActiveQuestGroups().Count > 0 && QuestCollection.GetActiveQuestGroups()[0].CurrentTaskId == 5) return;
+        // Проверка на старт новых квестов
+        var currentDay = QuestCollection.GetCurrentDayData();
+        var availableGroups = currentDay != null
+            ? currentDay.Quests.Where(q => q.CheckOpen(_npcName)).ToList()
+            : new  List<QuestGroup>();
+
+        if (availableGroups.Count > 0)
+        {
+            var group = availableGroups.First();
+            group.StartQuest();
+            DialogueManager.GetInstance().EnterDialogueMode(group.OpenDialog, group.Id);
+            return;
+        }
+
+        // Обработка активных квестов
 
         // Дефолтный диалог
         DialogueManager.GetInstance().EnterDialogueMode(_defaultDialogue);
@@ -79,7 +80,8 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
                     .Where(t => !t.IsDone)
                     .OrderBy(t => t.Id)
                     .FirstOrDefault()?.Id ?? -1,
-            Tasks = group.Tasks
+            Tasks = group.Tasks,
+            Prime = group.Prime
         };
     }
 

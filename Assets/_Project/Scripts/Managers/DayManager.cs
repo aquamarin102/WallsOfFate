@@ -23,19 +23,19 @@ public class DayManager : MonoBehaviour
         CheckNewDayConditions();
     }
     public void CheckNewDayConditions()
-{
-    PlayerSpawnData.ClearData();
-    _inventoryLogicEnd?.RefreshPanel();
+    {
+        PlayerSpawnData.ClearData();
+        _inventoryLogicEnd?.RefreshPanel();
 
-    // Ищем главный Prime-квест, у которого ВСЕ задачи отмечены IsDone == true
-    var completedPrimeQuest = QuestCollection.GetAllQuestGroups()
-        .FirstOrDefault(q =>
-            q.Prime
-            && q.Tasks.All(t => t.IsDone)
-        );
+        // Ищем главный Prime-квест, у которого ВСЕ задачи отмечены IsDone == true
+        var completedPrimeQuest = QuestCollection.GetAllQuestGroups()
+            .FirstOrDefault(q =>
+                q.Prime
+                && q.Tasks.All(t => t.IsDone)
+            );
 
-    newDayButton.gameObject.SetActive(completedPrimeQuest != null);
-}
+        newDayButton.gameObject.SetActive(completedPrimeQuest != null);
+    }
 
     private void ShowEndOfDay()
     {

@@ -12,7 +12,7 @@
           "CurrentTaskId": 0,
           "OpenDialog": "Messager/MessagerDialogMainRoom/",
           "Evidence": null,
-          "Prime": false,
+          "Prime": true,
           "Tasks": [
             {
               "Id": 0,
@@ -76,6 +76,63 @@
           "Id": 1,
           "InProgress": false,
           "Complite": false,
+          "OpenNPS": "Blacksmith",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Blacksmith/LostNails/",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": [
+            {
+              "Id": 0,
+              "TaskInfo": "Поговорить с главой стражи на счет преступника",
+              "IsDone": false,
+              "ForNPS": "ChiefGuard",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "ChiefGuard/LostNails/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              },
+            }
+          ]
+        },
+        {
+          "Id": 2,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Blacksmith",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Blacksmith/FindTreasure/",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": [
+            {
+              "Id": 0,
+              "TaskInfo": "Найдите склад оружия и доспехов",
+              "IsDone": false,
+              "ForNPS": "stoneWithCache",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Servants/ServantMobilisation/0/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              },
+            }
+          ]
+        },
+      ]
+    },
+    {
+      "Day": 1,
+      "Quests": [
+        {
+          "Id": 0,
+          "InProgress": false,
+          "Complite": false,
           "OpenNPS": "Messenger",
           "CurrentTaskId": 0,
           "OpenDialog": "Messager/MessagerMainRoomStorageQuest/",
@@ -104,11 +161,11 @@
             },
             {
               "Id": 1,
-              "TaskInfo": "Пойти в главный зал",
+              "TaskInfo": "Найдите отчет",
               "IsDone": false,
-              "ForNPS": "MainRoomDoor",
-              "RequeredTasksIds": [],
-              "RequeredDialog": "Messager/MessagerMainRoomStorageQuest/",
+              "ForNPS": "CastleConditionReport",
+              "RequeredTasksIds": [0],
+              "RequeredDialog": "Messages/StorageRoge/",
               "Resources": {
                 "Gold": 0,
                 "Food": 0,
@@ -116,14 +173,22 @@
                 "CastleStrength": 0
               }
             },
-
+            {
+              "Id": 2,
+              "TaskInfo": "Найдите улики",
+              "IsDone": false,
+              "ForNPS": "CastleConditionReport",
+              "RequeredTasksIds": [0, 1],
+              "RequeredDialog": "Messages/StorageRoge/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            }
           ]
-        }
-      ]
-    },
-    {
-      "Day": 1,
-      "Quests": [
+        },
         {
           "Id": 1,
           "InProgress": false,
@@ -148,6 +213,67 @@
                 "CastleStrength": 0
               }
             }
+          ]
+        },
+        {
+          "Id": 2,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Messenger",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Messager/FindTreasure/",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": [
+            {
+              "Id": 0,
+              "TaskInfo": "Найти беженца",
+              "IsDone": false,
+              "ForNPS": "TeasureChest",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Refugee/RefugeeForgeMobilisationQuest/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            }
+          ]
+        },
+      ]
+    },
+    {
+      "Day": 2,
+      "Quests": [
+        {
+          "Id": 0,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Messenger",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Messager/HelpNeighbor/",
+          "Evidence": {
+            "EvidenceType": "---",
+            "Dialoge": "Messager/MessagerMainRoomStorageQuest/",
+            "DialogePlayed": false,
+            "Picture": "UI/Inventory/UIPrefabs/ItemsImages/forest",
+            "Description": "Пахнет лесом..."
+          },
+          "Prime": true,
+          "Tasks": [
+          ]
+        },
+        {
+          "Id": 1,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "ChiefArmy",
+          "CurrentTaskId": 0,
+          "OpenDialog": "ChiefArmy/Discussion/",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": [
           ]
         }
       ]

@@ -46,8 +46,60 @@ public class LoadingScreenManager : MonoBehaviour
     // === Кнопка «Конец дня» в вашем UI должна вызывать этот метод ===
     public void ShowEndOfDayPanel()
     {
-        // просто показываем экран конца дня
+        // Показываем экран конца дня
         panelEndOfDay.SetActive(true);
+
+        // Находим все дочерние элементы
+        Transform[] children = panelEndOfDay.GetComponentsInChildren<Transform>(true);
+
+        // Обновляем значения ресурсов
+        UpdateResourceText(children, "Gold", GameResources.GameResources.Gold.ToString());
+        UpdateResourceText(children, "Food", GameResources.GameResources.Food.ToString());
+        UpdateResourceText(children, "Satisfaction", GameResources.GameResources.PeopleSatisfaction.ToString());
+        UpdateResourceText(children, "Staraight", GameResources.GameResources.CastleStrength.ToString());
+    }
+
+    private void UpdateResourceText(Transform[] children, string parentObjectName, string value)
+    {
+        // Ищем первый родительский объект с указанным именем
+        Transform parentObject = System.Array.Find(children, child => child.name == parentObjectName);
+
+        if (parentObject != null)
+        {
+            // Ищем дочерний объект, имя которого начинается с "Amount%"
+            Transform amountChild = null;
+            foreach (Transform child in parentObject)
+            {
+                if (child.name.StartsWith("Amount"))
+                {
+                    amountChild = child;
+                    break;
+                }
+            }
+
+            if (amountChild != null)
+            {
+                // Получаем компонент TextMeshProUGUI
+                TextMeshProUGUI textComponent = amountChild.GetComponent<TextMeshProUGUI>();
+
+                if (textComponent != null)
+                {
+                    textComponent.text = value;
+                }
+                else
+                {
+                    Debug.LogWarning($"Объект Amount% в {parentObjectName} не содержит компонент TextMeshProUGUI");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"Не найден дочерний объект Amount% в {parentObjectName}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"Не найден родительский объект с именем {parentObjectName}");
+        }
     }
 
     // === Кнопка «Подтвердить конец дня» на panelEndOfDay ===
