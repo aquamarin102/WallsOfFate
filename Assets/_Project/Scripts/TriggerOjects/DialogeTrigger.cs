@@ -3,7 +3,6 @@ using UnityEngine;
 using Quest;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.SceneManagement;
 
 internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
 {
