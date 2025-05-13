@@ -7,6 +7,7 @@ using System;
 using UnityEngine.EventSystems;
 using System.IO;
 using System.Linq;
+using Quest;
 
 public class DialogueManager : MonoBehaviour
 {
@@ -49,6 +50,7 @@ public class DialogueManager : MonoBehaviour
     private DialogueVariables _dialogueVariables;
 
     public GameObject PowerCheckPrefab { get; set; }
+    private int? _currentQuestId = null;
 
     private void Awake()
     {
@@ -129,8 +131,9 @@ public class DialogueManager : MonoBehaviour
             : input;
     }
 
-    public void EnterDialogueMode(string dialogueFileName)
-     {
+    public void EnterDialogueMode(string dialogueFileName, int? questId = null)
+    {
+        _currentQuestId = questId;
         if (DialogueIsPlaying)
         {
             // Защита от двойного запуска
@@ -195,6 +198,14 @@ public class DialogueManager : MonoBehaviour
     public IEnumerator ExitDialogueMode()
     {
         yield return new WaitForSeconds(0.2f);
+
+        // Проверяем, нужно ли завершить квест
+        if (_currentQuestId.HasValue)
+        {
+            bool shouldComplete = GetVariablesState("QuestComplete")?.ToString().ToLower() == "true";
+            QuestCollection.ForceCompleteQuest(_currentQuestId.Value, shouldComplete);
+            SetVariableState("QuestComplete", false);
+        }
 
         _dialogueVariables.StopListening(_currentStory);
 

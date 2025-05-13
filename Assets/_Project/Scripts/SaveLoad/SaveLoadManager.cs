@@ -46,6 +46,7 @@ public sealed class SaveLoadManager : MonoBehaviour
             new ResourceSaveLoader(),
             // new PlayerSaveLoader(_playerTransform), // не загружаем позицию игрока
             new CollectionSaveLoader(AssembledPickups.GetAllPickups()),
+            new InteractableItemSaveLoader()
         };
 
         // ≈сли это не нова€ игра, загружаем необходимые данные.

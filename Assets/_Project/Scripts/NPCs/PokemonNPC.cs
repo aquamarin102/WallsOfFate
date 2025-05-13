@@ -10,6 +10,7 @@ public class PokemonNPC : MonoBehaviour
     [SerializeField] private CameraSwitch _switch;
     [SerializeField] private GameProcess _miniGameProcessor;
     [SerializeField] private GameObject _menu;
+    [SerializeField] private GameObject _trainingPrefab;
 
     private GameObject _winPanel;
     private GameObject _losePanel;
@@ -95,6 +96,19 @@ public class PokemonNPC : MonoBehaviour
             resultPanel.SetActive(true);
             yield return new WaitForSeconds(2f);
             resultPanel.SetActive(false);
+        }
+
+        // Обновляем ресурсы в зависимости от результата
+        if (winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab != _trainingPrefab)
+        {
+            GameResources.GameResources.ChangeCastleStrength(10); // Увеличиваем CastleStrength
+            GameResources.GameResources.ChangePeopleSatisfaction(-5); // Уменьшаем PeopleSatisfaction
+            Debug.Log("Player won: CastleStrength +10, PeopleSatisfaction -5");
+        }
+        else if(winnerName != "Player" && DialogueManager.GetInstance().PowerCheckPrefab != _trainingPrefab)
+        {
+            GameResources.GameResources.ChangePeopleSatisfaction(-10); // Уменьшаем PeopleSatisfaction
+            Debug.Log("Player lost: PeopleSatisfaction -10");
         }
 
         // Возвращаем основную камеру
