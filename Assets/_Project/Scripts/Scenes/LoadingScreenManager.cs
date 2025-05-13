@@ -15,6 +15,9 @@ public class LoadingScreenManager : MonoBehaviour
     public event Action LoadingFinished;
 
 
+    private InventoryLogicEnd _inventoryLogicEnd;
+
+
     [Header("UI-панели")]
     public GameObject loadingScreen;      // ваша существующая панель загрузки
     public TMP_Text loadingText;
@@ -39,6 +42,10 @@ public class LoadingScreenManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
         else { Destroy(gameObject); }
+
+        _inventoryLogicEnd = FindObjectOfType<InventoryLogicEnd>();
+        if (_inventoryLogicEnd == null)
+            Debug.LogWarning("LoadingScreenManager: не удалось найти InventoryLogicEnd на сцене!");
 
         spriteAnimator = loadingImage.GetComponent<UISpriteAnimator>();
     }
@@ -105,6 +112,14 @@ public class LoadingScreenManager : MonoBehaviour
     // === Кнопка «Подтвердить конец дня» на panelEndOfDay ===
     public void OnConfirmEndOfDay()
     {
+        PlayerSpawnData.ClearData();
+
+        // Обновляем панель инвентаря
+        if (_inventoryLogicEnd != null)
+            _inventoryLogicEnd.RefreshPanel();
+        else
+            Debug.LogWarning("LoadingScreenManager: InventoryLogicEnd == null, RefreshPanel не вызовется");
+
         QuestCollection.IncreaseCurrentDay();
         panelEndOfDay.SetActive(false);
         BeginLoadWithStartOfDay("StartDay");

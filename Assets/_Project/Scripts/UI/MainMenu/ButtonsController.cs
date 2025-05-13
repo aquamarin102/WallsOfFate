@@ -98,7 +98,6 @@ public class ButtonsController : MonoBehaviour
 
         // Enter, Space или E Ч с задержкой 1 секунда между нажати€ми
         if (Input.GetKeyUp(KeyCode.Return)
-            || Input.GetKeyUp(KeyCode.Space)
             || Input.GetKeyUp(KeyCode.E))
         {
             if (Time.unscaledTime - lastSubmitTime < submitCooldown)

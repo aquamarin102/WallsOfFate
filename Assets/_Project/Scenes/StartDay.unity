@@ -213,7 +213,7 @@ MonoBehaviour:
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 10
+  m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -3359,7 +3359,7 @@ MonoBehaviour:
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
   m_textAlignment: 65535
-  m_characterSpacing: 10
+  m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -5001,7 +5001,7 @@ MonoBehaviour:
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
-  m_characterSpacing: 10
+  m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
   m_lineSpacingMax: 0
@@ -5396,7 +5396,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &509698940
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7348,6 +7348,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _typingSpeed: 0.04
+  _inputBufferTime: 0.2
   _loadGlobalJSON: {fileID: 4900000, guid: 2c47b52d4551fd446aad00316c0c9416, type: 3}
   _dialoguePanel: {fileID: 509698939}
   _dialogueBackground: {fileID: 1446900408}
@@ -7375,6 +7376,7 @@ MonoBehaviour:
   _switch: {fileID: 829668897}
   _miniGameProcessor: {fileID: 7366989021537592088}
   _menu: {fileID: 1722570318}
+  _trainingPrefab: {fileID: 0}
 --- !u!114 &829668897
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -8,7 +8,6 @@ public class DayManager : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private Button newDayButton;
-    [SerializeField] private InventoryLogicEnd _inventoryLogicEnd;
 
     private void Awake()
     {
@@ -16,6 +15,7 @@ public class DayManager : MonoBehaviour
             newDayButton.onClick.AddListener(ShowEndOfDay);
         else
             Debug.LogWarning("DayManager: newDayButton не назначена!");
+
     }
 
     private void Update()
@@ -24,8 +24,6 @@ public class DayManager : MonoBehaviour
     }
     public void CheckNewDayConditions()
     {
-        PlayerSpawnData.ClearData();
-        _inventoryLogicEnd?.RefreshPanel();
 
         // Ищем главный Prime-квест, у которого ВСЕ задачи отмечены IsDone == true
         var completedPrimeQuest = QuestCollection.GetAllQuestGroups()
@@ -42,9 +40,5 @@ public class DayManager : MonoBehaviour
         LoadingScreenManager.Instance.ShowEndOfDayPanel();
     }
 
-    public void SetInventoryLogicEnd(InventoryLogicEnd logicEnd)
-    {
-        _inventoryLogicEnd = logicEnd;
-    }
 
 }
