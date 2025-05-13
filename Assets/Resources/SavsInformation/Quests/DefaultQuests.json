@@ -106,7 +106,7 @@
               "Id": 1,
               "TaskInfo": "Пойти в главный зал",
               "IsDone": false,
-              "ForNPS": "ForgeDoor",
+              "ForNPS": "MainRoomDoor",
               "RequeredTasksIds": [],
               "RequeredDialog": "Messager/MessagerMainRoomStorageQuest/",
               "Resources": {

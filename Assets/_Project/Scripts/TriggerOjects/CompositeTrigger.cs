@@ -37,20 +37,20 @@ public class CompositeTrigger : MonoBehaviour, ITriggerable
 
         if (groupToUpdate != null)
         {
-            // 1) отмечаем задачу
-            var task = groupToUpdate.GetCurrentTask();
-            task.CompleteTask();
+             // 1) отмечаем задачу
+    var task = groupToUpdate.GetCurrentTask();
+    task.CompleteTask();
 
-            // 2) пытаемся закрыть группу целиком
-            groupToUpdate.TryCompleteGroup();
+    // 2) пытаемся закрыть группу целиком
+    groupToUpdate.TryCompleteGroup();
 
-            // 3) назначаем следующий CurrentTaskId (или -1, если группа завершена)
-            var next = groupToUpdate.Tasks
-                .Where(t => !t.IsDone)
-                .OrderBy(t => t.Id)
-                .FirstOrDefault();
-            groupToUpdate.CurrentTaskId = next != null ? next.Id : -1;
-
+    // 3) назначаем следующий CurrentTaskId (или -1, если группа завершена)
+    var next = groupToUpdate.Tasks
+        .Where(t => !t.IsDone)
+        .OrderBy(t => t.Id)
+        .FirstOrDefault();
+    groupToUpdate.CurrentTaskId = next != null ? next.Id : -1;
+            
         }
     }
 

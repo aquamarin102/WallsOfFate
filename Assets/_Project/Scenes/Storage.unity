@@ -55216,7 +55216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: adccd2b93e2f15e44a65da412c269bd0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _selfName: StorageDoor
+  _selfName: MainRoomDoor
 --- !u!1 &1304069839
 GameObject:
   m_ObjectHideFlags: 0
