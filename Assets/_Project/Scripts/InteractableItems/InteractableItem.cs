@@ -1,9 +1,4 @@
-using System;
 using UnityEngine;
-using GameResources;
-using Zenject;
-using Zenject.SpaceFighter;
-using UnityEngine.AI;
 using UnityEngine.SceneManagement;
 
 public enum ResourceType { Gold, Food, PeopleSatisfaction, CastleStrength }
@@ -85,6 +80,23 @@ public class InteractableItem : MonoBehaviour, ITriggerable
             /* stop    */ approach
         );
     }
+
+    // Добавьте в InteractableItem.cs, если ещё нет
+    public void ResetForRespawn()
+    {
+        _hasBeenUsed = false;
+
+        if (TryGetComponent<Collider>(out var col))
+            col.enabled = true;
+
+        foreach (var o in GetComponentsInChildren<cakeslice.Outline>())
+            o.enabled = true;
+
+        string scene = SceneManager.GetActiveScene().name;
+        InteractableItemCollection.SetItemState(scene, gameObject.name, false);
+    }
+
+
 
     public void Interact()
     {
