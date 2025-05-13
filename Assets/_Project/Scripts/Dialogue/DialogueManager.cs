@@ -226,20 +226,30 @@ public class DialogueManager : MonoBehaviour
 
     private void ContinueStory()
     {
-        if (_currentStory.canContinue)
+        while (_currentStory.canContinue)
         {
-            if (_displayLineCoroutine != null) StopCoroutine(_displayLineCoroutine);
             string nextLine = _currentStory.Continue();
-            if (string.IsNullOrEmpty(nextLine) && !_currentStory.canContinue)
-            {
-                StartCoroutine(ExitDialogueMode());
-                return;
-            }
             HandleTags(_currentStory.currentTags);
+
+            // если строка пуста – читаем следующую
+            if (string.IsNullOrWhiteSpace(nextLine))
+                continue;
+
+            if (_displayLineCoroutine != null)
+                StopCoroutine(_displayLineCoroutine);
+
             _displayLineCoroutine = StartCoroutine(DisplayLine(nextLine));
+            return;                   // нашли текст – печатаем и ждём игрока
         }
-        else StartCoroutine(ExitDialogueMode());
+
+        // текста больше нет – может быть выбор
+        if (_currentStory.currentChoices.Count > 0)
+            DisplayChoices();
+        else
+            StartCoroutine(ExitDialogueMode());
     }
+
+
 
     private IEnumerator DisplayLine(string line)
     {
@@ -355,6 +365,7 @@ public class DialogueManager : MonoBehaviour
             _choices[i].SetActive(false);
 
         _isSelectingChoice = true;
+        _canContinueToNextLine = true;   // ← добавьте эту строку
         _selectedChoiceIndex = 0;
         StartCoroutine(SelectFirstChoice());
     }
