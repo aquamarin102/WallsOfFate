@@ -138,7 +138,7 @@
           "OpenDialog": "Messager/MessagerMainRoomStorageQuest/",
           "Evidence": {
             "EvidenceType": "---",
-            "Dialoge": "Messager/MessagerMainRoomStorageQuest/",
+            "Dialoge": "Messages/Storage/Roge/EvidenceConclusion/",
             "DialogePlayed": false,
             "Picture": "UI/Inventory/UIPrefabs/ItemsImages/forest",
             "Description": "Пахнет лесом..."
@@ -175,7 +175,7 @@
             },
             {
               "Id": 2,
-              "TaskInfo": "Найдите улики",
+              "TaskInfo": "Найдите улики открыть инвентарь на G",
               "IsDone": false,
               "ForNPS": "CastleConditionReport",
               "RequeredTasksIds": [0, 1],

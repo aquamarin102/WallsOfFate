@@ -123,6 +123,8 @@ namespace Quest
             return OpenNPS == npcName && !InProgress && !Complite;
         }
 
+        public bool IsEneded()  { return !InProgress && Complite; }
+
         public void StartQuest()
         {
             InProgress = true;

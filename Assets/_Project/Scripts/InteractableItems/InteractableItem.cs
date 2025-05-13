@@ -4,6 +4,7 @@ using GameResources;
 using Zenject;
 using Zenject.SpaceFighter;
 using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public enum ResourceType { Gold, Food, PeopleSatisfaction, CastleStrength }
 
@@ -37,6 +38,35 @@ public class InteractableItem : MonoBehaviour, ITriggerable
         var go = GameObject.FindGameObjectWithTag("Player");
         if (go) _player = go.transform;
         else Debug.LogError("Player not found Ч please tag the player object as 'Player'.");
+
+        // Load state from collection
+        CheckUsability();
+    }
+
+    private void Update()
+    {
+        CheckUsability(); 
+    }
+
+    private void CheckUsability()
+    {
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (InteractableItemCollection.TryGetItemState(sceneName, gameObject.name, out bool hasBeenUsed))
+        {
+            _hasBeenUsed = hasBeenUsed;
+            if (_hasBeenUsed)
+            {
+                if (destroyAfterUse)
+                    gameObject.SetActive(false);
+                else
+                {
+                    var col = GetComponent<Collider>();
+                    if (col) col.enabled = false;
+                }
+                foreach (var o in GetComponentsInChildren<cakeslice.Outline>())
+                    o.enabled = false;
+            }
+        }
     }
 
     void OnMouseUpAsButton()
@@ -60,6 +90,10 @@ public class InteractableItem : MonoBehaviour, ITriggerable
     {
         if (_hasBeenUsed) return;
         _hasBeenUsed = true;
+
+        // Save state to collection
+        string sceneName = SceneManager.GetActiveScene().name;
+        InteractableItemCollection.SetItemState(sceneName, gameObject.name, _hasBeenUsed);
 
         // 1) –есурсы
         switch (resourceType)
@@ -96,10 +130,13 @@ public class InteractableItem : MonoBehaviour, ITriggerable
             if (col) col.enabled = false;
         }
 
+        InteractableItemCollection.SetItemState(SceneManager.GetActiveScene().name, this.gameObject.name, _hasBeenUsed);
+
         // 4) ќтключаем Outline (если был)
         foreach (var o in GetComponentsInChildren<cakeslice.Outline>())
             o.enabled = false;
     }
 
     public void Triggered() => Interact();
+
 }

@@ -31,7 +31,7 @@ public class DayManager : MonoBehaviour
         var completedPrimeQuest = QuestCollection.GetAllQuestGroups()
             .FirstOrDefault(q =>
                 q.Prime
-                && q.Tasks.All(t => t.IsDone)
+                && q.IsEneded()
             );
 
         newDayButton.gameObject.SetActive(completedPrimeQuest != null);
