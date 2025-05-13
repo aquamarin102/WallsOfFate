@@ -36,7 +36,7 @@ namespace Quest
         public static void Initialize(QuestSaveData saveData = null)
         {
             _saveData = saveData ?? new QuestSaveData();
-            if (_saveData.Days == null) _saveData.Days = new List<DayData>();
+             if (_saveData.Days == null) _saveData.Days = new List<DayData>();
         }
 
         public static void AddDay(DayData day)

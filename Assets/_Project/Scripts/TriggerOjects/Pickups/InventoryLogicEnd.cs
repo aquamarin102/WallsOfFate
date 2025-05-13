@@ -53,14 +53,27 @@ public class InventoryLogicEnd : MonoBehaviour
             {
                 _ratObject.SetActive(true);
             }
+            else
+            {
+                _ratObject = GameObject.FindWithTag("Rat");
+            }
         }
     }
 
     private bool AllPanelsOpened()
     {
-        return pickupPanels.All(panel =>
-            panel != null &&
-            panel.transform.Find("Image")?.gameObject.activeSelf == true);
+        bool result = false;
+        bool isAllChecked = true;
+        foreach (var pannel in pickupPanels)
+        {
+            if (pannel != null)
+            {
+                bool imageCheck = pannel.transform.Find("Image").gameObject.activeSelf;
+                isAllChecked = isAllChecked && imageCheck;
+            }
+        }
+        result = isAllChecked || result;
+        return result;
     }
 
     private void UpdatePanelsVisibility()

@@ -842,15 +842,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NPC:
+  - {fileID: 869600013806441278, guid: 5b0f1feb5de8eef4c9f4763f55baf3dc, type: 3}
   - {fileID: 5179246055025782645, guid: b0a9076a91ac51d42ba409ab98e09f78, type: 3}
   - {fileID: 5535076611407859519, guid: 5e4b209ffed4f184696c1a805c7db289, type: 3}
-  - {fileID: 869600013806441278, guid: 5b0f1feb5de8eef4c9f4763f55baf3dc, type: 3}
   - {fileID: 5287994788729229247, guid: ae0815cdbc662dd4d81a34087f2d67db, type: 3}
   Parent: {fileID: 582872662}
   StartPoints:
   - {fileID: 937559992}
-  - {fileID: 237262696}
   - {fileID: 1543215523}
+  - {fileID: 237262696}
   - {fileID: 470660103}
   EnableCheck: 01010101
 --- !u!1001 &23496083

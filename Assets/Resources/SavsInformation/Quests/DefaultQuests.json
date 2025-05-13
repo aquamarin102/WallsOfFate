@@ -283,7 +283,7 @@
           "Tasks": [
             {
               "Id": 0,
-              "TaskInfo": "Найти беженца",
+              "TaskInfo": "Найти сокровище",
               "IsDone": false,
               "ForNPS": "TeasureChest",
               "RequeredTasksIds": [],

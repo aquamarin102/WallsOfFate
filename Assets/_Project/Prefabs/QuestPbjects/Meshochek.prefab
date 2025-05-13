@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 3003053774063675200}
   - component: {fileID: 2853763178827997417}
   - component: {fileID: 948213291999674421}
+  - component: {fileID: 5292132061262029626}
   m_Layer: 0
   m_Name: Meshochek
   m_TagString: PickupFloor
@@ -218,6 +219,19 @@ MonoBehaviour:
   spawnOffset: {x: 0, y: 2.5, z: 0}
   destroyAfterUse: 1
   approachDistance: 1.2
+--- !u!114 &5292132061262029626
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5179246055025782645}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: adccd2b93e2f15e44a65da412c269bd0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _selfName: Evidence
 --- !u!1001 &6560330771286779076
 PrefabInstance:
   m_ObjectHideFlags: 0
