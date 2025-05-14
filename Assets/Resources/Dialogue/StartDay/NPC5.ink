@@ -1,13 +1,31 @@
 INCLUDE ../GlobalSettings/global.ink
 
-#speaker:Странник #portrait:black_man #layout:right
-Пан, есть вести, которые стоят золота. Интересует?
+#speaker:Странник 
+#portrait:black_man 
+#layout:right
+Пан, у меня слухи, что стоят звонкой монеты. Клады, маршруты врага, трещины в их броне… Интересует?
+#speaker:Странник 
+#portrait:black_man 
+#layout:left
+*   Заплати за тайну.
+-> accept
+*   Не кормлю сплетников.
+-> refuse
 
-*   Выкладывай, но предупреждаю – не люблю зря тратить золото. #speaker:Странник #portrait:black_man #layout:left
-    Поверь, пан, каждое слово на вес золота. #speaker:Странник #portrait:black_man #layout:right
-    ~ Gold -= 10
-    ~ CastleStrength += 30
+=== accept ===
+    Монету дам, но если слова твои пусты — заплатишь языком. Говори.
+    #speaker:Странник 
+    #portrait:black_man 
+    #layout:right
+    Дорога через старый овраг размыта — войско врага двинется в обход, прямо под западный склон. Усильте там засаду — и перережете им хвост.
+~ Gold -= 10
+~ CastleStrength += 30
     -> END
-*   Не стану платить за сплетни. #speaker:Странник #portrait:black_man #layout:left
-    Пусть твоя гордыня не станет твоей смертью. #speaker:Странник #portrait:black_man #layout:right
+
+=== refuse ===
+    Чужие секреты пахнут тухлой рыбой. Храни их при себе.
+    #speaker:Странник 
+    #portrait:black_man 
+    #layout:right
+    Как желаете, пан. Но рыба, что гниёт в тени, порой губит целый пир.
     -> END

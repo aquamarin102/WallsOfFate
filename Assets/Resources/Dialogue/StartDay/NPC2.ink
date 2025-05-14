@@ -1,13 +1,33 @@
 INCLUDE ../GlobalSettings/global.ink
 
-#speaker:Музыкантка #portrait:black_woman #layout:right
-Милостивый пан, позволь нам переночевать и подкрепиться. Взамен усладим слух ваших людей перед битвой.
-*   Пусть поют, может, хоть кто-то забудет о смерти на пороге. #speaker:Музыкантка #portrait:black_woman #layout:left
-    Песнь будет о твоей щедрости. #speaker:Музыкантка #portrait:black_woman #layout:right
+#speaker:Музыкантка 
+#portrait:black_woman 
+#layout:right
+Милостивый пан, дай нам кров и скудный ужин. Взамен разгоним страх в сердцах — песней о доблести и грядущей победе.
+#speaker:Музыкантка 
+#portrait:black_woman 
+#layout:left
+*   Пусть поют.
+-> accept
+*   Не до музыки.
+-> refuse
+
+=== accept ===
+    Бери харч из кухни, но считай каждый каравай. Когда струны запоют — пусть песня станет бронёй, где не достаёт стали.
+    #speaker:Музыкантка 
+#portrait:black_woman 
+#layout:right
+    Светлая благодарность, пан. Ваша щедрость прозвучит до последнего бастиона.
     ~ Food -= 5
     ~ PeopleSatisfaction += 2
+    ~CastleStrength += 10
     -> END
-*   Здесь война, а не балаган! #speaker:Музыкантка #portrait:black_woman #layout:left
-    Как знаешь, пан, но помни – не одними мечами битва выиграна. #speaker:Музыкантка #portrait:black_woman #layout:right
+
+=== refuse ===
+    Здесь пахнет гарью битвы, не пиром. Лютня не остановит стрелу. Ищи крышу вдали от моих стен.
+    #speaker:Музыкантка 
+    #portrait:black_woman 
+    #layout:right
+    Понимаю… Но вспомните: порой песня крепче брони. Прощайте, пан.
     ~ PeopleSatisfaction -= 1
     -> END

@@ -1,13 +1,32 @@
 INCLUDE ../GlobalSettings/global.ink
 
-#speaker:Кочевник #portrait:black_man #layout:right
-Пан, дорога длинна, и живот сводит голодом. Продай немного еды, золото есть.
+#speaker:Кочевник 
+#portrait:black_man 
+#layout:right
+Пан, долгая дорога высушила все мои запасы. Продай горсть провианта — золото в руке.
+#speaker:Кочевник 
+#portrait:black_man 
+#layout:left
+*   Монету на стол — и получишь хлеб.
+-> accept
+*   Замок — не лавка.
+-> refuse
 
-*   Деньги вперёд, еда после.  #speaker:Кочевник #portrait:black_man #layout:left
-    Держи, пан. Пусть дорога твоя будет безопасной. #speaker:Кочевник #portrait:black_man #layout:right
-    ~ Food -= 20
+=== accept ===
+    Золото вперёд. Получишь хлеб и сушёное мясо, а потом катись по ветру.
+   #speaker:Кочевник 
+    #portrait:black_man 
+    #layout:right
+    Благодарю, пан. Пускай твоя казна звенит громче врага.
+    ~ Food -= 15
     ~ Gold += 20
     -> END
-*   Самим не хватает, не до торговли. #speaker:Кочевник #portrait:black_man #layout:left
-    Не забывай, пан, голод толкает людей на отчаянные поступки... #speaker:Кочевник #portrait:black_man #layout:right
-    -> END
+
+=== refuse ===
+Самим не хватает. Замок кормит тех, кто его защищает. Разыщи харч на трактах, как прочие кочевники.
+    #speaker:Кочевник 
+    #portrait:black_man 
+    #layout:right
+    Пустой желудок ходит тёмными тропами, пан. Береги запасы.
+    ~ Food -= 5
+-> END
