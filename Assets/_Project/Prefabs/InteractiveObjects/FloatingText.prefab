@@ -315,7 +315,7 @@ MonoBehaviour:
   backgroundSR: {fileID: 2845084463022345391}
   scaleFactorX: 1.2
   scaleFactorY: 1.5
-  lifeTime: 3
+  lifeTime: 5
 --- !u!210 &2170132941022028192
 SortingGroup:
   m_ObjectHideFlags: 0

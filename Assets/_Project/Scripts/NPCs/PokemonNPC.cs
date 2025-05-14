@@ -70,6 +70,8 @@ public class PokemonNPC : MonoBehaviour
         _isMiniGameActive = true;
         _canStartMiniGame = false;
 
+        AudioManager.GetInstance().StartMiniGameMusic();
+
         // Деактивируем и сразу активируем мини-игру для "сброса"
         _miniGame.SetActive(false);
         _miniGame.SetActive(true);
@@ -88,7 +90,7 @@ public class PokemonNPC : MonoBehaviour
     {
         _isMiniGameActive = false;
         _miniGame.SetActive(false);
-
+        AudioManager.GetInstance().StopMiniGameMusic();
         // Показываем результат
         GameObject resultPanel = winnerName == "Player" ? _winPanel : _losePanel;
         if (resultPanel != null)

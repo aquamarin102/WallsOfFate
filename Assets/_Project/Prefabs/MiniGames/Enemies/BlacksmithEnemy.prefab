@@ -128,7 +128,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerName: BlacksmithEnemy
   maxHealth: 150
-  health: 150
+  health: 160
   minDamage: 12
   damage: 18
   speed: 4

@@ -154,7 +154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerName: MassangerEnemy
-  maxHealth: 70
+  maxHealth: 80
   health: 70
   minDamage: 6
   damage: 9

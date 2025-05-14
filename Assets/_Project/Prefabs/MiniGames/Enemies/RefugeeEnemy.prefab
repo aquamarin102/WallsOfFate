@@ -127,8 +127,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerName: RefugeeEnemy
-  maxHealth: 80
-  health: 80
+  maxHealth: 100
+  health: 100
   minDamage: 5
   damage: 8
   speed: 3.5

@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerName: GuardEnemy
-  maxHealth: 100
+  maxHealth: 120
   health: 100
   minDamage: 8
   damage: 12
