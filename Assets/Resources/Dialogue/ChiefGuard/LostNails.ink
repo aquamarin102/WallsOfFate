@@ -2,43 +2,32 @@ INCLUDE ../GlobalSettings/global.ink
 # speaker: Глава стражи
 # portrait: GuardPortrait
 # layout: right
-Пан, чем прикажете заняться?
+Пан, ждём приказа. Куда направить клинки?
 
-*   В кузне пропадают гвозди.
     # speaker: Глава стражи
     # portrait: GuardPortrait
     # layout: left
+*   Допросить кузнеца.
     -> interrogateBlacksmith
-
-*   Кузнец обвиняет бродягу в краже. Арестуй бродягу у ворот. Он вор
-    # speaker: Глава стражи
-    # portrait: GuardPortrait
-    # layout: left
+*   Арестовать бродягу.
     -> arrestBeggar
 
 === interrogateBlacksmith ===
-    # speaker: Глава стражи
-    # portrait: GuardPortrait
-    # layout: left
-    Нужно разобраться. Допроси кузнеца как следует. Он что-то скрывает.
+    В кузне тают гвозди. Возьми пару крепких парней, тряхни мастера: пусть железо градом сыплется — правду вытрясите.
     # speaker: Глава стражи
     # portrait: GuardPortrait
     # layout: right
-    Будет сделано! Мы найдём правду!
-   
+    По‑вашему будет. Загляну в горн и в кошель мастера. Если врёт — не позавидуешь ему.   
     ~ PeopleSatisfaction -= 1
-    ~ CastleStrength -= 1
+    ~ CastleStrength -= 40
     -> END
 
 === arrestBeggar ===
-    # speaker: Глава стражи
-    # portrait: GuardPortraitn
-    # layout: left
-    Кузнец обвиняет бродягу в краже. Арестуй бродягу у ворот. Он вор.
+    Кузнец клянёт оборванца у ворот. Свяжи нищего, выведай, где тайник, и пригрози кандалами, коли замолчит.
     # speaker: Глава стражи
     # portrait: GuardPortraitn
     # layout: right
-    Я думаю справедливым наказанием будет забрать его в армию.
-    
+    Есть, пан. Скрутим, прижмём к стенке. Если унес гвозди — пойдёт в ополчение без права отказа.    
     ~ PeopleSatisfaction -= 1
+    ~ CastleStrength += 10
     -> END

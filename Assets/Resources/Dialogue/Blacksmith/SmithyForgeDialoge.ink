@@ -1,16 +1,42 @@
 INCLUDE ../GlobalSettings/global.ink
-#speaker:Кузнец #portrait:SmithyPortrait #layout:right
-О, ваша светлость! Рад видеть вас у своей кузни. 
-#speaker:Кузнец #portrait:SmithyPortrait #layout:left
-Как продвигается работа?
-#speaker:Кузнец #portrait:SmithyPortrait #layout:right
-Один из молотов сломался, а без него я не смогу закончить починку оружия. Запасной молот лежит в сундуке неподалеку. Не окажете мне честь?
+#speaker:Кузнец 
+#portrait:SmithyPortrait 
+#layout:right
+Ваша милость! Редко балуете мой горн визитом. Чем могу служить?
 
-*   Хорошо, я принесу его. #speaker:Кузнец #portrait:SmithyPortrait #layout:left
-    Благодарю. Скоро работа будет завершена. #speaker:Кузнец #portrait:SmithyPortrait #layout:right
+#speaker:Кузнец 
+#portrait:SmithyPortrait 
+#layout:left
+Как идёт починка оружия?
+
+#speaker:Кузнец 
+#portrait:SmithyPortrait 
+#layout:right
+Главный молот развалился, словно старый черепок. А этот огрызок, что в руках, едва искры выбивает.
+Купец подвёз новый инструмент, да повозка где-то застряла. Поймал бы подмастерья — послал бы его, да жулик с утра канул без вести. 
+Не окажете чести сходить за молотом, пока железо не остыло?
+
+# speaker: Кузнец 
+# portrait: SmithyPortrait 
+# layout: left
+*   Принесу я твой молот.
+-> accept
+*   Не до того мне. 
+-> refuse
+
+=== accept ===
+    Не впервой таскать железяки. Достану молот с повозки, держи меха раскалёнными — вернусь, и пусть искры летят.
+    # speaker: Кузнец
+    # portrait: SmithyPortrait
+    # layout: right
+    Благодарю, пан. Как принесёте новый молот — работа пойдёт споро, и дружина получит клинки, что звенят, словно серебро.
     -> END
-*   Не до того. Зови своего помощника. #speaker:Кузнец #portrait:SmithyPortrait #layout:left
-    Как прикажете… А подмастерье мой с утра как сквозь землю провалился — небось дрыхнет на сеновале. А мне ж и отойти нельзя: коль оставлю наковальню, — металл остынет, и бойцам нечем будет сражаться. #speaker:Кузнец #portrait:SmithyPortrait #layout:right   
-    ~ QuestComplete = true
+
+=== refuse ===
+    Сам разбирайся. Подмастерье найдётся — вытащит молот из телеги.
+    # speaker: Кузнец
+    # portrait: SmithyPortrait
+    # layout: right
+    Как прикажете… Только без молота клинки будут мягки, словно масло. Не взыщите, коль дружина останется без мечей.
+    ~ QuestComplite = true
     -> END
-    
