@@ -240,7 +240,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   resourceType: 0
-  amount: 1
+  amount: 0
   message: "\u041F\u043E\u0445\u043E\u0436\u0435 \u043D\u0430 \u043C\u043E\u043B\u043E\u0442,
     \u0447\u0442\u043E \u0438\u0441\u043A\u0430\u043B \u043A\u0443\u0437\u043D\u0435\u0446."
   floatingTextPrefab: {fileID: 4848396624485697127, guid: b674c6ddfaf88fa4c8200c48bc74b5fa, type: 3}
