@@ -57,6 +57,9 @@ public class DialogueManager : MonoBehaviour
     public GameObject PowerCheckPrefab { get; set; }
     private int? _currentQuestId = null;
 
+    private bool _skipNextLineIfChoice;
+    private string _lastChosenText;
+
     private void Awake()
     {
         if (_instance != null)
@@ -231,18 +234,28 @@ public class DialogueManager : MonoBehaviour
             string nextLine = _currentStory.Continue();
             HandleTags(_currentStory.currentTags);
 
-            // если строка пуста – читаем следующую
             if (string.IsNullOrWhiteSpace(nextLine))
                 continue;
+            // ― отбрасываем первую строку после клика,
+            //   если она совпадает с текстом выбранного варианта
+            if (_skipNextLineIfChoice &&
+                !string.IsNullOrWhiteSpace(nextLine) &&
+                nextLine.Trim().Equals(_lastChosenText, StringComparison.Ordinal))
+            {
+                _skipNextLineIfChoice = false;   // cброс флажка
+                continue;                        // сразу читаем следующую
+            }
 
+            _skipNextLineIfChoice = false;       // на всякий случай
+
+            // обычная печать
             if (_displayLineCoroutine != null)
                 StopCoroutine(_displayLineCoroutine);
 
             _displayLineCoroutine = StartCoroutine(DisplayLine(nextLine));
-            return;                   // нашли текст – печатаем и ждём игрока
+            return;
         }
 
-        // текста больше нет – может быть выбор
         if (_currentStory.currentChoices.Count > 0)
             DisplayChoices();
         else
@@ -380,6 +393,10 @@ public class DialogueManager : MonoBehaviour
     {
         if (_canContinueToNextLine)
         {
+            // запоминаем текст, который был виден в кнопке
+            _lastChosenText = _currentStory.currentChoices[choiceIndex].text.Trim();
+            _skipNextLineIfChoice = true;
+
             _currentStory.ChooseChoiceIndex(choiceIndex);
             _portraitAnimator.SetTrigger("blink");
             ContinueStory();
