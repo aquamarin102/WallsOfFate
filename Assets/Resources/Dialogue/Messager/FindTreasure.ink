@@ -2,32 +2,40 @@ INCLUDE ../GlobalSettings/global.ink
 	# speaker: Гонец
 	# portrait: ms_yellow_neutral
 	# layout: right
-	Пан, перелистывал я старые архивы и нашел любопытную запись - ваш дед спрятал в замке семейное сокровище!
-
-	*   # speaker: Гонец
-	    # portrait: ms_yellow_neutral
-	    # layout: left
-	    Где именно искать?
+	Пан, рылся в летописях и нашёл завещание вашего деда. 
+	Говорят, он тайно спрятал фамильный клад в главном зале — да оставил загадку вместо карты.
+	
+    # speaker: Гонец
+    # portrait: ms_yellow_neutral
+    # layout: left
+    И что за загадка?
+	# speaker: Гонец
+	# portrait: ms_yellow_neutral
+	# layout: right
+    Всего одна строка, выведенная чернилами и кровью: «Где спины томов глядят в камень — там сердце золота». Больше ни слова.  
+    
+    # speaker: Гонец
+    # portrait: ms_yellow_neutral
+    # layout: left
+	*   Займусь поисками.
 	    -> askDetails
 
-	*   # speaker: Гонец
-	    # portrait: ms_yellow_neutral
-	    # layout: left
-	    Старые сказки...
+	*   Старая байка.
 	    -> dismissClaim
 
 	=== askDetails ===
+	    Надеюсь эта байка выведет вас к золоту… или к очередной легенде. Удачи.
 	    # speaker: Гонец
 	    # portrait: ms_yellow_neutral
-	    # layout: left
-	    В записи сказано: "Под защитой каменного стража". Думаю, это статуя в главном зале.
+	    # layout: right
 	    ~ TalkedWithMagnate = true
 	    -> END
 
 	=== dismissClaim ===
+    	Дед любил приукрасить. Архивы врут чаще, чем священник в трактире. Не буду тратить время на сказки.
 	    # speaker: Гонец
 	    # portrait: ms_yellow_neutral
-	    # layout: left
-	    Как знаете, пан. Но я бы проверил...
-	    ~ QuestComplite = true
+	    # layout: right
+        Как пожелаете. Но чашу с золотом редко наполняет тот, кто не ищет.
+        ~ QuestComplite = true
 	    -> END
