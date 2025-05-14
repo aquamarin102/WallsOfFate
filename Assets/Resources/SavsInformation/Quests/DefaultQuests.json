@@ -84,7 +84,7 @@
           "Tasks": [
             {
               "Id": 0,
-              "TaskInfo": "Найти беженца",
+              "TaskInfo": "Найти старого Голована",
               "IsDone": false,
               "ForNPS": "Refugee",
               "RequeredTasksIds": [],
@@ -135,7 +135,7 @@
             },
             {
               "Id": 1,
-              "TaskInfo": "Найдите отчет",
+              "TaskInfo": "Найдите отчет и другие улики",
               "IsDone": false,
               "ForNPS": "CastleConditionReport",
               "RequeredTasksIds": [0],
@@ -149,7 +149,7 @@
             },
             {
               "Id": 2,
-              "TaskInfo": "Найдите улики. Открыть инвентарь на G",
+              "TaskInfo": "Найдите остальные улики",
               "IsDone": false,
               "ForNPS": "Evidence",
               "RequeredTasksIds": [0, 1],
@@ -163,10 +163,10 @@
             },
             {
               "Id": 3,
-              "TaskInfo": "Найдите улики. Открыть инвентарь на G",
+              "TaskInfo": "Найдите остальные улики",
               "IsDone": false,
               "ForNPS": "Evidence",
-              "RequeredTasksIds": [0, 1],
+              "RequeredTasksIds": [ 0, 1 ],
               "RequeredDialog": "Messages/StorageRoge/",
               "Resources": {
                 "Gold": 0,
@@ -177,10 +177,10 @@
             },
             {
               "Id": 4,
-              "TaskInfo": "Найдите улики. Открыть инвентарь на G",
+              "TaskInfo": "Найдите остальные улики",
               "IsDone": false,
               "ForNPS": "Evidence",
-              "RequeredTasksIds": [0, 1],
+              "RequeredTasksIds": [ 0, 1 ],
               "RequeredDialog": "Messages/StorageRoge/",
               "Resources": {
                 "Gold": 0,
@@ -191,7 +191,7 @@
             },
             {
               "Id": 5,
-              "TaskInfo": "Найдите предателя.",
+              "TaskInfo": "Найдите предателя",
               "IsDone": false,
               "ForNPS": "Ratter",
               "RequeredTasksIds": [0, 1, 2, 3, 4],
@@ -204,9 +204,9 @@
               }
             }
           ]
-        },      
+        },
         {
-          "Id": 2,
+          "Id": 1,
           "InProgress": false,
           "Complite": false,
           "OpenNPS": "Blacksmith",
@@ -217,7 +217,7 @@
           "Tasks": [
             {
               "Id": 0,
-              "TaskInfo": "Найдите склад оружия и доспехов",
+              "TaskInfo": "Найдите где спрятаны чертежи",
               "IsDone": false,
               "ForNPS": "stoneWithCache",
               "RequeredTasksIds": [],
@@ -230,6 +230,17 @@
               }
             }
           ]
+        },
+        {
+          "Id": 2,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Messenger",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Refugee/RefugeeFoodTask",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": []
         }
       ]
     },
@@ -263,33 +274,7 @@
           ]
         },
         {
-          "Id": 2,
-          "InProgress": false,
-          "Complite": false,
-          "OpenNPS": "Blacksmith",
-          "CurrentTaskId": 0,
-          "OpenDialog": "Blacksmith/FindTreasure/",
-          "Evidence": null,
-          "Prime": false,
-          "Tasks": [
-            {
-              "Id": 0,
-              "TaskInfo": "Найдите склад оружия и доспехов",
-              "IsDone": false,
-              "ForNPS": "stoneWithCache",
-              "RequeredTasksIds": [],
-              "RequeredDialog": "Servants/ServantMobilisation/0/",
-              "Resources": {
-                "Gold": 0,
-                "Food": 0,
-                "PeopleSatisfaction": 0,
-                "CastleStrength": 0
-              }
-            }
-          ]
-        },
-        {
-          "Id": 2,
+          "Id": 1,
           "InProgress": false,
           "Complite": false,
           "OpenNPS": "Messenger",
@@ -300,7 +285,7 @@
           "Tasks": [
             {
               "Id": 0,
-              "TaskInfo": "Найти сокровище",
+              "TaskInfo": "Найти где стрятано сокровище",
               "IsDone": false,
               "ForNPS": "TeasureChest",
               "RequeredTasksIds": [],
@@ -313,17 +298,6 @@
               }
             }
           ]
-        },
-        {
-          "Id": 3,
-          "InProgress": false,
-          "Complite": false,
-          "OpenNPS": "Messenger",
-          "CurrentTaskId": 0,
-          "OpenDialog": "Refugee/RefugeeFoodTask",
-          "Evidence": null,
-          "Prime": false,
-          "Tasks": []
         }        
       ]
     }   

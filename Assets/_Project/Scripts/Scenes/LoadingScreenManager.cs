@@ -14,6 +14,9 @@ public class LoadingScreenManager : MonoBehaviour
     public event Action LoadingStarted;
     public event Action LoadingFinished;
 
+    public GameObject panelGameOver;   // экран проигрыша
+    public GameObject panelVictory;
+
 
     private InventoryLogicEnd _inventoryLogicEnd;
 
@@ -48,6 +51,31 @@ public class LoadingScreenManager : MonoBehaviour
             Debug.LogWarning("LoadingScreenManager: не удалось найти InventoryLogicEnd на сцене!");
 
         spriteAnimator = loadingImage.GetComponent<UISpriteAnimator>();
+    }
+
+    private void Update()
+    {
+        // если уже идЄт загрузка или финальный экран открыт Ч ничего не делаем
+        if (IsLoading || panelGameOver.activeSelf || panelVictory.activeSelf) return;
+
+        if (IsAnyResourceZero())
+        {
+            ShowGameOver();
+        }
+    }
+
+    private bool IsAnyResourceZero()
+    {
+        return GameResources.GameResources.Gold <= 0 ||
+                GameResources.GameResources.Food <= 0 ||
+                GameResources.GameResources.PeopleSatisfaction <= 0 ||
+                GameResources.GameResources.CastleStrength <= 0;
+    }
+
+    private void ShowGameOver()
+    {
+        Time.timeScale = 0f;               // ставим игру на паузу
+        panelGameOver.SetActive(true);
     }
 
     // ===  нопка Ђ онец дн€ї в вашем UI должна вызывать этот метод ===
@@ -114,13 +142,18 @@ public class LoadingScreenManager : MonoBehaviour
     {
         PlayerSpawnData.ClearData();
 
-        // ќбновл€ем панель инвентар€
         if (_inventoryLogicEnd != null)
             _inventoryLogicEnd.RefreshPanel();
-        else
-            Debug.LogWarning("LoadingScreenManager: InventoryLogicEnd == null, RefreshPanel не вызоветс€");
 
-        QuestCollection.IncreaseCurrentDay();
+        QuestCollection.IncreaseCurrentDay();   // день +1
+
+        /* --- ѕ–ќ¬≈–я≈ћ ѕќЅ≈ƒ” --- */
+        if (QuestCollection.CurrentDayNumber > 3)
+        {
+            StartCoroutine(ShowVictoryAfterLoad());
+            return;                             // прерываем обычный флоу загрузки
+        }
+
         panelEndOfDay.SetActive(false);
         BeginLoadWithStartOfDay("StartDay");
     }
@@ -161,6 +194,18 @@ public class LoadingScreenManager : MonoBehaviour
         AudioManager.Instance.PlayLoadingMusic();
 
         StartCoroutine(LoadSceneAsync(sceneName, showStartDay: false));
+    }
+
+    private IEnumerator ShowVictoryAfterLoad()
+    {
+        // показываем обычный лоадинг, чтобы был единый флоу
+        BeginLoadWithStartOfDay("StartDay");
+
+        // ждЄм пока он отработает
+        while (IsLoading) yield return null;
+
+        Time.timeScale = 0f;
+        panelVictory.SetActive(true);
     }
 
     private void ShowLoadingUI()

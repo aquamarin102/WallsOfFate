@@ -8,67 +8,107 @@ using System;
 public class MultiTextChanger : MonoBehaviour
 {
     [SerializeField] private List<TMP_Text> _textMeshProLinks;
-    [SerializeField] private List<GameObject> _IconsLinks;
+    [SerializeField] private List<GameObject> _iconsLinks;
 
     [Header("Quest Settings")]
-    [SerializeField] private string _defaultText = "Все квесты выполнены! Вы можете закончить день!";
+    [SerializeField] private string _defaultTextAllQuests = "Все квесты выполнены! Вы можете закончить день!";
+    [SerializeField] private string _defaultTextStillQuests = "Основной квест выполнен! Вы можете пообщаться с другими жителями!";
 
     private void Update()
     {
         UpdateQuestText();
-        if (_textMeshProLinks.Count != 0 && _IconsLinks.Count != 0 && _IconsLinks.Count == _textMeshProLinks.Count)
-        {
-            for (int i = 0; i < _textMeshProLinks.Count; i++)
-            {
-                if (_textMeshProLinks[i].text == "") _IconsLinks[i].SetActive(false);
-                else _IconsLinks[i].SetActive(true);
-            }
-        }
+        SyncIcons();   // ← здесь ваша старая, уже рабочая логика
     }
 
     private void UpdateQuestText()
     {
         try
         {
-            List<QuestGroup> processingGroups = QuestCollection.GetActiveQuestGroups();
+            // Берём все квесты текущего дня
+            var allGroups = QuestCollection.GetAllQuestGroups();
 
-            // Проверяем, все ли квесты завершены
-            if (processingGroups.All(q => q.Complite && !q.InProgress))
+            // 0) Ни одного квеста ещё не стартовано
+            if (allGroups.Count > 0 && allGroups.All(q => !q.InProgress && !q.Complite))
             {
-                _textMeshProLinks[0].text = _defaultText;
-                for (int i = 1; i < _textMeshProLinks.Count; i++)
-                {
-                    _textMeshProLinks[i].text = "";
-                }
+                ShowSingleMessage(_defaultTextStillQuests);
                 return;
             }
 
-            if (processingGroups.Count > 0)
+            // 1) Все квесты этого дня завершены
+            if (allGroups.Count > 0 && allGroups.All(q => q.Complite))
             {
-                // Сортируем группы: сначала Prime, затем остальные
-                var sortedGroups = processingGroups.OrderByDescending(q => q.Prime).ToList();
-
-                // Ограничиваем количество групп количеством текстовых полей
-                int groupsToShow = Mathf.Min(_textMeshProLinks.Count, sortedGroups.Count);
-
-                for (int i = 0; i < _textMeshProLinks.Count; i++)
-                {
-                    if (i < groupsToShow)
-                    {
-                        // Показываем информацию о текущем задании для группы
-                        _textMeshProLinks[i].text = sortedGroups[i].GetCurrentTask().TaskInfo;
-                    }
-                    else
-                    {
-                        // Очищаем остальные поля
-                        _textMeshProLinks[i].text = "";
-                    }
-                }
+                ShowSingleMessage(_defaultTextAllQuests);
+                return;
             }
+
+            // 2) Смешанные случаи
+            bool primeDone = allGroups.Any(q => q.Prime && q.Complite);
+            bool hasSide = allGroups.Any(q => !q.Prime);
+            bool sideLeft = allGroups.Any(q => !q.Prime && !q.Complite);
+
+            // 2-а) Главный пройден, есть сайд-квесты, но все они завершены → всё сделано
+            if (primeDone && hasSide && !sideLeft)
+            {
+                ShowSingleMessage(_defaultTextAllQuests);
+                return;
+            }
+
+            // 2-б) Только главный и побочных изначально не было → подсказка «поговорить»
+            if (primeDone && !hasSide)
+            {
+                ShowSingleMessage(_defaultTextStillQuests);
+                return;
+            }
+
+            // 2-в) Иначе показываем (опциональную) подсказку + текущие задачи
+            int idx = 0;
+
+            // Если главный уже сделан — сначала сообщение
+            if (primeDone)
+                _textMeshProLinks[idx++].text = _defaultTextStillQuests;
+
+            // Затем все активные (InProgress && !Complite), при этом Prime первым
+            foreach (var group in allGroups
+                                  .Where(q => q.InProgress && !q.Complite)
+                                  .OrderByDescending(q => q.Prime))
+            {
+                if (idx >= _textMeshProLinks.Count) break;
+                _textMeshProLinks[idx++].text = group.GetCurrentTask().TaskInfo;
+            }
+
+            // — очищаем остаток —
+            for (; idx < _textMeshProLinks.Count; idx++)
+                _textMeshProLinks[idx].text = "";
         }
         catch (Exception e)
         {
             Debug.LogError($"Error {e.Message}");
+        }
+    }
+
+    private void ShowSingleMessage(string msg)
+    {
+        // Первый слот = сообщение, остальные = пусто
+        for (int i = 0; i < _textMeshProLinks.Count; i++)
+            _textMeshProLinks[i].text = (i == 0 ? msg : "");
+    }
+
+    private void SyncIcons()
+    {
+        // Сколько сейчас активных квестов?
+        int activeQuests = QuestCollection.GetActiveQuestGroups().Count;
+        // Если вместо «только задач» у вас иногда выводится общее сообщение
+        // (_defaultTextStillQuests или _defaultTextAllQuests), можно сделать:
+        bool isShowingMessage = string.IsNullOrEmpty(_textMeshProLinks[0].text) == false
+                                && QuestCollection.GetActiveQuestGroups().Count == 0;
+        // Тогда значение слотов, для которых показываем иконки, таково:
+        int iconsToShow = activeQuests;
+        if (isShowingMessage) iconsToShow = 1;
+
+        // Перебираем все готовые иконки
+        for (int i = 0; i < _iconsLinks.Count; i++)
+        {
+            _iconsLinks[i].SetActive(i < iconsToShow);
         }
     }
 }

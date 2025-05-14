@@ -7722,11 +7722,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 669f1a336f4fc53419c55ef740481ae5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toggleButtons:
-  - keyCode: 103
-    setActive: 1
-  - keyCode: 27
-    setActive: 0
+  toggleButtons: []
   <TargetObject>k__BackingField: {fileID: 491508375}
 --- !u!114 &899287659
 MonoBehaviour:
@@ -7735,7 +7731,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 899287656}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8df54b4e75f0bbf469c97906250f24dc, type: 3}
   m_Name: 
@@ -18398,7 +18394,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.05
+  m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 712f670e052a8e94d820faf46b534bbd, type: 2}
   m_BuildHeightMesh: 0
@@ -20740,6 +20736,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2356878405047530460, guid: 44a0de0f766c9634eb66f1d56b7edc9d, type: 3}
+      propertyPath: m_BaseOffset
+      value: -0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 2356878405047530460, guid: 44a0de0f766c9634eb66f1d56b7edc9d, type: 3}
       propertyPath: m_AgentTypeID
       value: -1372625422
       objectReference: {fileID: 0}
@@ -20749,7 +20749,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6020308598444310925, guid: 44a0de0f766c9634eb66f1d56b7edc9d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.013
+      value: 2.972
       objectReference: {fileID: 0}
     - target: {fileID: 6020308598444310925, guid: 44a0de0f766c9634eb66f1d56b7edc9d, type: 3}
       propertyPath: m_LocalPosition.z
