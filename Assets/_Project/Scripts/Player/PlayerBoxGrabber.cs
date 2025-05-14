@@ -125,15 +125,28 @@ public class PlayerBoxGrabber : MonoBehaviour
             AttachBox(target); yield break;
         }
 
-        agent.isStopped = false; agent.SetDestination(target.position);
+        agent.isStopped = false;
+        agent.SetDestination(target.position);
 
-        while (Vector3.Distance(transform.position, target.position) > grabRange)
+        // ►  ЖДЁМ, пока действительно не подойдём
+        while (true)
         {
-            if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance + 0.1f) break; // не дошёл
-            yield return null;
+            // если путь построен и осталось пройти больше grabRange
+            if (!agent.pathPending &&
+                agent.remainingDistance <= grabRange + 0.8f)
+                break;                      // достаточно близко
+
+            yield return null;              // ждём следующий кадр
         }
 
-        agent.ResetPath(); AttachBox(target);
+        agent.ResetPath();
+
+        // контрольная проверка
+        if (Vector3.Distance(transform.position, target.position) <= grabRange + 0.8f)
+            AttachBox(target);
+        else
+            Debug.Log("[BoxGrabber] Too far to grab — " +
+                      Vector3.Distance(transform.position, target.position));
     }
 
     /*========== FIND & ATTACH ==========*/
