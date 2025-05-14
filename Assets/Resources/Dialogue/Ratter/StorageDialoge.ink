@@ -39,6 +39,6 @@ INCLUDE ../GlobalSettings/global.ink
 	    # layout: right
 	    (Бросает серебро к ногам пана, убегает, не оглядываясь.)
 	    ~ Gold += 30
-	    ~ CastleStrength += 10
+	    ~ CastleStrength += 20
 	    ~ PeopleSatisfaction += 1
 	    -> END

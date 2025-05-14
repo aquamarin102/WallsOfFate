@@ -31,6 +31,7 @@ INCLUDE ../GlobalSettings/global.ink
     Хлеб и доспех я приму. Но власть… она тяжела.
     Ладно. Ради тех, кто ещё верит в эту землю, я вновь возьмусь за сталь.
     ~ CastleStrength += 30
+    ~ Food -= 5
     -> END
 
 === gate2RefugeeMainRoom ===
