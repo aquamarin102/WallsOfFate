@@ -33,6 +33,37 @@ public class InventoryLogicEnd : MonoBehaviour
         }
     }
 
+    public List<GameObject> FindAllRatObjects()
+    {
+        List<GameObject> ratObjects = new List<GameObject>();
+
+        // Находим активные объекты с тегом "Rat"
+        GameObject[] activeRatObjects = GameObject.FindGameObjectsWithTag("Rat");
+        ratObjects.AddRange(activeRatObjects);
+
+        // Находим неактивные объекты с тегом "Rat"
+        var inactiveRatObjects = Resources.FindObjectsOfTypeAll<GameObject>()
+            .Where(go => go.CompareTag("Rat") &&
+                        go.scene.isLoaded &&
+                        !go.activeInHierarchy && // Только неактивные
+                        !ratObjects.Contains(go)) // Исключаем уже найденные активные
+            .ToList();
+
+        ratObjects.AddRange(inactiveRatObjects);
+
+        // Логирование для отладки
+        if (ratObjects.Count == 0)
+        {
+            Debug.LogWarning("Объекты с тегом 'Rat' не найдены в сцене.");
+        }
+        else
+        {
+            Debug.Log($"Найдено {ratObjects.Count} объектов с тегом 'Rat': {string.Join(", ", ratObjects.Select(o => o.name))}");
+        }
+
+        return ratObjects;
+    }
+
     private void Update()
     {
         if (string.IsNullOrEmpty(_pickupType)) return;
@@ -47,6 +78,7 @@ public class InventoryLogicEnd : MonoBehaviour
             _currentPickupsOfType = newPickups;
         }
 
+        var ratObjs = FindAllRatObjects();
         if (AllPanelsOpened())
         {
             if (_ratObject != null)
@@ -56,6 +88,7 @@ public class InventoryLogicEnd : MonoBehaviour
             else
             {
                 _ratObject = GameObject.FindWithTag("Rat");
+                if (_ratObject == null) _ratObject = ratObjs[0];
             }
         }
     }
