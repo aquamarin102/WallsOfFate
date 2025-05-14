@@ -97,33 +97,7 @@
               }
             }
           ]
-        },      
-        {
-          "Id": 2,
-          "InProgress": false,
-          "Complite": false,
-          "OpenNPS": "Blacksmith",
-          "CurrentTaskId": 0,
-          "OpenDialog": "Blacksmith/FindTreasure/",
-          "Evidence": null,
-          "Prime": false,
-          "Tasks": [
-            {
-              "Id": 0,
-              "TaskInfo": "Найдите склад оружия и доспехов",
-              "IsDone": false,
-              "ForNPS": "stoneWithCache",
-              "RequeredTasksIds": [],
-              "RequeredDialog": "Servants/ServantMobilisation/0/",
-              "Resources": {
-                "Gold": 0,
-                "Food": 0,
-                "PeopleSatisfaction": 0,
-                "CastleStrength": 0
-              },
-            }
-          ]
-        },
+        }
       ]
     },
     {
@@ -140,8 +114,8 @@
             "EvidenceType": "---",
             "Dialoge": "Messages/Storage/Roge/EvidenceConclusion/",
             "DialogePlayed": false,
-            "Picture": "UI/Inventory/UIPrefabs/ItemsImages/forest",
-            "Description": "Пахнет лесом..."
+            "Picture": "UI/Inventory/IndicatinPrefabs/MixButton/exclamation",
+            "Description": "Предатель где-то на складе"
           },
           "Prime": true,
           "Tasks": [
@@ -228,14 +202,26 @@
                 "PeopleSatisfaction": 0,
                 "CastleStrength": 0
               }
-            },
+            }
+          ]
+        },      
+        {
+          "Id": 2,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Blacksmith",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Blacksmith/FindTreasure/",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": [
             {
-              "Id": 6,
-              "TaskInfo": "Поговорить с главой стражи",
+              "Id": 0,
+              "TaskInfo": "Найдите склад оружия и доспехов",
               "IsDone": false,
-              "ForNPS": "Ratter",
-              "RequeredTasksIds": [0, 1, 2, 3, 4, 5],
-              "RequeredDialog": "ChiefGuard/StorageRoge/",
+              "ForNPS": "stoneWithCache",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Servants/ServantMobilisation/0/",
               "Resources": {
                 "Gold": 0,
                 "Food": 0,
@@ -244,9 +230,14 @@
               }
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "Day": 2,
+      "Quests": [
         {
-          "Id": 1,
+          "Id": 0,
           "InProgress": false,
           "Complite": false,
           "OpenNPS": "Blacksmith",
@@ -267,7 +258,33 @@
                 "Food": 0,
                 "PeopleSatisfaction": 0,
                 "CastleStrength": 0
-              },
+              }
+            }
+          ]
+        },
+        {
+          "Id": 2,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Blacksmith",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Blacksmith/FindTreasure/",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": [
+            {
+              "Id": 0,
+              "TaskInfo": "Найдите склад оружия и доспехов",
+              "IsDone": false,
+              "ForNPS": "stoneWithCache",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Servants/ServantMobilisation/0/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
             }
           ]
         },
@@ -297,43 +314,18 @@
             }
           ]
         },
+        {
+          "Id": 3,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Messenger",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Refugee/RefugeeFoodTask",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": []
+        }        
       ]
-    }
-    // ,
-    // {
-    //   "Day": 2,
-    //   "Quests": [
-    //     {
-    //       "Id": 0,
-    //       "InProgress": false,
-    //       "Complite": false,
-    //       "OpenNPS": "Messenger",
-    //       "CurrentTaskId": 0,
-    //       "OpenDialog": "Messager/HelpNeighbor/",
-    //       "Evidence": {
-    //         "EvidenceType": "---",
-    //         "Dialoge": "Messager/MessagerMainRoomStorageQuest/",
-    //         "DialogePlayed": false,
-    //         "Picture": "UI/Inventory/UIPrefabs/ItemsImages/forest",
-    //         "Description": "Пахнет лесом..."
-    //       },
-    //       "Prime": true,
-    //       "Tasks": [
-    //       ]
-    //     },
-    //     {
-    //       "Id": 1,
-    //       "InProgress": false,
-    //       "Complite": false,
-    //       "OpenNPS": "ChiefArmy",
-    //       "CurrentTaskId": 0,
-    //       "OpenDialog": "ChiefArmy/Discussion/",
-    //       "Evidence": null,
-    //       "Prime": false,
-    //       "Tasks": [
-    //       ]
-    //     }
-    //   ]
-    // }
+    }   
   ]
 }

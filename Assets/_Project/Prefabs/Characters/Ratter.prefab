@@ -1946,7 +1946,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0996432d9ec83764eab23e8d27b623a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultDialogue: Messager/MessagerMainroomDefault/
+  _defaultDialogue: Ratter/RatterDefault/
   _npcName: Ratter
   PowerCheckPrefab: {fileID: 2262867481233806756, guid: e8b91453af2b17d47a52508a00f39eaf, type: 3}
 --- !u!114 &9068749000022450544
