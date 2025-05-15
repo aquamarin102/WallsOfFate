@@ -70,6 +70,8 @@ public class LoadingScreenManager : MonoBehaviour
 
     private void Update()
     {
+        // если уже идЄт загрузка или финальный экран открыт Ч ничего не делаем
+        if (IsLoading || panelGameOver.activeSelf || panelVictory.activeSelf) return;
 
         if (IsAnyResourceZero())
         {
@@ -192,7 +194,6 @@ public class LoadingScreenManager : MonoBehaviour
 
         StartCoroutine(LoadSceneAsync(sceneName, showStartDay: true));
     }
-
 
     // === ¬аш существующий метод LoadScene, но без end-day ===
     public void LoadScene(string sceneName)
