@@ -3,7 +3,7 @@ INCLUDE ../GlobalSettings/global.ink
 #speaker:Кочевник 
 #portrait:black_man 
 #layout:right
-Пан, долгая дорога высушила все мои запасы. Продай горсть провианта — золото в руке.
+Пан, долгая дорога истощила все мои запасы. Продай горсть провианта — золото в руке.
 #speaker:Кочевник 
 #portrait:black_man 
 #layout:left

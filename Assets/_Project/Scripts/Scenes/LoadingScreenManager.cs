@@ -20,6 +20,7 @@ public class LoadingScreenManager : MonoBehaviour
 
     private InventoryLogicEnd _inventoryLogicEnd;
 
+    private bool _startupIntroShown = false;
 
     [Header("UI-панели")]
     public GameObject loadingScreen;      // ваша существующая панель загрузки
@@ -37,6 +38,10 @@ public class LoadingScreenManager : MonoBehaviour
     private bool waitingForInput;
     private UISpriteAnimator spriteAnimator;
 
+    [Header("Intro Screen (New Game)")]
+    public GameObject panelNewGameIntro;      // ваш новый экран интро при старте
+    public float introDuration = 10f;
+
     private void Awake()
     {
         if (Instance == null)
@@ -51,6 +56,16 @@ public class LoadingScreenManager : MonoBehaviour
             Debug.LogWarning("LoadingScreenManager: не удалось найти InventoryLogicEnd на сцене!");
 
         spriteAnimator = loadingImage.GetComponent<UISpriteAnimator>();
+    }
+
+    private void Start()
+    {
+        // Только один раз при первом старте
+        if (!_startupIntroShown && panelNewGameIntro != null)
+        {
+            _startupIntroShown = true;
+            StartCoroutine(ShowStartupIntro());
+        }
     }
 
     private void Update()
@@ -269,7 +284,25 @@ public class LoadingScreenManager : MonoBehaviour
         LoadingFinished?.Invoke();
     }
 
+    private IEnumerator ShowStartupIntro()
+    {
+        // Блокируем всё остальное
+        Time.timeScale = 0f;
+        panelNewGameIntro.SetActive(true);
 
+        float timer = 0f;
+        // Ждём либо introDuration, либо первого нажатия
+        while (timer < introDuration)
+        {
+            if (Input.anyKeyDown)
+                break;
+            timer += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        panelNewGameIntro.SetActive(false);
+        Time.timeScale = 1f;
+    }
 
     private IEnumerator FadeText()
     {
