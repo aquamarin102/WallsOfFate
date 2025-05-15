@@ -97,7 +97,7 @@ public class PokemonNPC : MonoBehaviour
     }
 
     private IEnumerator EndMiniGameCoroutine(string winnerName, string loserName)
-    {
+    {// Обновляем ресурсы в зависимости от результата
         _isMiniGameActive = false;
         _miniGame.SetActive(false);
         AudioManager.GetInstance().StopMiniGameMusic();
@@ -109,8 +109,14 @@ public class PokemonNPC : MonoBehaviour
             yield return new WaitForSeconds(2f);
             resultPanel.SetActive(false);
         }
-
-        // Обновляем ресурсы в зависимости от результата
+        if(winnerName != "Player" && DialogueManager.GetInstance().PowerCheckPrefab == _bossPrefab)
+        {
+            GameResources.GameResources.ChangePeopleSatisfaction(-1000); // Уменьшаем PeopleSatisfaction
+        }
+        else if(winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab == _bossPrefab)
+        {
+            GameResources.GameResources.ChangePeopleSatisfaction(1000); // Уменьшаем PeopleSatisfaction
+        }
         if (winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab != _trainingPrefab)
         {
             GameResources.GameResources.ChangeCastleStrength(10); // Увеличиваем CastleStrength
@@ -119,14 +125,8 @@ public class PokemonNPC : MonoBehaviour
         {
             GameResources.GameResources.ChangePeopleSatisfaction(-1); // Уменьшаем PeopleSatisfaction
         }
-        else if(winnerName != "Player" && DialogueManager.GetInstance().PowerCheckPrefab == _bossPrefab)
-        {
-            GameResources.GameResources.ChangePeopleSatisfaction(-1000); // Уменьшаем PeopleSatisfaction
-        }
-        else if(winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab == _bossPrefab)
-        {
-            GameResources.GameResources.ChangePeopleSatisfaction(-1000); // Уменьшаем PeopleSatisfaction
-        }
+
+        
 
         // Возвращаем основную камеру
         _switch.SwitchCamera();
