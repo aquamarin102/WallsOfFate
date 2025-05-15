@@ -26,7 +26,6 @@ INCLUDE ../GlobalSettings/global.ink
 	    ~ PeopleSatisfaction -= 1
 	     ~ Gold += 30
 	    ~ CastleStrength += 60
-	    ~ PowerCheckStart = true
 	    -> END
 
 	=== exileTraitor ===
