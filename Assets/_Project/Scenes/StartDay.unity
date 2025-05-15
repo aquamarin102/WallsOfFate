@@ -1230,6 +1230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37447fe3f1772ff4381a8128f2837c99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  firstGameplayScene: StartDay
   spawnPoint: {fileID: 0}
 --- !u!1 &99721441
 GameObject:
@@ -4650,13 +4651,14 @@ MonoBehaviour:
   - {fileID: 1761834666}
   - {fileID: 590970216}
   - {fileID: 700777574}
-  _IconsLinks:
-  - {fileID: 2046913293}
-  - {fileID: 585022273}
-  - {fileID: 99721441}
-  _defaultText: "\u0412\u0441\u0435 \u043A\u0432\u0435\u0441\u0442\u044B \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u044B!
-    \u0412\u044B \u043C\u043E\u0436\u0435\u0442\u0435\u0437\u0430\u043A\u043E\u043D\u0447\u0438\u0442\u044C
-    \u0434\u0435\u043D\u044C!"
+  _iconsLinks: []
+  _defaultTextAllQuests: "\u0412\u0441\u0435 \u043A\u0432\u0435\u0441\u0442\u044B
+    \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u044B! \u0412\u044B \u043C\u043E\u0436\u0435\u0442\u0435
+    \u0437\u0430\u043A\u043E\u043D\u0447\u0438\u0442\u044C \u0434\u0435\u043D\u044C!"
+  _defaultTextStillQuests: "\u041E\u0441\u043D\u043E\u0432\u043D\u043E\u0439 \u043A\u0432\u0435\u0441\u0442
+    \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D! \u0412\u044B \u043C\u043E\u0436\u0435\u0442\u0435
+    \u043F\u043E\u043E\u0431\u0449\u0430\u0442\u044C\u0441\u044F \u0441 \u0434\u0440\u0443\u0433\u0438\u043C\u0438
+    \u0436\u0438\u0442\u0435\u043B\u044F\u043C\u0438!"
 --- !u!114 &469402434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11323,7 +11325,7 @@ MonoBehaviour:
   _mainQuestGivers:
   - {fileID: 11400000, guid: 43564b18dad23404fb3f586d02a81553, type: 2}
   - {fileID: 11400000, guid: 43564b18dad23404fb3f586d02a81553, type: 2}
-  - {fileID: 11400000, guid: 43564b18dad23404fb3f586d02a81553, type: 2}
+  - {fileID: 11400000, guid: 1ebfacd2e73d54c499aca6c69ad6e915, type: 2}
 --- !u!1 &1520835539
 GameObject:
   m_ObjectHideFlags: 0

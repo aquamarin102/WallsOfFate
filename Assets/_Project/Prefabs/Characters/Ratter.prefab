@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3748177536510450014}
   - component: {fileID: 7879908543429180346}
+  - component: {fileID: 5593313874446758765}
   m_Layer: 0
   m_Name: Bracelet_low
   m_TagString: Untagged
@@ -153,6 +154,20 @@ SkinnedMeshRenderer:
     m_Center: {x: 104.49199, y: 46.270676, z: -23.136414}
     m_Extent: {x: 40.61461, y: 45.60972, z: 46.35913}
   m_DirtyAABB: 0
+--- !u!114 &5593313874446758765
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 182031748253421420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
 --- !u!1 &298211883298001174
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,6 +243,7 @@ GameObject:
   - component: {fileID: 6361637805064990989}
   - component: {fileID: 1416749820151339514}
   - component: {fileID: 1548900440634529605}
+  - component: {fileID: 6555401383617032055}
   m_Layer: 0
   m_Name: boots_low
   m_TagString: Untagged
@@ -328,6 +344,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   color: 0
   eraseRenderer: 0
+--- !u!114 &6555401383617032055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 471117043648858809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
 --- !u!1 &617123146459689859
 GameObject:
   m_ObjectHideFlags: 0
@@ -371,6 +401,7 @@ GameObject:
   - component: {fileID: 4937781871802526682}
   - component: {fileID: 6977071868075339}
   - component: {fileID: 5909130005076437519}
+  - component: {fileID: 7301862377641507113}
   m_Layer: 0
   m_Name: neck_low
   m_TagString: Untagged
@@ -453,6 +484,20 @@ SkinnedMeshRenderer:
     m_Extent: {x: 0.07251345, y: 0.07831155, z: 0.095352225}
   m_DirtyAABB: 0
 --- !u!114 &5909130005076437519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 679154716871985710}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
+--- !u!114 &7301862377641507113
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -639,6 +684,7 @@ GameObject:
   m_Component:
   - component: {fileID: 973243424136718621}
   - component: {fileID: 8228211872730879851}
+  - component: {fileID: 1175650413783703873}
   m_Layer: 0
   m_Name: hair_low
   m_TagString: Untagged
@@ -782,6 +828,20 @@ SkinnedMeshRenderer:
     m_Center: {x: -10.016758, y: 320.18747, z: 51.252342}
     m_Extent: {x: 40.38508, y: 43.161987, z: 52.026817}
   m_DirtyAABB: 0
+--- !u!114 &1175650413783703873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910909927459327011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
 --- !u!1 &924603682649549791
 GameObject:
   m_ObjectHideFlags: 0
@@ -983,6 +1043,7 @@ GameObject:
   - component: {fileID: 6803889500260868143}
   - component: {fileID: 2682149231366194109}
   - component: {fileID: 6219686959541225707}
+  - component: {fileID: 8493383178144175948}
   m_Layer: 0
   m_Name: bag_low
   m_TagString: Untagged
@@ -1069,6 +1130,20 @@ SkinnedMeshRenderer:
     m_Extent: {x: 0.2065149, y: 0.1479517, z: 0.16960812}
   m_DirtyAABB: 0
 --- !u!114 &6219686959541225707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1445767714169107322}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
+--- !u!114 &8493383178144175948
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1255,6 +1330,7 @@ GameObject:
   - component: {fileID: 709734088580867183}
   - component: {fileID: 5279824874949129251}
   - component: {fileID: 4710041111539012471}
+  - component: {fileID: 8151221744592376871}
   m_Layer: 0
   m_Name: blade_low
   m_TagString: Untagged
@@ -1350,6 +1426,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   color: 0
   eraseRenderer: 0
+--- !u!114 &8151221744592376871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2247166532592114640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
 --- !u!1 &2296057394050945902
 GameObject:
   m_ObjectHideFlags: 0
@@ -1360,6 +1450,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5364830200703195736}
   - component: {fileID: 5762580067168922936}
+  - component: {fileID: 3000526815135382448}
   m_Layer: 0
   m_Name: Body_low
   m_TagString: Untagged
@@ -1503,6 +1594,20 @@ SkinnedMeshRenderer:
     m_Center: {x: -5.99028, y: 149.06778, z: 10.481766}
     m_Extent: {x: 158.13036, y: 126.458374, z: 84.82604}
   m_DirtyAABB: 0
+--- !u!114 &3000526815135382448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2296057394050945902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
 --- !u!1 &2345635244106169044
 GameObject:
   m_ObjectHideFlags: 0
@@ -1706,6 +1811,7 @@ GameObject:
   - component: {fileID: 7155892818517295032}
   - component: {fileID: 3505678708102148133}
   - component: {fileID: 1800257992672571779}
+  - component: {fileID: 5461264543719683792}
   m_Layer: 0
   m_Name: eyes_low
   m_TagString: Untagged
@@ -1786,6 +1892,20 @@ SkinnedMeshRenderer:
     m_Extent: {x: 0.014202185, y: 0.046052203, z: 0.013584547}
   m_DirtyAABB: 0
 --- !u!114 &1800257992672571779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3132316456228984194}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
+--- !u!114 &5461264543719683792
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1908,9 +2028,9 @@ Transform:
   - {fileID: 3748177536510450014}
   - {fileID: 973243424136718621}
   - {fileID: 7487326072180309309}
-  - {fileID: 8386644988996429673}
   - {fileID: 3281713538078955966}
   - {fileID: 1452911663561283673}
+  - {fileID: 8386644988996429673}
   m_Father: {fileID: 8962330537170480382}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &108778439164983640
@@ -2235,6 +2355,7 @@ GameObject:
   - component: {fileID: 5856309142077348833}
   - component: {fileID: 4273485898015703329}
   - component: {fileID: 4086391189523589190}
+  - component: {fileID: 3447665454980521631}
   m_Layer: 0
   m_Name: head_low
   m_TagString: Untagged
@@ -2343,6 +2464,20 @@ SkinnedMeshRenderer:
     m_Extent: {x: 0.15883486, y: 0.45520857, z: 0.5965066}
   m_DirtyAABB: 0
 --- !u!114 &4086391189523589190
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4783018193553457682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
+--- !u!114 &3447665454980521631
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2545,7 +2680,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 7119323010903739852, guid: c297e275c45b0db4fa8c6c95a825b156, type: 2}
-  m_audioClip: {fileID: 8300000, guid: cb8186295f2eb644f92922a7102a3f4d, type: 3}
+  m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: cb8186295f2eb644f92922a7102a3f4d, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.4
@@ -3011,6 +3146,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1452911663561283673}
   - component: {fileID: 3323049772562055636}
+  - component: {fileID: 4616378925046284971}
   m_Layer: 0
   m_Name: ZedBody_low
   m_TagString: Untagged
@@ -3154,6 +3290,20 @@ SkinnedMeshRenderer:
     m_Center: {x: -18.584915, y: 53.507576, z: 15.2447815}
     m_Extent: {x: 168.59163, y: 305.89777, z: 94.89415}
   m_DirtyAABB: 0
+--- !u!114 &4616378925046284971
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6279893457443167776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
 --- !u!1 &6382961263169246422
 GameObject:
   m_ObjectHideFlags: 0
@@ -3197,6 +3347,7 @@ GameObject:
   - component: {fileID: 2695247513520347624}
   - component: {fileID: 5244826892657202126}
   - component: {fileID: 6578826556696985789}
+  - component: {fileID: 3472270957497114156}
   m_Layer: 0
   m_Name: cloth_low
   m_TagString: Untagged
@@ -3305,6 +3456,20 @@ SkinnedMeshRenderer:
     m_Extent: {x: 0.6730956, y: 0.53447866, z: 0.23147503}
   m_DirtyAABB: 0
 --- !u!114 &6578826556696985789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6453105762490537901}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
+--- !u!114 &3472270957497114156
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3840,6 +4005,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6777161590292944411}
   - component: {fileID: 280743325655045017}
+  - component: {fileID: 7340823093325807382}
   m_Layer: 0
   m_Name: Boots_low
   m_TagString: Untagged
@@ -3983,6 +4149,20 @@ SkinnedMeshRenderer:
     m_Center: {x: 25.041443, y: -301.62723, z: -22.131065}
     m_Extent: {x: 139.05937, y: 115.93271, z: 119.67271}
   m_DirtyAABB: 0
+--- !u!114 &7340823093325807382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8275623402066960122}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
 --- !u!1 &8285043076019327499
 GameObject:
   m_ObjectHideFlags: 0
@@ -3993,6 +4173,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7487326072180309309}
   - component: {fileID: 8488148680121519}
+  - component: {fileID: 4268775275426828975}
   m_Layer: 0
   m_Name: Pants_low
   m_TagString: Untagged
@@ -4136,6 +4317,20 @@ SkinnedMeshRenderer:
     m_Center: {x: 15.3921585, y: -77.86101, z: 4.8486786}
     m_Extent: {x: 121.41027, y: 139.28252, z: 73.23309}
   m_DirtyAABB: 0
+--- !u!114 &4268775275426828975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8285043076019327499}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
 --- !u!1 &8304113547609333723
 GameObject:
   m_ObjectHideFlags: 0
@@ -4147,6 +4342,7 @@ GameObject:
   - component: {fileID: 3735045159558417176}
   - component: {fileID: 1235022301058504261}
   - component: {fileID: 6328506693901730791}
+  - component: {fileID: 623567428033530138}
   m_Layer: 0
   m_Name: cloak_low
   m_TagString: Untagged
@@ -4244,6 +4440,20 @@ SkinnedMeshRenderer:
     m_Extent: {x: 0.403777, y: 0.44933915, z: 0.21529816}
   m_DirtyAABB: 0
 --- !u!114 &6328506693901730791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8304113547609333723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
+--- !u!114 &623567428033530138
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4650,6 +4860,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3281713538078955966}
   - component: {fileID: 5800734291163790082}
+  - component: {fileID: 7562332034368552157}
   m_Layer: 0
   m_Name: skirt_low
   m_TagString: Untagged
@@ -4793,6 +5004,20 @@ SkinnedMeshRenderer:
     m_Center: {x: 12.492882, y: -50.502052, z: 8.196754}
     m_Extent: {x: 124.19163, y: 106.67104, z: 81.07901}
   m_DirtyAABB: 0
+--- !u!114 &7562332034368552157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8939339132390257571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbf3575480402db40813e763382412fb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 0
+  eraseRenderer: 0
 --- !u!1 &8941215362028091123
 GameObject:
   m_ObjectHideFlags: 0
