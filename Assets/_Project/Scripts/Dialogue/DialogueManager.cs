@@ -215,9 +215,9 @@ public class DialogueManager : MonoBehaviour
         yield return new WaitForSeconds(0.2f);
         if (_currentQuestId.HasValue)
         {
-            bool shouldComplete = GetVariablesState("QuestComplete")?.ToString().ToLower() == "true";
+            bool shouldComplete = GetVariablesState("QuestComplite")?.ToString().ToLower() == "true";
             QuestCollection.ForceCompleteQuest(_currentQuestId.Value, shouldComplete);
-            SetVariableState("QuestComplete", false);
+            SetVariableState("QuestComplite", false);
         }
         _dialogueVariables.StopListening(_currentStory);
         DialogueIsPlaying = false;
