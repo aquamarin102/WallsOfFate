@@ -128,7 +128,7 @@ public class InteractableItem : MonoBehaviour, ITriggerable
         if (floatingTextPrefab != null && _player != null)
         {
             Vector3 worldPos = _player.position + spawnOffset;
-            var ftGO = Instantiate(floatingTextPrefab, worldPos, Quaternion.identity, _player);
+            var ftGO = Instantiate(floatingTextPrefab, worldPos, Quaternion.identity);
             if (ftGO.TryGetComponent<FloatingText>(out var ft))
                 ft.SetText(message);
         }
