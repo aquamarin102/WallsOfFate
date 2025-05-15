@@ -12,6 +12,7 @@ public class PokemonNPC : MonoBehaviour
     [SerializeField] private GameObject _menu;
     [SerializeField] private GameObject _trainingPrefab;
     [SerializeField] private GameObject _bossPrefab;
+    [SerializeField] private GameObject _startNewDayButt;
 
     private GameObject _winPanel;
     private GameObject _losePanel;
@@ -55,6 +56,8 @@ public class PokemonNPC : MonoBehaviour
     {
         if (!_canStartMiniGame || _isMiniGameActive || _isWaitingForMiniGame)
             return;
+
+        if (_bossPrefab == DialogueManager.GetInstance().PowerCheckPrefab) _startNewDayButt.SetActive(false);
 
         DialogueManager dialogeManager = DialogueManager.GetInstance();
         bool powerCheckStart = ((Ink.Runtime.BoolValue)dialogeManager.GetVariablesState("PowerCheckStart")).value;
