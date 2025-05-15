@@ -15,6 +15,7 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
 
     public void Triggered()
     {
+        DialogueManager.GetInstance().PowerCheckPrefab = PowerCheckPrefab;
        var activeGroups = QuestCollection.GetActiveQuestGroups();
         var groupToUpdate = activeGroups.FirstOrDefault(g =>
             g.GetCurrentTask() != null &&
@@ -34,7 +35,6 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
             return;
         }
 
-        DialogueManager.GetInstance().PowerCheckPrefab = PowerCheckPrefab;
         //if(QuestCollection.GetActiveQuestGroups().Count > 0 && QuestCollection.GetActiveQuestGroups()[0].CurrentTaskId == 5) return;
         // Проверка на старт новых квестов
         var currentDay = QuestCollection.GetCurrentDayData();

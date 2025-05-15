@@ -70,6 +70,12 @@ public class PokemonNPC : MonoBehaviour
         _isMiniGameActive = true;
         _canStartMiniGame = false;
 
+        //MineSpawner mineSpawner = FindObjectOfType<MineSpawner>();
+        //if (mineSpawner != null)
+        //{
+        //    mineSpawner.ClearAllMineObjects();
+        //}
+
         AudioManager.GetInstance().StartMiniGameMusic();
 
         // Деактивируем и сразу активируем мини-игру для "сброса"
