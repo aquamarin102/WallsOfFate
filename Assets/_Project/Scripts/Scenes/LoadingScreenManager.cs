@@ -22,6 +22,9 @@ public class LoadingScreenManager : MonoBehaviour
 
     private bool _startupIntroShown = false;
 
+    private Coroutine _fadeCoroutine;
+
+
     [Header("UI-панели")]
     public GameObject loadingScreen;      // ваша существующая панель загрузки
     public TMP_Text loadingText;
@@ -242,9 +245,20 @@ public class LoadingScreenManager : MonoBehaviour
         Time.timeScale = 1f;
         loadingScreen.SetActive(true);
         panelEndOfDay.SetActive(false);
-        // НЕ скрываем panelStartOfDay здесь!
+
+        // Начинаем пульсацию текста
         loadingText.text = "Загрузка...";
+        StartTextFade();
+
         if (spriteAnimator != null) spriteAnimator.enabled = true;
+    }
+
+    private void StartTextFade()
+    {
+        // Если уже мерцает — перезапускаем
+        if (_fadeCoroutine != null)
+            StopCoroutine(_fadeCoroutine);
+        _fadeCoroutine = StartCoroutine(FadeText());
     }
 
     private IEnumerator LoadSceneAsync(string sceneName, bool showStartDay)
@@ -258,10 +272,11 @@ public class LoadingScreenManager : MonoBehaviour
 
                 if (spriteAnimator != null) spriteAnimator.enabled = false;
                 if (finalSprite != null) loadingImage.sprite = finalSprite;
+
+                // меняем текст, но пульсация уже запущена
                 loadingText.text = "Продолжить";
                 waitingForInput = true;
 
-                // Здесь ждём до полного скрытия panelStartOfDay
                 yield return StartCoroutine(WaitForUserInput(showStartDay));
                 yield break;
             }
@@ -274,6 +289,13 @@ public class LoadingScreenManager : MonoBehaviour
     {
         // Ждём нажатия
         while (!Input.anyKeyDown) yield return null;
+        waitingForInput = false;
+
+        if (_fadeCoroutine != null)
+            StopCoroutine(_fadeCoroutine);
+        var c = loadingText.color;
+        loadingText.color = new Color(c.r, c.g, c.b, 1f);
+
         waitingForInput = false;
 
         // Подготовка звука и анимации
@@ -320,16 +342,15 @@ public class LoadingScreenManager : MonoBehaviour
 
     private IEnumerator FadeText()
     {
-        float freq = 2f;
-        while (waitingForInput)
+        float freq = 2f;                  // скорость пульсации
+        Color baseColor = loadingText.color;
+        while (true)
         {
+            // синусоида: [0…1]
             float a = (Mathf.Sin(Time.time * freq) + 1f) / 2f;
-            var c = loadingText.color; c.a = a;
-            loadingText.color = c;
+            loadingText.color = new Color(baseColor.r, baseColor.g, baseColor.b, a);
             yield return null;
         }
-        var f = loadingText.color; f.a = 1f;
-        loadingText.color = f;
     }
 
     private IEnumerator ShowStartDay()

@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using Quest;
 public class NewGameButton : MonoBehaviour
 {
     [SerializeField] private GameObject newGamePanel;
@@ -43,6 +43,7 @@ public class NewGameButton : MonoBehaviour
     {
         if (_saveLoadManager != null)
             _saveLoadManager.ClearSavs();
+        QuestCollection.ClearQuests();
 
         // —бросить все параметры ресурсов на стартовые
         GameResources.GameResources.Gold = 50;

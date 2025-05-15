@@ -3,8 +3,17 @@ INCLUDE ../GlobalSettings/global.ink
     # portrait: dr_green_neutral
     # layout: left
     (Разглядывая найденные улики)
+    # speaker: пан Яков
+    # portrait: dr_green_neutral
+    # layout: left
     1) Замковый отчёт цел, но страницы помяты: чужие пальцы лазили в мои секреты.  
-    2) Золотой кулон с моим гербом — исчез из кабинета неделю назад.  
+    # speaker: пан Яков
+    # portrait: dr_green_neutral
+    # layout: left
+    2) Золотой кулон с моим гербом — исчез из кабинета неделю назад. 
+    # speaker: пан Яков
+    # portrait: dr_green_neutral
+    # layout: left
     3) Эти травы явно не отсюда. И среди моих подданных нет травницы.
 # speaker: пан Яков
     # portrait: dr_green_neutral
@@ -14,9 +23,15 @@ INCLUDE ../GlobalSettings/global.ink
     # portrait: dr_green_neutral
     # layout: left
     *   Изучить кулон подробнее
+    # speaker: пан Яков
+    # portrait: dr_green_neutral
+    # layout: left
         -> analyzePendant
 
     *   Изучить мешочек
+    # speaker: пан Яков
+    # portrait: dr_green_neutral
+    # layout: left
         -> followFlour
 
 === analyzePendant ===
@@ -25,13 +40,18 @@ INCLUDE ../GlobalSettings/global.ink
     # layout: left
     Мой герб, выгравирован до линий. Значит, вор не только пробрался в склад, но и беспрепятственно гулял по моим покоям.
     Предатель близко.
+    # speaker: пан Яков
+    # portrait: dr_green_neutral
+    # layout: left
     -> connectClues
 
 === followFlour ===
 # speaker: пан Яков
     # portrait: dr_green_neutral
     # layout: left
-    Травинки тянутся тонкой змеёй вглубь подвала. Кто-то нарочно или по неосторожности раскидал их, будто метил дорогу к тайному выходу.    
+    Травинки тянутся тонкой змеёй вглубь подвала. Кто-то нарочно или по неосторожности раскидал их, будто метил дорогу к тайному выходу.    # speaker: пан Яков
+    # portrait: dr_green_neutral
+    # layout: left
     -> connectClues
 
 === connectClues ===
@@ -39,6 +59,9 @@ INCLUDE ../GlobalSettings/global.ink
     # portrait: dr_green_neutral
     # layout: left
 Кулон из моего кабинета. Экзотические травы, какие не найти в замковых садах. Шпион прячется среди своих — иначе как он прошёл стражу? Время играть в кошки‑мышки закончилось.
+# speaker: пан Яков
+    # portrait: dr_green_neutral
+    # layout: left
 -> realization
 
 === realization ===
@@ -46,4 +69,7 @@ INCLUDE ../GlobalSettings/global.ink
     # portrait: dr_green_neutral
     # layout: left
 След из травинок ещё свежий. Прочешу склад прямо сейчас — крыса не уйдёт из своей норы.
+# speaker: пан Яков
+    # portrait: dr_green_neutral
+    # layout: left
 -> END

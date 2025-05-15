@@ -1,65 +1,66 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Linq;
 
-/// <summary>
-/// Показывает кнопку на 3 с, когда любой наблюдаемый объект
-/// становится неактивным, и плавно мигает альфой.
-/// </summary>
-public class ButtonBlinkOnItemDisable : MonoBehaviour
+public class ButtonBlinkOnChildDisable : MonoBehaviour
 {
-    [Header("Что отслеживаем")]
-    [SerializeField] private GameObject[] watchedItems;   // предметы на сцене
+    [Header("Корневой объект для наблюдения")]
+    [SerializeField] private GameObject watchedRoot;  // за этим объектом берём всех детей
 
     [Header("UI")]
-    [SerializeField] private Button targetButton;         // кнопка, которую показываем
-    [SerializeField] private float visibleTime = 3f;      // сколько секунд держать кнопку включённой
-    [SerializeField] private float blinkSpeed = 2f;       // скорость мигания
+    [SerializeField] private Button targetButton;
+    [SerializeField] private float visibleTime = 3f;
+    [SerializeField] private float blinkSpeed = 2f;
 
     private CanvasGroup canvasGroup;
-    private bool[] lastState;                             // состояние предметов в предыдущем кадре
+    private GameObject[] watchedItems;
+    private bool[] lastState;
     private Coroutine blinkRoutine;
 
     private void Awake()
     {
-        // гарантируем наличие CanvasGroup, чтобы управлять альфой
+        // 1) Подготовка кнопки
         canvasGroup = targetButton.GetComponent<CanvasGroup>();
         if (canvasGroup == null)
             canvasGroup = targetButton.gameObject.AddComponent<CanvasGroup>();
+        targetButton.gameObject.SetActive(false);
 
-        // запоминаем стартовые состояния
+        // 2) Собираем ВСЕ дочерние ГеймОбъекты (включая неактивные)
+        watchedItems = watchedRoot
+            .GetComponentsInChildren<Transform>(true)    // true = включать неактивные
+            .Select(t => t.gameObject)
+            .Where(go => go != watchedRoot)               // исключаем сам root
+            .ToArray();
+
+        // 3) Запоминаем их стартовые состояния
         lastState = new bool[watchedItems.Length];
         for (int i = 0; i < watchedItems.Length; i++)
             lastState[i] = watchedItems[i].activeInHierarchy;
-
-        // кнопку скрываем до события
-        targetButton.gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        // проверяем, не выключился ли какой-то предмет в этом кадре
+        // Для каждого потомка проверяем: был активным → стал неактивным?
         for (int i = 0; i < watchedItems.Length; i++)
         {
-            bool current = watchedItems[i].activeInHierarchy;
-            if (!current && lastState[i])        // событие «стал неактивным»
+            bool now = watchedItems[i].activeInHierarchy;
+            if (lastState[i] && !now)
             {
                 StartBlinking();
+                // если нужно реагировать только на первый оффлайн в кадре, можно break;
             }
-            lastState[i] = current;              // обновляем историю
+            lastState[i] = now;
         }
     }
 
-    /// <summary>Запускает мигание заново.</summary>
     private void StartBlinking()
     {
         if (blinkRoutine != null)
             StopCoroutine(blinkRoutine);
-
         blinkRoutine = StartCoroutine(BlinkRoutine());
     }
 
-    /// <summary>Показывает кнопку и плавно колеблет альфу visibleTime секунд.</summary>
     private IEnumerator BlinkRoutine()
     {
         targetButton.gameObject.SetActive(true);
@@ -68,10 +69,7 @@ public class ButtonBlinkOnItemDisable : MonoBehaviour
         while (timer < visibleTime)
         {
             timer += Time.deltaTime;
-
-            // PingPong даёт 0→1→0; умножаем Time.time на скорость
             canvasGroup.alpha = Mathf.PingPong(Time.time * blinkSpeed, 1f);
-
             yield return null;
         }
 

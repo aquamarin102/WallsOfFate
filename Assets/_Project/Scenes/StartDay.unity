@@ -20726,6 +20726,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -6050418262163192570, guid: 44a0de0f766c9634eb66f1d56b7edc9d, type: 3}
+      propertyPath: runSpeed
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -6050418262163192570, guid: 44a0de0f766c9634eb66f1d56b7edc9d, type: 3}
+      propertyPath: walkSpeed
+      value: 0.8
+      objectReference: {fileID: 0}
+    - target: {fileID: -6050418262163192570, guid: 44a0de0f766c9634eb66f1d56b7edc9d, type: 3}
       propertyPath: comfortMax
       value: 1.5
       objectReference: {fileID: 0}
