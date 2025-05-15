@@ -110,6 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultDialogue: StartDay/NPC2/NPC2
   _npcName: NPC2
+  PowerCheckPrefab: {fileID: 0}
 --- !u!54 &2487000032420465755
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -217,8 +218,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rotationSpeed: 360
-  stepClip1: {fileID: 8300000, guid: 41fb45f1ff97f9245a54400add63923b, type: 3}
-  stepClip2: {fileID: 8300000, guid: 0d1a315848dbe12438e2bfb76f718cae, type: 3}
+  stepClip1: {fileID: 8300000, guid: 569cc1b8cde87c342a8f88bfb84406f0, type: 3}
+  stepClip2: {fileID: 8300000, guid: cb08dd830ab07104d86c593912717494, type: 3}
   baseStepInterval: 0.5
 --- !u!82 &789759011494019141
 AudioSource:
@@ -230,8 +231,8 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 7119323010903739852, guid: c297e275c45b0db4fa8c6c95a825b156, type: 2}
-  m_audioClip: {fileID: 8300000, guid: 41fb45f1ff97f9245a54400add63923b, type: 3}
-  m_Resource: {fileID: 8300000, guid: 41fb45f1ff97f9245a54400add63923b, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 569cc1b8cde87c342a8f88bfb84406f0, type: 3}
+  m_Resource: {fileID: 8300000, guid: 569cc1b8cde87c342a8f88bfb84406f0, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 0.4
   m_Pitch: 1

@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 324038106643690944, guid: f0a0480e4b0f93642ae6d471a1fff28e, type: 3}
       propertyPath: m_Name
-      value: NPC8
+      value: NPC8OLD
       objectReference: {fileID: 0}
     - target: {fileID: 726713945076689391, guid: f0a0480e4b0f93642ae6d471a1fff28e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -110,6 +110,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultDialogue: StartDay/NPC8/NPC8
   _npcName: NPC8
+  PowerCheckPrefab: {fileID: 0}
 --- !u!54 &1502061413564057030
 Rigidbody:
   m_ObjectHideFlags: 0

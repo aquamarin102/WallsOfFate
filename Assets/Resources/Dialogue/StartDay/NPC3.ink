@@ -23,7 +23,7 @@ INCLUDE ../GlobalSettings/global.ink
     -> END
 
 === refuse ===
-   Не растрачивай людей. Пускай волки примут его исповедью.
+   Не растрачивай людей. Пускай волки примут его исповедь.
     # speaker: Стражник
     # portrait: black_guard
     # layout: right

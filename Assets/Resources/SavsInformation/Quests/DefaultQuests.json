@@ -285,7 +285,7 @@
           "Tasks": [
             {
               "Id": 0,
-              "TaskInfo": "Найти где стрятано сокровище",
+              "TaskInfo": "Найти где спрятано сокровище",
               "IsDone": false,
               "ForNPS": "TeasureChest",
               "RequeredTasksIds": [],
