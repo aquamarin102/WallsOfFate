@@ -9530,6 +9530,7 @@ GameObject:
   - component: {fileID: 244297666}
   - component: {fileID: 244297667}
   - component: {fileID: 244297670}
+  - component: {fileID: 244297671}
   m_Layer: 0
   m_Name: InventoryLogic
   m_TagString: Untagged
@@ -9589,6 +9590,19 @@ MonoBehaviour:
   _pickupType: ---
   _buttonObject: {fileID: 381164573}
   _inventoryObj: {fileID: 1822668983}
+--- !u!114 &244297671
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 244297665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34ec3a71a4537644dab5f7a09bc7b8b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  newDayButton: {fileID: 1761784352}
 --- !u!1 &245311791 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 75503cbb698365b4c89ca6a9459d9967, type: 3}
@@ -72886,7 +72900,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1761784349}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 34ec3a71a4537644dab5f7a09bc7b8b3, type: 3}
   m_Name: 

@@ -15,10 +15,10 @@ PrefabInstance:
     - target: {fileID: -8216647497389900131, guid: f0a0480e4b0f93642ae6d471a1fff28e, type: 3}
       propertyPath: m_audioClip
       value: 
-      objectReference: {fileID: 8300000, guid: f3cb235d7c16edf429d446e01ba9b035, type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 324038106643690944, guid: f0a0480e4b0f93642ae6d471a1fff28e, type: 3}
       propertyPath: m_Name
-      value: BOSS
+      value: Atash
       objectReference: {fileID: 0}
     - target: {fileID: 726713945076689391, guid: f0a0480e4b0f93642ae6d471a1fff28e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -330,7 +330,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _defaultDialogue: 
-  _npcName: BOSS
+  _npcName: Atash
   PowerCheckPrefab: {fileID: 2262867481233806756, guid: f72ccac8dcb1fa448a9e55b0957e76dd, type: 3}
 --- !u!65 &2279511623032576828
 BoxCollider:
