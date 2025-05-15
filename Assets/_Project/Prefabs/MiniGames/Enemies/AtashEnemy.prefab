@@ -132,7 +132,7 @@ MonoBehaviour:
   floatingTextWorldPrefab: {fileID: 8503380163757038419, guid: 2fd5f98ba8460eb4a99e6a13faa9fc55, type: 3}
   playerRenderer: {fileID: 317413116064756849}
   flashDuration: 0.2
-  Portrait: NPC
+  Portrait: Atash
   initialBuffPulseDuration: 1
   initialDebuffPulseDuration: 1
   minPulseDuration: 0.2
