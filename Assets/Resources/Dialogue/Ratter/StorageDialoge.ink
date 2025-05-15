@@ -32,11 +32,11 @@ INCLUDE ../GlobalSettings/global.ink
 	    # speaker: Плотник
 	    # portrait: black_man
 	    # layout: left
-	    Один раз соскользнёшь за порог — больше не вернёшься. Шагай.
+	    Один раз соскользнёшь за порог — голова с плеч. Стой жди стражу.
 	    # speaker: Плотник
 	    # portrait: black_man
 	    # layout: right
-	    (Бросает серебро к ногам пана, убегает, не оглядываясь.)
+	    Только не трогайте мою семью...
 	    ~ Gold += 30
 	    ~ CastleStrength += 20
 	    ~ PeopleSatisfaction += 1

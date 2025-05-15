@@ -76,17 +76,22 @@ public class MultiTextChanger : MonoBehaviour
     {
         // Сколько сейчас активных квестов?
         int activeQuests = QuestCollection.GetActiveQuestGroups().Count;
-        // Если вместо «только задач» у вас иногда выводится общее сообщение
-        // (_defaultTextStillQuests или _defaultTextAllQuests), можно сделать:
-        bool isShowingMessage = QuestCollection.GetActiveQuestGroups().Count == 0;
-        // Тогда значение слотов, для которых показываем иконки, таково:
-        int iconsToShow = activeQuests;
-        if (isShowingMessage) iconsToShow = 1;
+        // Проверяем, отображается ли общее сообщение (_defaultTextStillQuests или _defaultTextAllQuests)
+        bool isShowingMessage = activeQuests == 0;
 
-        // Перебираем все готовые иконки
+        // Определяем, для каких слотов показываем иконки
         for (int i = 0; i < _iconsLinks.Count; i++)
         {
-            _iconsLinks[i].SetActive(i < iconsToShow);
+            bool shouldShowIcon = false;
+            if (i < _textMeshProLinks.Count)
+            {
+                // Показываем иконку, если:
+                // 1) Текст в панели не пустой (для активных квестов или сообщения)
+                // 2) Индекс в пределах активных квестов или это сообщение в первом слоте
+                shouldShowIcon = !string.IsNullOrEmpty(_textMeshProLinks[i].text) &&
+                                 (isShowingMessage ? i == 0 : i < activeQuests);
+            }
+            _iconsLinks[i].SetActive(shouldShowIcon);
         }
     }
 }
