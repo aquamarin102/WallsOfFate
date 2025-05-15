@@ -9,6 +9,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 4115995d5c9b5b74282057bcb4988c3a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4115995d5c9b5b74282057bcb4988c3a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4115995d5c9b5b74282057bcb4988c3a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3.5
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 4115995d5c9b5b74282057bcb4988c3a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -28.46677
       objectReference: {fileID: 0}
@@ -124,7 +136,7 @@ MonoBehaviour:
   health: 200
   minDamage: 9
   damage: 13
-  speed: 5
+  speed: 4.5
   speedModifier: 1
   minHealingAmount: 6
   healingAmount: 8

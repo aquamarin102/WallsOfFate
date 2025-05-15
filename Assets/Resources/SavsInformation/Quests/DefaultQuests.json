@@ -237,7 +237,7 @@
           "Complite": false,
           "OpenNPS": "Refugee",
           "CurrentTaskId": 0,
-          "OpenDialog": "Refugee/RefugeeFoodTask",
+          "OpenDialog": "Refugee/RefugeeFoodTask/",
           "Evidence": null,
           "Prime": false
         }
