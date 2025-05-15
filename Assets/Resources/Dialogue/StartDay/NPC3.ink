@@ -17,7 +17,7 @@ INCLUDE ../GlobalSettings/global.ink
     # speaker: Стражник
     # portrait: black_guard
     # layout: right
-    Есть, пан. Отправлю быстрых, но знайте: бойцов придётся оторвать от стены.
+    Есть, пан. Отправлю быстрых, но знайте: бойцов придётсяотозвать со стен.
     ~ CastleStrength -= 20
     ~ PeopleSatisfaction += 1
     -> END
