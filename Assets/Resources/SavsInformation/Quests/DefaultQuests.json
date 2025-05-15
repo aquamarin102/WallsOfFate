@@ -253,7 +253,7 @@
           "Complite": false,
           "OpenNPS": "Messenger",
           "CurrentTaskId": 0,
-          "OpenDialog": "Messager/MessagerAtash",
+          "OpenDialog": "Messager/MessagerAtash/",
           "Evidence": null,
           "Prime": false,
           "Tasks": [
