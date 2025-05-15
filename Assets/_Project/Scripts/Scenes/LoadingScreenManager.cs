@@ -180,6 +180,7 @@ public class LoadingScreenManager : MonoBehaviour
         StartCoroutine(LoadSceneAsync(sceneName, showStartDay: true));
     }
 
+
     // === Ваш существующий метод LoadScene, но без end-day ===
     public void LoadScene(string sceneName)
     {

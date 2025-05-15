@@ -50,7 +50,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 4115995d5c9b5b74282057bcb4988c3a, type: 3}
       propertyPath: m_Name
-      value: BOSSEnemy
+      value: AtashEnemy
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -119,7 +119,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9ca5c2987e88b74aaf4f0ec5a6382bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerName: BOSSEnemy
+  playerName: AtashEnemy
   maxHealth: 200
   health: 200
   minDamage: 12

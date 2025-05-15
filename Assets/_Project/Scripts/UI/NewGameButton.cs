@@ -8,9 +8,11 @@ public class NewGameButton : MonoBehaviour
     public static event System.Action NewGameStarted;
 
     private SaveLoadManager _saveLoadManager;
+    private LoadingScreenManager _loadingScreenManager;
     private void Awake()
     {
         _saveLoadManager = GetComponent<SaveLoadManager>();
+        _loadingScreenManager = GetComponent<LoadingScreenManager>();
     }
     void Start()
     {
@@ -38,7 +40,6 @@ public class NewGameButton : MonoBehaviour
     public void ShowNewGamePanel()
     {
         newGamePanel.SetActive(true);
-
     }
     public void StartGame()
     {
@@ -48,8 +49,18 @@ public class NewGameButton : MonoBehaviour
             _saveLoadManager.ClearSavs();
         }
         NewGameStarted?.Invoke();        // оповестили всех подписчиков
+        _loadingScreenManager.panelGameOver.SetActive(false);
+        _loadingScreenManager.panelVictory.SetActive(false);
         LoadingScreenManager.Instance.OnConfirmEndOfDay();
     }
+
+    public void BackToMenuGame()
+    {
+        _loadingScreenManager.panelGameOver.SetActive(false);
+        _loadingScreenManager.panelVictory.SetActive(false);
+        LoadingScreenManager.Instance.LoadScene("MainMenu");
+    }
+
     public void HideNewGamePanel()
     {
         newGamePanel.SetActive(false);
