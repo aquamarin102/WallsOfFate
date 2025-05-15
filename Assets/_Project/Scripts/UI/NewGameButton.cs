@@ -46,8 +46,8 @@ public class NewGameButton : MonoBehaviour
 
         // —бросить все параметры ресурсов на стартовые
         GameResources.GameResources.Gold = 50;
-        GameResources.GameResources.Food = 40;
-        GameResources.GameResources.PeopleSatisfaction = 5;
+        GameResources.GameResources.Food = 50;
+        GameResources.GameResources.PeopleSatisfaction = 6;
         GameResources.GameResources.CastleStrength = 200;
 
         NewGameStarted?.Invoke();
@@ -59,8 +59,8 @@ public class NewGameButton : MonoBehaviour
     public void BackToMenuGame()
     {
         GameResources.GameResources.Gold = 50;
-        GameResources.GameResources.Food = 40;
-        GameResources.GameResources.PeopleSatisfaction = 5;
+        GameResources.GameResources.Food = 50;
+        GameResources.GameResources.PeopleSatisfaction = 6;
         GameResources.GameResources.CastleStrength = 200;
 
         LoadingScreenManager.Instance.panelGameOver.SetActive(false);

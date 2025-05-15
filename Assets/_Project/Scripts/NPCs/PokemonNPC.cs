@@ -104,12 +104,11 @@ public class PokemonNPC : MonoBehaviour
         if (winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab != _trainingPrefab)
         {
             GameResources.GameResources.ChangeCastleStrength(10); // Увеличиваем CastleStrength
-            GameResources.GameResources.ChangePeopleSatisfaction(-5); // Уменьшаем PeopleSatisfaction
             Debug.Log("Player won: CastleStrength +10, PeopleSatisfaction -5");
         }
         else if(winnerName != "Player" && DialogueManager.GetInstance().PowerCheckPrefab != _trainingPrefab)
         {
-            GameResources.GameResources.ChangePeopleSatisfaction(-10); // Уменьшаем PeopleSatisfaction
+            GameResources.GameResources.ChangePeopleSatisfaction(-1); // Уменьшаем PeopleSatisfaction
             Debug.Log("Player lost: PeopleSatisfaction -10");
         }
 

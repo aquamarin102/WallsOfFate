@@ -329,7 +329,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0996432d9ec83764eab23e8d27b623a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultDialogue: 
+  _defaultDialogue: BOSS/BOSSEND/
   _npcName: Atash
   PowerCheckPrefab: {fileID: 2262867481233806756, guid: f72ccac8dcb1fa448a9e55b0957e76dd, type: 3}
 --- !u!65 &2279511623032576828

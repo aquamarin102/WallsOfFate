@@ -235,12 +235,11 @@
           "Id": 2,
           "InProgress": false,
           "Complite": false,
-          "OpenNPS": "Messenger",
+          "OpenNPS": "Refugee",
           "CurrentTaskId": 0,
           "OpenDialog": "Refugee/RefugeeFoodTask",
           "Evidence": null,
-          "Prime": false,
-          "Tasks": []
+          "Prime": false
         }
       ]
     },
@@ -255,15 +254,15 @@
           "CurrentTaskId": 0,
           "OpenDialog": "Messager/MessagerAtash/",
           "Evidence": null,
-          "Prime": false,
+          "Prime": true,
           "Tasks": [
             {
               "Id": 0,
-              "TaskInfo": "Поговорить с главой стражи на счет преступника",
+              "TaskInfo": "Поговорить с Ханом Аташем",
               "IsDone": false,
-              "ForNPS": "BOSS",
+              "ForNPS": "Atash",
               "RequeredTasksIds": [],
-              "RequeredDialog": "ChiefGuard/LostNails/",
+              "RequeredDialog": "BOSS/BOSSEND/",
               "Resources": {
                 "Gold": 0,
                 "Food": 0,

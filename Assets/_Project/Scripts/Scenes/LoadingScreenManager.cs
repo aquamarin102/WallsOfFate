@@ -90,6 +90,13 @@ public class LoadingScreenManager : MonoBehaviour
     private void ShowGameOver()
     {
         Time.timeScale = 0f;               // ставим игру на паузу
+        Transform[] children = panelGameOver.GetComponentsInChildren<Transform>(true);
+
+        // Обновляем значения ресурсов
+        UpdateResourceText(children, "Gold", GameResources.GameResources.Gold.ToString());
+        UpdateResourceText(children, "Food", GameResources.GameResources.Food.ToString());
+        UpdateResourceText(children, "Satisfaction", GameResources.GameResources.PeopleSatisfaction.ToString());
+        UpdateResourceText(children, "Staraight", GameResources.GameResources.CastleStrength.ToString());
         panelGameOver.SetActive(true);
     }
 
@@ -220,6 +227,13 @@ public class LoadingScreenManager : MonoBehaviour
         while (IsLoading) yield return null;
 
         Time.timeScale = 0f;
+        Transform[] children = panelVictory.GetComponentsInChildren<Transform>(true);
+
+        // Обновляем значения ресурсов
+        UpdateResourceText(children, "Gold", GameResources.GameResources.Gold.ToString());
+        UpdateResourceText(children, "Food", GameResources.GameResources.Food.ToString());
+        UpdateResourceText(children, "Satisfaction", GameResources.GameResources.PeopleSatisfaction.ToString());
+        UpdateResourceText(children, "Staraight", GameResources.GameResources.CastleStrength.ToString());
         panelVictory.SetActive(true);
     }
 

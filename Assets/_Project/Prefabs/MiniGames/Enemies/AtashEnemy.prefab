@@ -122,8 +122,8 @@ MonoBehaviour:
   playerName: AtashEnemy
   maxHealth: 200
   health: 200
-  minDamage: 12
-  damage: 18
+  minDamage: 9
+  damage: 13
   speed: 5
   speedModifier: 1
   minHealingAmount: 6
