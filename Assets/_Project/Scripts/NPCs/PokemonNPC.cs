@@ -11,6 +11,7 @@ public class PokemonNPC : MonoBehaviour
     [SerializeField] private GameProcess _miniGameProcessor;
     [SerializeField] private GameObject _menu;
     [SerializeField] private GameObject _trainingPrefab;
+    [SerializeField] private GameObject _bossPrefab;
 
     private GameObject _winPanel;
     private GameObject _losePanel;
@@ -110,12 +111,18 @@ public class PokemonNPC : MonoBehaviour
         if (winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab != _trainingPrefab)
         {
             GameResources.GameResources.ChangeCastleStrength(10); // Увеличиваем CastleStrength
-            Debug.Log("Player won: CastleStrength +10, PeopleSatisfaction -5");
         }
         else if(winnerName != "Player" && DialogueManager.GetInstance().PowerCheckPrefab != _trainingPrefab)
         {
             GameResources.GameResources.ChangePeopleSatisfaction(-1); // Уменьшаем PeopleSatisfaction
-            Debug.Log("Player lost: PeopleSatisfaction -10");
+        }
+        else if(winnerName != "Player" && DialogueManager.GetInstance().PowerCheckPrefab == _bossPrefab)
+        {
+            GameResources.GameResources.ChangePeopleSatisfaction(-1000); // Уменьшаем PeopleSatisfaction
+        }
+        else if(winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab == _bossPrefab)
+        {
+            GameResources.GameResources.ChangePeopleSatisfaction(-1000); // Уменьшаем PeopleSatisfaction
         }
 
         // Возвращаем основную камеру
