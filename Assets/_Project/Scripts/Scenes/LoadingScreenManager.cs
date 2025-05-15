@@ -80,6 +80,10 @@ public class LoadingScreenManager : MonoBehaviour
         {
             ShowGameOver();
         }
+        else if (IsAnyResourceHundrid())
+        {
+            ShowWin();
+        }
     }
 
     private bool IsAnyResourceZero()
@@ -88,6 +92,13 @@ public class LoadingScreenManager : MonoBehaviour
                 GameResources.GameResources.Food <= 0 ||
                 GameResources.GameResources.PeopleSatisfaction <= 0 ||
                 GameResources.GameResources.CastleStrength <= 0;
+    }
+    private bool IsAnyResourceHundrid()
+    {
+        return GameResources.GameResources.Gold >= 1000 ||
+                GameResources.GameResources.Food >= 1000 ||
+                GameResources.GameResources.PeopleSatisfaction >= 1000 ||
+                GameResources.GameResources.CastleStrength >= 1000;
     }
 
     private void ShowGameOver()
@@ -101,6 +112,18 @@ public class LoadingScreenManager : MonoBehaviour
         UpdateResourceText(children, "Satisfaction", GameResources.GameResources.PeopleSatisfaction.ToString());
         UpdateResourceText(children, "Staraight", GameResources.GameResources.CastleStrength.ToString());
         panelGameOver.SetActive(true);
+    }
+    private void ShowWin()
+    {
+        Time.timeScale = 0f;               // ставим игру на паузу
+        Transform[] children = panelVictory.GetComponentsInChildren<Transform>(true);
+
+        // Обновляем значения ресурсов
+        UpdateResourceText(children, "Gold", GameResources.GameResources.Gold.ToString());
+        UpdateResourceText(children, "Food", GameResources.GameResources.Food.ToString());
+        UpdateResourceText(children, "Satisfaction", GameResources.GameResources.PeopleSatisfaction.ToString());
+        UpdateResourceText(children, "Staraight", GameResources.GameResources.CastleStrength.ToString());
+        panelVictory.SetActive(true);
     }
 
     // === Кнопка «Конец дня» в вашем UI должна вызывать этот метод ===
