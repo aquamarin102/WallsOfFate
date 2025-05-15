@@ -8,11 +8,9 @@ public class NewGameButton : MonoBehaviour
     public static event System.Action NewGameStarted;
 
     private SaveLoadManager _saveLoadManager;
-    private LoadingScreenManager _loadingScreenManager;
     private void Awake()
     {
         _saveLoadManager = GetComponent<SaveLoadManager>();
-        _loadingScreenManager = GetComponent<LoadingScreenManager>();
     }
     void Start()
     {
@@ -44,20 +42,29 @@ public class NewGameButton : MonoBehaviour
     public void StartGame()
     {
         if (_saveLoadManager != null)
-        {
-            // —бросить все сохранЄнные данные, чтобы нова€ игра начиналась с чистого листа
             _saveLoadManager.ClearSavs();
-        }
-        NewGameStarted?.Invoke();        // оповестили всех подписчиков
-        _loadingScreenManager.panelGameOver.SetActive(false);
-        _loadingScreenManager.panelVictory.SetActive(false);
+
+        // —бросить все параметры ресурсов на стартовые
+        GameResources.GameResources.Gold = 50;
+        GameResources.GameResources.Food = 40;
+        GameResources.GameResources.PeopleSatisfaction = 5;
+        GameResources.GameResources.CastleStrength = 200;
+
+        NewGameStarted?.Invoke();
+        LoadingScreenManager.Instance.panelGameOver.SetActive(false);
+        LoadingScreenManager.Instance.panelVictory.SetActive(false);
         LoadingScreenManager.Instance.OnConfirmEndOfDay();
     }
 
     public void BackToMenuGame()
     {
-        _loadingScreenManager.panelGameOver.SetActive(false);
-        _loadingScreenManager.panelVictory.SetActive(false);
+        GameResources.GameResources.Gold = 50;
+        GameResources.GameResources.Food = 40;
+        GameResources.GameResources.PeopleSatisfaction = 5;
+        GameResources.GameResources.CastleStrength = 200;
+
+        LoadingScreenManager.Instance.panelGameOver.SetActive(false);
+        LoadingScreenManager.Instance.panelVictory.SetActive(false);
         LoadingScreenManager.Instance.LoadScene("MainMenu");
     }
 
