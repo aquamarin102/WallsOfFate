@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 1317082295246484945}
   - component: {fileID: 3475057249743783193}
   - component: {fileID: 1894319600746604230}
-  - component: {fileID: 1357890251911076274}
   - component: {fileID: 608398627741124874}
   - component: {fileID: 5430430914279418229}
+  - component: {fileID: 212526929189843802}
   m_Layer: 0
   m_Name: Food_chicken
   m_TagString: Untagged
@@ -117,27 +117,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246c04dfc0ad72d4d947b4c8da3b71df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!65 &1357890251911076274
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1096793387542289378}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
+  hoverCheckDistance: 100
+  hoverLayerMask:
     serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.55818176, y: 0.21860509, z: 0.59348935}
-  m_Center: {x: 0.0015029907, y: 0.10930254, z: -0.0018112962}
+    m_Bits: 4294967295
 --- !u!65 &608398627741124874
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -157,7 +140,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.8, y: 0.8, z: 0.8}
+  m_Size: {x: 1.5, y: 1.5, z: 1.5}
   m_Center: {x: 0.0015029907, y: 0.10930254, z: -0.0018112962}
 --- !u!114 &5430430914279418229
 MonoBehaviour:
@@ -178,3 +161,24 @@ MonoBehaviour:
   spawnOffset: {x: 0, y: 2.3, z: 0}
   destroyAfterUse: 1
   approachDistance: 1.5
+--- !u!65 &212526929189843802
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1096793387542289378}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.55818176, y: 0.21860509, z: 0.59348935}
+  m_Center: {x: 0.0015029907, y: 0.10930254, z: -0.0018112962}

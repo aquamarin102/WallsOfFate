@@ -271,7 +271,6 @@ public class LoadingScreenManager : MonoBehaviour
 
         // Ќачинаем пульсацию текста
         loadingText.text = "«агрузка...";
-        StartTextFade();
 
         if (spriteAnimator != null) spriteAnimator.enabled = true;
     }
@@ -298,6 +297,7 @@ public class LoadingScreenManager : MonoBehaviour
 
                 // мен€ем текст, но пульсаци€ уже запущена
                 loadingText.text = "ѕродолжить";
+                StartTextFade();
                 waitingForInput = true;
 
                 yield return StartCoroutine(WaitForUserInput(showStartDay));
@@ -365,7 +365,7 @@ public class LoadingScreenManager : MonoBehaviour
 
     private IEnumerator FadeText()
     {
-        float freq = 2f;                  // скорость пульсации
+        float freq = 4f;                  // скорость пульсации
         Color baseColor = loadingText.color;
         while (true)
         {

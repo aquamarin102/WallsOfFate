@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 1490834854622440237}
   - component: {fileID: 7265596282921758101}
   - component: {fileID: 306313904727666361}
-  - component: {fileID: 6426723281979723760}
   - component: {fileID: 5877537734066872832}
   - component: {fileID: 7070525626721240036}
+  - component: {fileID: 8737918460259239573}
   m_Layer: 0
   m_Name: Food_bread_2
   m_TagString: Untagged
@@ -117,27 +117,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246c04dfc0ad72d4d947b4c8da3b71df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!65 &6426723281979723760
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2799865253331758379}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
+  hoverCheckDistance: 100
+  hoverLayerMask:
     serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.16342163, y: 0.1833468, z: 0.2350944}
-  m_Center: {x: -0.00009918213, y: 0.0916734, z: -0.00020420928}
+    m_Bits: 4294967295
 --- !u!65 &5877537734066872832
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -157,7 +140,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.8, y: 0.8, z: 0.8}
+  m_Size: {x: 1.5, y: 1.5, z: 1.5}
   m_Center: {x: -0.00009918213, y: 0.0916734, z: -0.00020420928}
 --- !u!114 &7070525626721240036
 MonoBehaviour:
@@ -178,3 +161,24 @@ MonoBehaviour:
   spawnOffset: {x: 0, y: 2.3, z: 0}
   destroyAfterUse: 1
   approachDistance: 1.5
+--- !u!65 &8737918460259239573
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2799865253331758379}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.16342163, y: 0.1833468, z: 0.2350944}
+  m_Center: {x: -0.00009918213, y: 0.0916734, z: -0.00020420928}

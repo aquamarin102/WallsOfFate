@@ -8,19 +8,20 @@ public class FloatingTextMinigame : MonoBehaviour
 
     private TMP_Text tmp;
     private float startTime;
-    private Camera mainCam;
+    private Camera targetCam;
+
+    
 
     private void Awake()
     {
         tmp = GetComponent<TMP_Text>();
         startTime = Time.time;
-        mainCam = Camera.main;          // кешируем основную камеру
     }
 
     private void LateUpdate()
     {
         // Check for null references and destroy the GameObject if any are found
-        if (tmp == null || mainCam == null)
+        if (tmp == null || targetCam == null)
         {
             Destroy(gameObject);
             return;
@@ -35,7 +36,7 @@ public class FloatingTextMinigame : MonoBehaviour
         tmp.color = new Color(c.r, c.g, c.b, Mathf.Lerp(1f, 0f, t));
 
         // 3) Billboard Ч поворачиваем к камере
-        Vector3 dir = transform.position - mainCam.transform.position;
+        Vector3 dir = transform.position - targetCam.transform.position;
         transform.rotation = Quaternion.LookRotation(dir);
 
         // 4) ”дал€ем по окончанию жизни
@@ -46,9 +47,11 @@ public class FloatingTextMinigame : MonoBehaviour
     /// <summary>
     /// ”станавливает текст и цвет.
     /// </summary>
-    public void Setup(string message, Color color)
+    public void Setup(string message, Color color, Camera cam = null)
     {
         tmp.text = message;
         tmp.color = color;
+        targetCam = cam != null ? cam : Camera.main;
+        startTime = Time.time; // ѕерезапусти таймер на случай переиспользовани€ объекта
     }
 }

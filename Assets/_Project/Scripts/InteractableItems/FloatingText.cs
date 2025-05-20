@@ -17,6 +17,8 @@ public class FloatingText : MonoBehaviour
     [SerializeField] private Vector3 offset = new Vector3(0f, 2.5f, 0f);
     private Transform _player;
 
+    private static FloatingText current;
+
     void Awake()
     {
         if (textMesh == null)
@@ -33,6 +35,12 @@ public class FloatingText : MonoBehaviour
         {
             Debug.LogError("Player not found — please tag the player object as 'Player'.");
         }
+
+        if (current != null && current != this)
+            Destroy(current.gameObject);
+        current = this;
+
+        Destroy(gameObject, lifeTime);
     }
 
     /// <summary>
@@ -56,14 +64,6 @@ public class FloatingText : MonoBehaviour
 
     void Update()
     {
-        //float xRotation = this.transform.localEulerAngles.x;
-        //if (xRotation > 180f) xRotation -= 360f;
-        //bool isInRotationRange = xRotation >= 85f && xRotation <= 95f;
-        //if (isInRotationRange)
-        //{
-        //    this.transform.rotation = Quaternion.Euler(90f, 180f, 0f);
-        //    //this.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-        //}
         if (_player != null)
         {
             // Берем только x и y из позиции игрока, сохраняем текущую z
@@ -73,8 +73,10 @@ public class FloatingText : MonoBehaviour
                 _player.position.z + offset.z
             );
         }
-        lifeTime -= Time.deltaTime;
-        if (lifeTime <= 0f)
-            Destroy(gameObject);
+    }
+    void OnDestroy()
+    {
+        if (current == this)
+            current = null;
     }
 }

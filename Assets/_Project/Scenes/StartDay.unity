@@ -3388,7 +3388,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 19.324226, y: 1.337997, z: -196.66742, w: -60.690544}
+  m_margin: {x: 19.324226, y: 1.337997, z: -186.11432, w: -60.690544}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -5262,7 +5262,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &509698940
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7243,6 +7243,8 @@ MonoBehaviour:
   _miniGameProcessor: {fileID: 7366989021537592088}
   _menu: {fileID: 1722570318}
   _trainingPrefab: {fileID: 0}
+  _bossPrefab: {fileID: 0}
+  _startNewDayButt: {fileID: 0}
 --- !u!114 &829668897
 MonoBehaviour:
   m_ObjectHideFlags: 0
