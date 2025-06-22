@@ -83,12 +83,9 @@ public static class AssembledPickups
         if (pickup == null || pickup.gameObject == null) return false;
 
         return pickups.Any(p =>
-            p != null &&
+             p != null &&
              p.Name == pickup.Name);
-             //p.Name.Equals(pickup.Name, StringComparison.OrdinalIgnoreCase));
     }
-            //p.gameObject != null &&
-            //(p.gameObject.GetInstanceID() == pickup.gameObject.GetInstanceID() ||
 
     public static int Count => pickups.Count;
 

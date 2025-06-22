@@ -7,16 +7,13 @@ using System.Linq;
 public class CompositeTrigger : MonoBehaviour, ITriggerable
 {
     [Header("Quest Settings")]
-    [SerializeField] private string _selfName; // ID текущего квеста
-    //[SerializeField] private List<int> _requiredTriggerIds = new List<int>(); // ID требуемых квестов
-    //[SerializeField] private bool _once = false;
+    [SerializeField] private string _selfName; 
 
     public event Action OnActivated;
     public bool IsDone { get; private set; }
 
     public void Triggered()
     {
-        // Проверка на старт новых квестов
         var availableGroups = QuestCollection.GetAllDays()
             .SelectMany(d => d.Quests)
             .Where(q => q.CheckOpen(_selfName))
@@ -26,10 +23,10 @@ public class CompositeTrigger : MonoBehaviour, ITriggerable
         {
             var group = availableGroups.First();
             group.StartQuest();
-            return;
+            IsDone = true;
+            return;   
         }
 
-        // Обработка активных квестов
         var activeGroups = QuestCollection.GetActiveQuestGroups();
         var groupToUpdate = activeGroups.FirstOrDefault(g =>
             g.GetCurrentTask() != null &&
@@ -37,21 +34,20 @@ public class CompositeTrigger : MonoBehaviour, ITriggerable
 
         if (groupToUpdate != null)
         {
-             // 1) отмечаем задачу
-    var task = groupToUpdate.GetCurrentTask();
-    task.CompleteTask();
+            var task = groupToUpdate.GetCurrentTask();
+            task.CompleteTask();
 
-    // 2) пытаемся закрыть группу целиком
-    groupToUpdate.TryCompleteGroup();
+            groupToUpdate.TryCompleteGroup();
 
-    // 3) назначаем следующий CurrentTaskId (или -1, если группа завершена)
-    var next = groupToUpdate.Tasks
-        .Where(t => !t.IsDone)
-        .OrderBy(t => t.Id)
-        .FirstOrDefault();
-    groupToUpdate.CurrentTaskId = next != null ? next.Id : -1;
-            
+            var next = groupToUpdate.Tasks
+                .Where(t => !t.IsDone)
+                .OrderBy(t => t.Id)
+                .FirstOrDefault();
+            groupToUpdate.CurrentTaskId = next != null ? next.Id : -1;
+            IsDone = true;
+
         }
+
     }
 
     private bool CanTriggerTask(QuestTask task)

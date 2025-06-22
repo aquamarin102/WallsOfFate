@@ -11781,7 +11781,6 @@ MonoBehaviour:
   inputDelay: 4
   finalSprite: {fileID: 21300000, guid: f43f4ed66919f7341b953a235f8ce2ed, type: 3}
   panelNewGameIntro: {fileID: 315544520}
-  introDuration: 10
 --- !u!4 &1788727852
 Transform:
   m_ObjectHideFlags: 0
