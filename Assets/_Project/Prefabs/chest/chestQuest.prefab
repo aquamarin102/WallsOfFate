@@ -36,6 +36,10 @@ PrefabInstance:
       propertyPath: amount
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4276808589213752708, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}
+      propertyPath: _dependFromQuests
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5050328978687382349, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}
       propertyPath: m_LocalPosition.x
       value: -28.24
@@ -78,7 +82,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5574770098997398007, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}
       propertyPath: m_Name
-      value: chest Variant
+      value: chestQuest
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 886819451013226711, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}

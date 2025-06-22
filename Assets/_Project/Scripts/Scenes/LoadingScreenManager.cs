@@ -43,7 +43,7 @@ public class LoadingScreenManager : MonoBehaviour
 
     [Header("Intro Screen (New Game)")]
     public GameObject panelNewGameIntro;      // ваш новый экран интро при старте
-    public float introDuration = 10f;
+    //public float introDuration = 10f;
 
     private void Awake()
     {
@@ -351,7 +351,7 @@ public class LoadingScreenManager : MonoBehaviour
 
         float timer = 0f;
         // ∆дЄм либо introDuration, либо первого нажати€
-        while (timer < introDuration)
+        while (/*timer < introDuration*/true)
         {
             if (Input.anyKeyDown)
                 break;

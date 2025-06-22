@@ -135,11 +135,7 @@ public class InventoryLogicEnd : MonoBehaviour
     {
         if (_buttonObject == null) return;
 
-        // Находим первый неотрендеренный пикап
-        //var nonRenderedPickup = FindFirstNonRenderedPickup(_pickupType);
-
-        // Если все пикапы отрендерены и есть что показывать
-        bool allDisplayed = /*nonRenderedPickup == null && */_displayedImagesCount >= 3;
+        bool allDisplayed = _displayedImagesCount >= 3;
         _buttonObject.SetActive(allDisplayed);
     }
 
