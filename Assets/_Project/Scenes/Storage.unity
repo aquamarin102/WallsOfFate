@@ -68871,6 +68871,8 @@ MonoBehaviour:
   _miniGameProcessor: {fileID: 1166670706}
   _menu: {fileID: 729678677}
   _trainingPrefab: {fileID: 0}
+  _bossPrefab: {fileID: 0}
+  _startNewDayButt: {fileID: 0}
 --- !u!114 &1651741896
 MonoBehaviour:
   m_ObjectHideFlags: 0

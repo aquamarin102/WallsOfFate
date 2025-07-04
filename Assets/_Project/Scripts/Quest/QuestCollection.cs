@@ -228,7 +228,7 @@ namespace Quest
                 QuestCollection.GetAllDays()
                     .SelectMany(d => d.Quests)
                     .SelectMany(q => q.Tasks)
-                    .Any(t => t.Id == id && t.IsDone));
+                    .Any(t => t.Id == id && t.IsDone)) && !this.IsDone;
         }
 
         private void ApplyResources()

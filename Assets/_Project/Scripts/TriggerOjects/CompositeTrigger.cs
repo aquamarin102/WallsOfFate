@@ -28,14 +28,30 @@ public class CompositeTrigger : MonoBehaviour, ITriggerable
         }
 
         var activeGroups = QuestCollection.GetActiveQuestGroups();
-        var groupToUpdate = activeGroups.FirstOrDefault(g =>
-            g.GetCurrentTask() != null &&
-            CanTriggerTask(g.GetCurrentTask()));
+        //var groupToUpdate = activeGroups.FirstOrDefault(g =>
+        //    g.GetCurrentTask() != null &&
+        //    CanTriggerTask(g.Tasks.FirstOrDefault(t => t.CanComplete())));
+
+        QuestGroup groupToUpdate = null;
+        QuestTask taskToComplete = null;
+
+        foreach (var group in activeGroups) {
+            taskToComplete = group.Tasks
+                .Where(t => !t.IsDone && t.ForNPS == _selfName && t.CanComplete())
+                .OrderBy(t => t.Id)
+                .FirstOrDefault();
+
+            if (taskToComplete != null) {
+                groupToUpdate = group;
+                break;
+            }
+        }
+
 
         if (groupToUpdate != null)
         {
-            var task = groupToUpdate.GetCurrentTask();
-            task.CompleteTask();
+            //var task = groupToUpdate.GetCurrentTask();
+            taskToComplete.CompleteTask();
 
             groupToUpdate.TryCompleteGroup();
 
