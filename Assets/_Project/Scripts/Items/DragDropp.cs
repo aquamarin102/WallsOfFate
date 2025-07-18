@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UIElements;
 
-namespace Assets.Scripts.Drag_Dropp
+namespace Assets.Scripts.Items
 {
     internal class DragDropp : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler
     {

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace Assets.Scripts.Drag_Dropp
+namespace Assets.Scripts.Items
 {
     internal class ItemSlot : MonoBehaviour, IDropHandler
     {
