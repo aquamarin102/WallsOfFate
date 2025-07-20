@@ -1,8 +1,7 @@
-using Assets._Project.Scripts.TriggerOjects;
 using System.Collections;
 using UnityEngine;
 
-public class PokemonNPC : MonoBehaviour
+public class MinigameStarter : MonoBehaviour
 {
     [SerializeField] private GameObject _miniGame;
     [SerializeField] private GameObject _castle;
