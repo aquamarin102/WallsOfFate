@@ -21,6 +21,10 @@ public class InteractManager : MonoBehaviour
     // Ссылка на компонент анимаций игрока, который содержит методы PlayPickupFloor, PlayPickupBody и PlayOpenChest
     private PlayerAnimator playerAnimator;
 
+    [Tooltip("Минимальная пауза между повторными нажатиями, сек.")]
+    [SerializeField] private float interactCooldown = 0.4f;
+    private float _nextTimeCanInteract = 0f;
+    private bool _interactBuffered;
     private void Awake()
     {
        
@@ -73,6 +77,21 @@ public class InteractManager : MonoBehaviour
         }
     }
 
+    private void OnTriggerStay(Collider collider)
+    {
+        // Обновляем currentTriggerable каждый FixedUpdate,
+        // если по какой-то причине он вдруг стал null
+        if (currentTriggerable == null)
+        {
+            OnTriggerEnter(collider);   // переиспользуем уже готовую логику
+            _nextTimeCanInteract = Time.time;   // не блокируем первое нажатие
+        }
+
+        // --- необязательно, но удобно: маленький буфер нажатия ---
+        if (!_interactBuffered && InputManager.GetInstance().GetInteractPressed())
+            _interactBuffered = true;
+    }
+
     private void OnTriggerExit(Collider collider)
     {
         // При выходе из зоны интерактивного объекта сбрасываем данные
@@ -97,40 +116,41 @@ public class InteractManager : MonoBehaviour
         }
     }
 
+
     private void Update()
     {
-        // Если есть активный интерактивный объект и ещё не было взаимодействия
-        if (currentTriggerable != null && !hasInteracted)
-        {
-            // Получаем нажатие кнопки взаимодействия через ваш InputManager
-            bool isInteract = InputManager.GetInstance().GetInteractPressed();
-            if (isInteract)
-                InteractWith(currentTriggerable);
+        if (currentTriggerable == null) return;
+        if (Time.time < _nextTimeCanInteract) return;
 
+        // либо нажали в этом кадре, либо нажатие «забуферилось» в OnTriggerStay
+        if (_interactBuffered || InputManager.GetInstance().GetInteractPressed())
+        {
+            _interactBuffered = false;          // сброс буфера
+            InteractWith(currentTriggerable);
+            _nextTimeCanInteract = Time.time + interactCooldown;
         }
     }
 
     // Пытаемся активировать конкретный триггер, если он еще не был активирован (либо если это Box)
     private void TryTrigger(ITriggerable trigger)
     {
-        // если еще не срабатывали (или это Box — можем повторять)
-        if (!triggeredSet.Contains(trigger) || trigger is Box)
+        // 1) Можно ли триггер вызывать многократно?
+        //    В пример добавлены «Dialogue» и «Box»
+        bool repeatable =
+            trigger is Box ||
+            (trigger as MonoBehaviour)?.CompareTag("Dialogue") == true;
+
+        // 2) Проверяем активирован ли раньше
+        if (!triggeredSet.Contains(trigger) || repeatable)
         {
-            // если это наш интерактивный предмет — просто Interact()
             if (trigger is InteractableItem item)
-            {
                 item.Interact();
-            }
             else
-            {
-                // любая другая логика
                 trigger.Triggered();
-            }
-            triggeredSet.Add(trigger);
-        }
-        else
-        {
-            Debug.Log($"Trigger {trigger} already activated, skipping");
+
+            // В «чёрный список» заносим только одноразовые
+            if (!repeatable)
+                triggeredSet.Add(trigger);
         }
     }
 

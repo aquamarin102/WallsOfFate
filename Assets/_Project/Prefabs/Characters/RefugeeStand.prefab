@@ -2274,6 +2274,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultDialogue: Refugee/RefugeeForgeDefault/
   _npcName: Refugee
+  PowerCheckPrefab: {fileID: 8816934456661431518, guid: c66df2a20c370b04b95cc4e57f18475c, type: 3}
 --- !u!114 &1719277975228918971
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2286,6 +2287,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246c04dfc0ad72d4d947b4c8da3b71df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoverCheckDistance: 100
+  hoverLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!1 &6595291542925989895
 GameObject:
   m_ObjectHideFlags: 0

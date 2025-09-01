@@ -68,7 +68,7 @@ namespace Quest
         public static List<QuestGroup> GetAllQuestGroups()
         {
             var currentDay = GetCurrentDayData();
-            return currentDay?.Quests ?? new List<QuestGroup>();
+            return currentDay.Quests ?? new List<QuestGroup>();
         }
 
         public static string SaveToJson()
@@ -79,6 +79,21 @@ namespace Quest
         public static void LoadFromJson(string json)
         {
             _saveData = JsonConvert.DeserializeObject<QuestSaveData>(json);
+        }
+
+        public static void ForceCompleteQuest(int questId, bool shouldComplete)
+        {
+            if (!shouldComplete) return;
+
+            var allDays = GetAllDays();
+            var day = _saveData.Days[CurrentDayNumber];
+            var quest = day.Quests.FirstOrDefault(q => q.Id == questId);
+            if (quest != null)
+            {
+                // Завершаем квест
+                quest.Complite = true;
+                quest.InProgress = false;
+            }
         }
     }
 
@@ -107,6 +122,8 @@ namespace Quest
         {
             return OpenNPS == npcName && !InProgress && !Complite;
         }
+
+        public bool IsEneded()  { return !InProgress && Complite; }
 
         public void StartQuest()
         {
@@ -162,6 +179,16 @@ namespace Quest
             }).ToList();
         }
 
+          public void TryCompleteGroup()
+    {
+        if (Tasks.All(t => t.IsDone))
+        {
+            Complite = true;
+            InProgress = false;
+            // можно тут ещё отправить событие, лог, звук и т.п.
+        }
+    }
+
         public int GetCurrentTaskId() => CurrentTaskId;
         public QuestTask GetCurrentTask() => Tasks[CurrentTaskId];
     }
@@ -201,7 +228,7 @@ namespace Quest
                 QuestCollection.GetAllDays()
                     .SelectMany(d => d.Quests)
                     .SelectMany(q => q.Tasks)
-                    .Any(t => t.Id == id && t.IsDone));
+                    .Any(t => t.Id == id && t.IsDone)) && !this.IsDone;
         }
 
         private void ApplyResources()

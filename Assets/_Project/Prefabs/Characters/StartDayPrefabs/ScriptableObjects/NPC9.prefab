@@ -109,6 +109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultDialogue: StartDay/NPC9/NPC9
   _npcName: NPC9
+  PowerCheckPrefab: {fileID: 0}
 --- !u!54 &-3009051614972486770
 Rigidbody:
   m_ObjectHideFlags: 0

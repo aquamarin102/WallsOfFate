@@ -1,15 +1,15 @@
-using System;
+using Quest;
 using UnityEngine;
-using GameResources;
-using Zenject;
-using Zenject.SpaceFighter;
-using UnityEngine.AI;
+using UnityEngine.SceneManagement;
+using System.Linq;
 
 public enum ResourceType { Gold, Food, PeopleSatisfaction, CastleStrength }
 
 [RequireComponent(typeof(Collider))]
 public class InteractableItem : MonoBehaviour, ITriggerable
 {
+    [SerializeField] private bool _dependFromQuests = false;
+
     [Header("Resource Settings")]
     public ResourceType resourceType;
     public int amount = 1;
@@ -37,6 +37,36 @@ public class InteractableItem : MonoBehaviour, ITriggerable
         var go = GameObject.FindGameObjectWithTag("Player");
         if (go) _player = go.transform;
         else Debug.LogError("Player not found — please tag the player object as 'Player'.");
+
+        CheckUsability();
+    }
+
+    private void Update()
+    {
+        CheckUsability(); 
+    }
+
+    private void CheckUsability()
+    {
+        CompositeTrigger compositeTrigger = this.gameObject.GetComponent<CompositeTrigger>();
+
+        string sceneName = SceneManager.GetActiveScene().name;
+        if (InteractableItemCollection.TryGetItemState(sceneName, gameObject.name, out bool hasBeenUsed))
+        {
+            _hasBeenUsed = hasBeenUsed;
+            if (_hasBeenUsed)
+            {
+                if (destroyAfterUse)
+                    gameObject.SetActive(false);
+                else
+                {
+                    var col = GetComponent<Collider>();
+                    if (col) col.enabled = false;
+                }
+                foreach (var o in GetComponentsInChildren<cakeslice.Outline>())
+                    o.enabled = false;
+            }
+        }
     }
 
     void OnMouseUpAsButton()
@@ -47,7 +77,7 @@ public class InteractableItem : MonoBehaviour, ITriggerable
         var mover = playerGO?.GetComponent<PlayerMoveController>();
         if (mover == null) return;
 
-        float approach = 1.2f;              // на каком расстоянии хватит
+        float approach = 1.2f;              
         mover.MoveToAndCallback(
             /* target  */ this.transform,
             /* run     */ true,
@@ -56,12 +86,36 @@ public class InteractableItem : MonoBehaviour, ITriggerable
         );
     }
 
+    public void ResetForRespawn()
+    {
+        _hasBeenUsed = false;
+
+        if (TryGetComponent<Collider>(out var col))
+            col.enabled = true;
+
+        foreach (var o in GetComponentsInChildren<cakeslice.Outline>())
+            o.enabled = true;
+
+        string scene = SceneManager.GetActiveScene().name;
+        InteractableItemCollection.SetItemState(scene, gameObject.name, false);
+    }
+
+
+
     public void Interact()
     {
+        CompositeTrigger compositeTrigger = this.gameObject.GetComponent<CompositeTrigger>();
         if (_hasBeenUsed) return;
+        else {
+            if (_dependFromQuests) {
+                if (!compositeTrigger.IsDone) return;
+            }
+        }
         _hasBeenUsed = true;
 
-        // 1) Ресурсы
+        string sceneName = SceneManager.GetActiveScene().name;
+        InteractableItemCollection.SetItemState(sceneName, gameObject.name, _hasBeenUsed);
+
         switch (resourceType)
         {
             case ResourceType.Gold:
@@ -78,16 +132,14 @@ public class InteractableItem : MonoBehaviour, ITriggerable
                 break;
         }
 
-        // 2) Всплывающий текст
         if (floatingTextPrefab != null && _player != null)
         {
             Vector3 worldPos = _player.position + spawnOffset;
-            var ftGO = Instantiate(floatingTextPrefab, worldPos, Quaternion.identity, _player);
+            var ftGO = Instantiate(floatingTextPrefab, worldPos, Quaternion.identity);
             if (ftGO.TryGetComponent<FloatingText>(out var ft))
                 ft.SetText(message);
         }
 
-        // 3) Убираем объект
         if (destroyAfterUse)
             gameObject.SetActive(false);
         else
@@ -96,10 +148,12 @@ public class InteractableItem : MonoBehaviour, ITriggerable
             if (col) col.enabled = false;
         }
 
-        // 4) Отключаем Outline (если был)
+        InteractableItemCollection.SetItemState(SceneManager.GetActiveScene().name, this.gameObject.name, _hasBeenUsed);
+
         foreach (var o in GetComponentsInChildren<cakeslice.Outline>())
             o.enabled = false;
     }
 
     public void Triggered() => Interact();
+
 }

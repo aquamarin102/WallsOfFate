@@ -225,6 +225,7 @@ public class MiniGamePlayer : MonoBehaviour
 
     private void SpawnFloatingText(string text, Color color)
     {
+        var cam = GetPowerCheckCamera();
         if (floatingTextWorldPrefab == null)
             return;
 
@@ -233,12 +234,18 @@ public class MiniGamePlayer : MonoBehaviour
             Quaternion.identity);
         var ft = go.GetComponent<FloatingTextMinigame>();
         if (ft != null)
-            ft.Setup(text, color);
+            ft.Setup(text, color, cam);
     }
 
     private void ResetHealth()
     {
         health = maxHealth;
         isDead = false;
+    }
+
+    private Camera GetPowerCheckCamera()
+    {
+        var go = GameObject.FindGameObjectWithTag("PowerCheckCamera");
+        return go != null ? go.GetComponent<Camera>() : null;
     }
 }

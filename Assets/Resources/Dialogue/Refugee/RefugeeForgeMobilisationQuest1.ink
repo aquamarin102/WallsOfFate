@@ -1,31 +1,44 @@
 INCLUDE ../GlobalSettings/global.ink
+# speaker: Бродяга
+# portrait: OldmenPortrait
+# layout: right
+П‑пожалуйста, пан… Не выдавайте меня. Я пережду войну в тени и уйду, как будто меня тут не было.
 
-#speaker:Бродяга #portrait:OldmenPortrait #layout:right
-Пощадите, Ваша Светлость! Я не воин! Мне бы только дожить до утра, не выходя из тени этих стен.
+# speaker: Бродяга
+# portrait: OldmenPortrait
+# layout: left
+Слышал я о волке, что прикинулся овцой. Говорят, звался Голован, генерал, что держал границу годами. Так ли это, "дед"?
 
-* Ты трус и дезертир. Мне придется казнить тебя. Здесь нет места тем, кто готов лишь брать, но не отдавать. К тому же трусы заражают страхом весь полк.
-    #speaker:Кузнец
-    #portrait:OldmenPortrait
-    #layout:left
+# speaker: Бродяга
+# portrait: OldmenPortrait
+# layout: right
+Было время… теперь я никому не нужен. Оставьте меня в покое.
+
+# speaker: Бродяга
+# portrait: OldmenPortrait
+# layout: left
+*   Стань под моё знамя.
     -> gate1RefugeeMainRoom
 
-* Возьмешь меч — честь тебе. Откажешься — встанешь в строй под кнутом. Но в бой ты пойдёшь, хочешь ты того или нет.
-    #speaker:Кузнец
-    #portrait:OldmenPortrait
-    #layout:left
+*   Силой вытащить на службу.
     -> gate2RefugeeMainRoom
 
 === gate1RefugeeMainRoom ===
-Ладно… Ладно. Я пойду. Только не бейте больше.
-#speaker:Кузнец
-#portrait:OldmenPortrait
-#layout:left
--> END
+    В покое? Пока ты прячешься, мои люди льют кровь. Поднимайся, Волк. Дам хлеб, доспех и власть — взамен хочу твоего гения на стенах.
+    # speaker: Бродяга
+    # portrait: OldmenPortrait
+    # layout: right
+    Хлеб и доспех я приму. Но власть… она тяжела.
+    Ладно. Ради тех, кто ещё верит в эту землю, я вновь возьмусь за сталь.
+    ~ CastleStrength += 30
+    -> END
 
 === gate2RefugeeMainRoom ===
-Нет! Я не пойду! Лучше умру здесь, чем на поле!
-#speaker:Кузнец
-#portrait:OldmenPortrait
-#layout:left
-~ PowerCheckStart = true
--> END
+    Мне не нужны отговорки. Либо ты ведёшь людей, либо кормишь ворон. Выбирай.
+    # speaker: Бродяга
+    # portrait: OldmenPortrait
+    # layout: right
+    Так вот какая плата за тишину… 
+    Придётся напомнить тебе, что Волк не сдаётся без укуса.
+  ~ PowerCheckStart = true
+    -> END
