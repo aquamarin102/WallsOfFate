@@ -45,11 +45,11 @@ public sealed class SaveLoadManager : MonoBehaviour
         // ”бираем PlayerSaveLoader, чтобы позици€ игрока оставалась такой, какой она определена на сцене.
         requiredSaveLoaders = new ISaveLoader[]
         {
-            new QuestSaveLoader(),
             new ResourceSaveLoader(),
             // new PlayerSaveLoader(_playerTransform), // не загружаем позицию игрока
             new CollectionSaveLoader(AssembledPickups.GetAllPickups()),
-            new InteractableItemSaveLoader()
+            new InteractableItemSaveLoader(),
+            new QuestSaveLoader(),
         };
 
         // ≈сли это не нова€ игра, загружаем необходимые данные.
@@ -91,7 +91,7 @@ public sealed class SaveLoadManager : MonoBehaviour
         Repository.LoadState();
         foreach (var saveLoader in requiredSaveLoaders)
         {
-            if (!saveLoader.LoadData())
+            if (!saveLoader.LoadData() || QuestCollection.CurrentDayNumber > 2)
             {
                 saveLoader.LoadDefaultData();
             }

@@ -111,10 +111,12 @@ public class MinigameStarter : MonoBehaviour
         if(winnerName != "Player" && DialogueManager.GetInstance().PowerCheckPrefab == _bossPrefab)
         {
             GameResources.GameResources.ChangePeopleSatisfaction(-1000); // Уменьшаем PeopleSatisfaction
+            Destroy(_bossPrefab);   
         }
         else if(winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab == _bossPrefab)
         {
             GameResources.GameResources.ChangePeopleSatisfaction(1000); // Уменьшаем PeopleSatisfaction
+            Destroy(_bossPrefab);
         }
         if (winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab != _trainingPrefab)
         {
