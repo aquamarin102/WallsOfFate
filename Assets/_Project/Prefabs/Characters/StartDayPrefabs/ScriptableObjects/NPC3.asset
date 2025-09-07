@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c210cc72ff83204c8c71c1521aad8e3, type: 3}
   m_Name: NPC3
   m_EditorClassIdentifier: 
-  npcName: NPC3
-  prefab: {fileID: 1102045971123107174, guid: b2ff3100d0d132e4881151cb27a111b6, type: 3}
+  npcName: NPC1
+  prefab: {fileID: 8400021922369283782, guid: 56da72eae29de1f42aa16f238597ce0b, type: 3}
