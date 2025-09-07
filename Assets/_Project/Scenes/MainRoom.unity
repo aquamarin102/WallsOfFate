@@ -19105,6 +19105,7 @@ Transform:
   - {fileID: 829668894}
   - {fileID: 1304811761}
   - {fileID: 97347571}
+  - {fileID: 401052852}
   - {fileID: 1688008016}
   - {fileID: 454014063}
   - {fileID: 1297797169}
@@ -19112,7 +19113,6 @@ Transform:
   - {fileID: 1778477911}
   - {fileID: 715198301}
   - {fileID: 878946534}
-  - {fileID: 401052852}
   m_Father: {fileID: 1323262236}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &715186515
