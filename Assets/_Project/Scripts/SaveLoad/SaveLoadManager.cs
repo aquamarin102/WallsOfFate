@@ -5,6 +5,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Zenject;
+using UnityEngine.UI;
 
 public sealed class SaveLoadManager : MonoBehaviour
 {
@@ -17,6 +18,8 @@ public sealed class SaveLoadManager : MonoBehaviour
 
     // Флаг для определения начала новой игры
     private bool _startNewGame = false;
+
+    [SerializeField] private string firstGameplayScene = "StartDay";
 
     // Задаем стартовую точку через инспектор
     [SerializeField] private Transform spawnPoint;
@@ -42,10 +45,11 @@ public sealed class SaveLoadManager : MonoBehaviour
         // Убираем PlayerSaveLoader, чтобы позиция игрока оставалась такой, какой она определена на сцене.
         requiredSaveLoaders = new ISaveLoader[]
         {
-            new QuestSaveLoader(),
             new ResourceSaveLoader(),
             // new PlayerSaveLoader(_playerTransform), // не загружаем позицию игрока
             new CollectionSaveLoader(AssembledPickups.GetAllPickups()),
+            new InteractableItemSaveLoader(),
+            new QuestSaveLoader(),
         };
 
         // Если это не новая игра, загружаем необходимые данные.
@@ -54,6 +58,15 @@ public sealed class SaveLoadManager : MonoBehaviour
         {
             LoadRequiredData();
         }
+    }
+
+    private void Start()
+    {
+        // Ищем кнопку с тегом или по ссылке (упростим до FindObject)
+        Button loadBtn = GameObject.Find("Button_LoadGame")
+                                   ?.GetComponent<Button>();
+        if (loadBtn != null)
+            loadBtn.interactable = CanLoad();   // активна, только если есть сейв
     }
 
     /// <summary>
@@ -78,7 +91,7 @@ public sealed class SaveLoadManager : MonoBehaviour
         Repository.LoadState();
         foreach (var saveLoader in requiredSaveLoaders)
         {
-            if (!saveLoader.LoadData())
+            if (!saveLoader.LoadData() || QuestCollection.CurrentDayNumber > 2)
             {
                 saveLoader.LoadDefaultData();
             }
@@ -176,4 +189,24 @@ public sealed class SaveLoadManager : MonoBehaviour
             LoadRequiredData();
         }
     }
+
+    public void OnNewGameButton()
+    {
+        ClearSavs();                            // очистили всё
+        _startNewGame = true;                   // сообщаем OnSceneLoaded
+        LoadingScreenManager.Instance.BeginLoadWithStartOfDay(firstGameplayScene);
+    }
+
+    /*-------------------------------------------------*/
+    /*      КНОПКА «ЗАГРУЗИТЬ ИГРУ»                    */
+    /*-------------------------------------------------*/
+    public void OnLoadGameButton()
+    {
+        // safety-check: ничего не делать, если сохранений нет
+        if (!CanLoad()) return;
+
+        _startNewGame = false;                  // чтобы не перезаписать позицию
+        LoadGame();                             // подгрузили данные
+    }
+
 }

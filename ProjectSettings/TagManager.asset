@@ -24,6 +24,7 @@ TagManager:
   - ship
   - GameProcessor
   - PowerCheckCamera
+  - Rat
   layers:
   - Default
   - TransparentFX
@@ -40,7 +41,7 @@ TagManager:
   - MovableBox
   - Ground
   - NPC
-  - 
+  - Player
   - 
   - 
   - 

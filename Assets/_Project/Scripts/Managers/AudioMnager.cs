@@ -19,6 +19,12 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioMixerSnapshot loadingSnapshot;  // Snapshot, где звук сцены выключен
     [SerializeField] private float snapshotTransitionTime = 0.5f;   // Время перехода
 
+    [Header("Mini-game")]
+    [SerializeField] private AudioClip miniGameMusic;   // Музыка для мини-игры
+
+    private AudioClip _previousMusic;                   // Сохраняем, что играло раньше
+    private bool _isInMiniGame;
+
     private void Awake()
     {
         if (Instance == null)
@@ -165,6 +171,26 @@ public class AudioManager : MonoBehaviour
             normalSnapshot.TransitionTo(snapshotTransitionTime);
         }
     }
+
+    public void StartMiniGameMusic()
+    {
+        if (_isInMiniGame || miniGameMusic == null) return;
+
+        _previousMusic = musicSource.clip;  // запоминаем текущий трек
+        _isInMiniGame = true;
+        PlayMusic(miniGameMusic);
+    }
+
+    public void StopMiniGameMusic()
+    {
+        if (!_isInMiniGame) return;
+
+        _isInMiniGame = false;
+        // Если предыдущий трек был, вернём его; иначе ничего не меняем
+        if (_previousMusic != null)
+            PlayMusic(_previousMusic);
+    }
+
 
 
     public void ReloadVolumeSettings()

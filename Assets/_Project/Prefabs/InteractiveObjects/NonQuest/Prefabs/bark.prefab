@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 1751232171010038710}
   - component: {fileID: 2450086755606127840}
   - component: {fileID: 2733975454894928019}
-  - component: {fileID: 4945128172108291663}
   - component: {fileID: 7951015661757610351}
   - component: {fileID: 8844796454230840957}
+  - component: {fileID: 3927243273877315876}
   m_Layer: 0
   m_Name: bark
   m_TagString: Untagged
@@ -117,27 +117,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 246c04dfc0ad72d4d947b4c8da3b71df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!65 &4945128172108291663
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2244592604039756896}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
+  hoverCheckDistance: 100
+  hoverLayerMask:
     serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.056022838, y: 1.8, z: 0.04929481}
-  m_Center: {x: 0.000000029802322, y: 0.000000029802322, z: 0}
+    m_Bits: 4294967295
 --- !u!65 &7951015661757610351
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -157,7 +140,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.8, y: 0.8, z: 0.8}
+  m_Size: {x: 1.5, y: 1.5, z: 1.5}
   m_Center: {x: 0.000000029802322, y: 0.000000029802322, z: 0}
 --- !u!114 &8844796454230840957
 MonoBehaviour:
@@ -178,3 +161,24 @@ MonoBehaviour:
   spawnOffset: {x: 0, y: 2.3, z: 0}
   destroyAfterUse: 1
   approachDistance: 1.5
+--- !u!65 &3927243273877315876
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2244592604039756896}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.056022838, y: 1.8, z: 0.04929481}
+  m_Center: {x: 0.000000029802322, y: 0.000000029802322, z: 0}

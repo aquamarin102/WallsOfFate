@@ -12,7 +12,7 @@
           "CurrentTaskId": 0,
           "OpenDialog": "Messager/MessagerDialogMainRoom/",
           "Evidence": null,
-          "Prime": false,
+          "Prime": true,
           "Tasks": [
             {
               "Id": 0,
@@ -76,15 +76,46 @@
           "Id": 1,
           "InProgress": false,
           "Complite": false,
+          "OpenNPS": "ChiefGuard",
+          "CurrentTaskId": 0,
+          "OpenDialog": "ChiefGuard/GuardForgeGuardQuestDialog/",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": [
+            {
+              "Id": 0,
+              "TaskInfo": "Найти старого Голована",
+              "IsDone": false,
+              "ForNPS": "Refugee",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Refugee/RefugeeForgeMobilisationQuest/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Day": 1,
+      "Quests": [
+        {
+          "Id": 0,
+          "InProgress": false,
+          "Complite": false,
           "OpenNPS": "Messenger",
           "CurrentTaskId": 0,
           "OpenDialog": "Messager/MessagerMainRoomStorageQuest/",
           "Evidence": {
             "EvidenceType": "---",
-            "Dialoge": "Messager/MessagerMainRoomStorageQuest/",
+            "Dialoge": "Messages/Storage/Roge/EvidenceConclusion/",
             "DialogePlayed": false,
-            "Picture": "UI/Inventory/UIPrefabs/ItemsImages/forest",
-            "Description": "Пахнет лесом..."
+            "Picture": "UI/Inventory/ItemsPrefabs/footstep/footstep",
+            "Description": "Предатель где-то на складе"
           },
           "Prime": true,
           "Tasks": [
@@ -104,11 +135,11 @@
             },
             {
               "Id": 1,
-              "TaskInfo": "Пойти в главный зал",
+              "TaskInfo": "Найдите отчет и другие улики",
               "IsDone": false,
-              "ForNPS": "ForgeDoor",
+              "ForNPS": "CastleConditionReport",
               "RequeredTasksIds": [],
-              "RequeredDialog": "Messager/MessagerMainRoomStorageQuest/",
+              "RequeredDialog": "Messages/StorageRoge/",
               "Resources": {
                 "Gold": 0,
                 "Food": 0,
@@ -116,29 +147,172 @@
                 "CastleStrength": 0
               }
             },
-
+            {
+              "Id": 2,
+              "TaskInfo": "Найдите остальные улики",
+              "IsDone": false,
+              "ForNPS": "Evidence",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Messages/StorageRoge/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            },
+            {
+              "Id": 3,
+              "TaskInfo": "Найдите остальные улики",
+              "IsDone": false,
+              "ForNPS": "Evidence",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Messages/StorageRoge/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            },
+            {
+              "Id": 4,
+              "TaskInfo": "Найдите остальные улики",
+              "IsDone": false,
+              "ForNPS": "Evidence",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Messages/StorageRoge/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            },
+            {
+              "Id": 5,
+              "TaskInfo": "Найдите предателя",
+              "IsDone": false,
+              "ForNPS": "Ratter",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Ratter/StorageDialoge/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            }
           ]
-        }
-      ]
-    },
-    {
-      "Day": 1,
-      "Quests": [
+        },
         {
           "Id": 1,
           "InProgress": false,
           "Complite": false,
-          "OpenNPS": "ChiefGuard",
+          "OpenNPS": "Blacksmith",
           "CurrentTaskId": 0,
-          "OpenDialog": "ChiefGuard/GuardForgeGuardQuestDialog/",
+          "OpenDialog": "Blacksmith/FindTreasure/",
           "Evidence": null,
           "Prime": false,
           "Tasks": [
             {
               "Id": 0,
-              "TaskInfo": "Найти беженца",
+              "TaskInfo": "Найдите где спрятаны чертежи",
               "IsDone": false,
-              "ForNPS": "Refugee",
+              "ForNPS": "stoneWithCache",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "Servants/ServantMobilisation/0/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            }
+          ]
+        },
+        {
+          "Id": 2,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Refugee",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Refugee/RefugeeFoodTask/",
+          "Evidence": null,
+          "Prime": false
+        }
+      ]
+    },
+    {
+      "Day": 2,
+      "Quests": [
+        {
+          "Id": 0,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Messenger",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Messager/MessagerAtash/",
+          "Evidence": null,
+          "Prime": true,
+          "Tasks": [
+            {
+              "Id": 0,
+              "TaskInfo": "Поговорить с Ханом Аташем",
+              "IsDone": false,
+              "ForNPS": "Atash",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "BOSS/BOSSEND/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            }
+          ]
+        },
+        {
+          "Id": 1,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Blacksmith",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Blacksmith/LostNails/",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": [
+            {
+              "Id": 0,
+              "TaskInfo": "Поговорить с главой стражи на счет преступника",
+              "IsDone": false,
+              "ForNPS": "ChiefGuard",
+              "RequeredTasksIds": [],
+              "RequeredDialog": "ChiefGuard/LostNails/",
+              "Resources": {
+                "Gold": 0,
+                "Food": 0,
+                "PeopleSatisfaction": 0,
+                "CastleStrength": 0
+              }
+            }
+          ]
+        },
+        {
+          "Id": 2,
+          "InProgress": false,
+          "Complite": false,
+          "OpenNPS": "Messenger",
+          "CurrentTaskId": 0,
+          "OpenDialog": "Messager/FindTreasure/",
+          "Evidence": null,
+          "Prime": false,
+          "Tasks": [
+            {
+              "Id": 0,
+              "TaskInfo": "Найти где спрятано сокровище",
+              "IsDone": false,
+              "ForNPS": "TeasureChest",
               "RequeredTasksIds": [],
               "RequeredDialog": "Refugee/RefugeeForgeMobilisationQuest/",
               "Resources": {
@@ -149,8 +323,8 @@
               }
             }
           ]
-        }
+        }        
       ]
-    }
+    }   
   ]
 }

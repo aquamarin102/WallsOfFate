@@ -30,12 +30,12 @@ namespace Assets._Project.Scripts.Managers
             if (pause)
             {
                 Time.timeScale = 0f; // Останавливаем время
-                Debug.Log("Игра на паузе");
+                //Debug.Log("Игра на паузе");
             }
             else
             {
                 Time.timeScale = 1f; // Восстанавливаем время
-                Debug.Log("Игра продолжается");
+                //Debug.Log("Игра продолжается");
             }
         }
     }

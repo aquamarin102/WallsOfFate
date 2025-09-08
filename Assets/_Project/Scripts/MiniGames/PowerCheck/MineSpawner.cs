@@ -163,7 +163,7 @@ public class MineSpawner : MonoBehaviour
     private void OnDisable()
     {
         ClearAllMineObjects();
-        StopAllCoroutines(); // Останавливаем все корутины спавна
+        //StopAllCoroutines(); // Останавливаем все корутины спавна
     }
 
     private void Start()
@@ -242,6 +242,13 @@ public class MineSpawner : MonoBehaviour
 
         Vector3 targetScale = _originalScales.TryGetValue(mine, out var s) ? s : Vector3.one;
         mine.MineGameObject.transform.localScale = Vector3.zero;
+
+        Collider[] colliders = mine.MineGameObject.GetComponentsInChildren<Collider>();
+        foreach (var collider in colliders)
+        {
+            collider.enabled = false;
+        }
+
         mine.SetActive(true);
         StartCoroutine(AnimateScale(mine.MineGameObject.transform, targetScale));
     }
@@ -257,6 +264,12 @@ public class MineSpawner : MonoBehaviour
             yield return null;
         }
         t.localScale = to;
+
+        Collider[] colliders = t.gameObject.GetComponentsInChildren<Collider>();
+        foreach (var collider in colliders)
+        {
+            collider.enabled = true;
+        }
     }
     private float EasingOutBack(float t)
     {

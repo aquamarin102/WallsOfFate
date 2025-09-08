@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using Quest;
 public class NewGameButton : MonoBehaviour
 {
     [SerializeField] private GameObject newGamePanel;
@@ -38,18 +38,37 @@ public class NewGameButton : MonoBehaviour
     public void ShowNewGamePanel()
     {
         newGamePanel.SetActive(true);
-
     }
     public void StartGame()
     {
         if (_saveLoadManager != null)
-        {
-            // —бросить все сохранЄнные данные, чтобы нова€ игра начиналась с чистого листа
             _saveLoadManager.ClearSavs();
-        }
-        NewGameStarted?.Invoke();        // оповестили всех подписчиков
-        LoadingScreenManager.Instance.LoadScene("StartDay");
+        QuestCollection.ClearQuests();
+
+        // —бросить все параметры ресурсов на стартовые
+        GameResources.GameResources.Gold = 50;
+        GameResources.GameResources.Food = 50;
+        GameResources.GameResources.PeopleSatisfaction = 6;
+        GameResources.GameResources.CastleStrength = 200;
+
+        NewGameStarted?.Invoke();
+        LoadingScreenManager.Instance.panelGameOver.SetActive(false);
+        LoadingScreenManager.Instance.panelVictory.SetActive(false);
+        LoadingScreenManager.Instance.OnConfirmEndOfDay();
     }
+
+    public void BackToMenuGame()
+    {
+        GameResources.GameResources.Gold = 50;
+        GameResources.GameResources.Food = 50;
+        GameResources.GameResources.PeopleSatisfaction = 6;
+        GameResources.GameResources.CastleStrength = 200;
+
+        LoadingScreenManager.Instance.panelGameOver.SetActive(false);
+        LoadingScreenManager.Instance.panelVictory.SetActive(false);
+        LoadingScreenManager.Instance.LoadScene("MainMenu");
+    }
+
     public void HideNewGamePanel()
     {
         newGamePanel.SetActive(false);

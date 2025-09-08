@@ -45,6 +45,7 @@ public class AIController : MonoBehaviour
 
     // counts to detect spawn/despawn
     private int _countDam, _countHeal, _countBuff;
+    private bool _initialized = false;
 
     #region DI
     [Inject]
@@ -106,7 +107,11 @@ public class AIController : MonoBehaviour
 
     private void Update()
     {
-        RefreshFields();
+        if (!_initialized)
+        {
+            RefreshFields();
+            _initialized = true;
+        }
         _agent.speed = Mathf.Lerp(_agent.speed, _targetSpeed, Time.deltaTime / _speedSmoothTime);
 
         if (!_agent.pathPending && (_targets.Count == 0 || PickUpsChanged()))

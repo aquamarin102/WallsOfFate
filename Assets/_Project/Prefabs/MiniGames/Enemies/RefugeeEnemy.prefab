@@ -127,8 +127,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerName: RefugeeEnemy
-  maxHealth: 80
-  health: 80
+  maxHealth: 90
+  health: 90
   minDamage: 5
   damage: 8
   speed: 3.5
@@ -139,7 +139,7 @@ MonoBehaviour:
   floatingTextWorldPrefab: {fileID: 8503380163757038419, guid: 2fd5f98ba8460eb4a99e6a13faa9fc55, type: 3}
   playerRenderer: {fileID: 1863916843032510309}
   flashDuration: 0.1
-  Portrait: DefaultItemPicture
+  Portrait: Refugee
   initialBuffPulseDuration: 1
   initialDebuffPulseDuration: 1
   minPulseDuration: 0.2
@@ -229,5 +229,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 5, y: 5, z: 5}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.03, y: 0.1, z: 0.03}
+  m_Center: {x: 0, y: 0.048, z: 0}

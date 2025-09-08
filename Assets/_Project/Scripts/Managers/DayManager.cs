@@ -1,57 +1,44 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using Quest;
+﻿using Quest;
 using System.Linq;
-
+using UnityEngine;
+using UnityEngine.UI;
 public class DayManager : MonoBehaviour
 {
-    [SerializeField] private InventoryLogicEnd _inventoryLogicEnd;
+    public static bool nextLoadIsNewDay = false;
+
+    [Header("UI")]
+    [SerializeField] private Button newDayButton;
+
+    private void Awake()
+    {
+        if (newDayButton != null)
+            newDayButton.onClick.AddListener(ShowEndOfDay);
+        else
+            Debug.LogWarning("DayManager: newDayButton не назначена!");
+
+    }
 
     private void Update()
     {
-        // Проверяем условия для старта нового дня каждый кадр
         CheckNewDayConditions();
     }
-
-    // Публичный метод для проверки условий нового дня
     public void CheckNewDayConditions()
     {
-        // Ищем главный квест текущего дня, который завершен
+
+        // Ищем главный Prime-квест, у которого ВСЕ задачи отмечены IsDone == true
         var completedPrimeQuest = QuestCollection.GetAllQuestGroups()
-            .FirstOrDefault(q => q.Prime && q.Complite && !q.InProgress);
+            .FirstOrDefault(q =>
+                q.Prime
+                && q.IsEneded()
+            );
 
-        if (completedPrimeQuest != null)
-        {
-            StartNewDay();
-        }
+        newDayButton.gameObject.SetActive(completedPrimeQuest != null);
     }
 
-    // Публичный метод для начала нового дня
-    public void StartNewDay()
+    private void ShowEndOfDay()
     {
-        PlayerSpawnData.ClearData();
-        if (_inventoryLogicEnd != null)
-        {
-            // Обновляем панель инвентаря
-            _inventoryLogicEnd.RefreshPanel();
-        }
-        else
-        {
-            Debug.LogWarning("InventoryLogicEnd не назначен в инспекторе!");
-        }
-
-        QuestCollection.IncreaseCurrentDay();
-
-        // Загружаем сцену начала дня
-        LoadingScreenManager.Instance.LoadScene("StartDay");
-
-        // Дополнительные действия при начале нового дня
-        Debug.Log("Начинается новый день!");
+        LoadingScreenManager.Instance.ShowEndOfDayPanel();
     }
 
-    // Метод для установки ссылки на InventoryLogicEnd
-    public void SetInventoryLogicEnd(InventoryLogicEnd logicEnd)
-    {
-        _inventoryLogicEnd = logicEnd;
-    }
+
 }

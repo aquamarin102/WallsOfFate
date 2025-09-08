@@ -3,7 +3,6 @@ using UnityEngine;
 using Quest;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine.SceneManagement;
 
 internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
 {
@@ -17,30 +16,25 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
     public void Triggered()
     {
         DialogueManager.GetInstance().PowerCheckPrefab = PowerCheckPrefab;
-        //if(QuestCollection.GetActiveQuestGroups().Count > 0 && QuestCollection.GetActiveQuestGroups()[0].CurrentTaskId == 5) return;
-        // Проверка на старт новых квестов
-        var currentDay = QuestCollection.GetCurrentDayData();
-        var availableGroups = currentDay != null
-            ? currentDay.Quests.Where(q => q.CheckOpen(_npcName)).ToList()
-            : new List<QuestGroup>();
+        var activeGroups = QuestCollection.GetActiveQuestGroups();
+        QuestGroup groupToUpdate = null;
+        QuestTask taskToComplete = null;
 
-        if (availableGroups.Count > 0)
-        {
-            var group = availableGroups.First();
-            group.StartQuest();
-            DialogueManager.GetInstance().EnterDialogueMode(group.OpenDialog);
-            return;
+        foreach (var group in activeGroups) {
+            taskToComplete = group.Tasks
+                .Where(t => !t.IsDone && t.ForNPS == _npcName && t.CanComplete())
+                .OrderBy(t => t.Id)
+                .FirstOrDefault();
+
+            if (taskToComplete != null) {
+                groupToUpdate = group;
+                break;
+            }
         }
-
-        // Обработка активных квестов
-       var activeGroups = QuestCollection.GetActiveQuestGroups();
-        var groupToUpdate = activeGroups.FirstOrDefault(g =>
-            g.GetCurrentTask() != null &&
-            CanTriggerTask(g.GetCurrentTask(), out var dialogue));
 
         if (groupToUpdate != null)
         {
-            QuestTask taskForDiaog = groupToUpdate.GetCurrentTask();
+            //QuestTask taskForDiaog = groupToUpdate.GetCurrentTask();
             groupToUpdate.GetCurrentTask().CompleteTask();
             groupToUpdate = UpdateGroupState(groupToUpdate);
 
@@ -48,7 +42,21 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
                 .FirstOrDefault(g => g.Id == groupToUpdate.Id);
 
             originalGroup?.CopyFrom(groupToUpdate);
-            DialogueManager.GetInstance().EnterDialogueMode(taskForDiaog.RequeredDialog);
+            DialogueManager.GetInstance().EnterDialogueMode(taskToComplete.RequeredDialog, groupToUpdate.Id);
+            return;
+        }
+
+        // Проверка на старт новых квестов
+        var currentDay = QuestCollection.GetCurrentDayData();
+        var availableGroups = currentDay != null
+            ? currentDay.Quests.Where(q => q.CheckOpen(_npcName)).ToList()
+            : new  List<QuestGroup>();
+
+        if (availableGroups.Count > 0)
+        {
+            var group = availableGroups.First();
+            group.StartQuest();
+            DialogueManager.GetInstance().EnterDialogueMode(group.OpenDialog, group.Id);
             return;
         }
 
@@ -79,7 +87,8 @@ internal class DialogeTrigger : MonoBehaviour, ICheckableTrigger
                     .Where(t => !t.IsDone)
                     .OrderBy(t => t.Id)
                     .FirstOrDefault()?.Id ?? -1,
-            Tasks = group.Tasks
+            Tasks = group.Tasks,
+            Prime = group.Prime
         };
     }
 

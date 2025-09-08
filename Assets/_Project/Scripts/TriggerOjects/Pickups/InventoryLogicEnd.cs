@@ -16,7 +16,53 @@ public class InventoryLogicEnd : MonoBehaviour
     [SerializeField] private GameObject _inventoryObj; 
 
     private List<Pickup> _currentPickupsOfType = new List<Pickup>();
-    private int _displayedImagesCount = 0;
+    private int _displayedImagesCount = 0; 
+    private GameObject _ratObject;
+    private void Start()
+    {
+        // Ищем объект с тегом "Rat" при старте
+        _ratObject = GameObject.FindWithTag("Rat");
+        if (_ratObject == null)
+        {
+            Debug.LogWarning("Объект с тегом 'Rat' не найден!");
+        }
+        else
+        {
+            // Устанавливаем объект неактивным при старте (если нужно)
+            _ratObject.SetActive(false);
+        }
+    }
+
+    public List<GameObject> FindAllRatObjects()
+    {
+        List<GameObject> ratObjects = new List<GameObject>();
+
+        // Находим активные объекты с тегом "Rat"
+        GameObject[] activeRatObjects = GameObject.FindGameObjectsWithTag("Rat");
+        ratObjects.AddRange(activeRatObjects);
+
+        // Находим неактивные объекты с тегом "Rat"
+        var inactiveRatObjects = Resources.FindObjectsOfTypeAll<GameObject>()
+            .Where(go => go.CompareTag("Rat") &&
+                        go.scene.isLoaded &&
+                        !go.activeInHierarchy && // Только неактивные
+                        !ratObjects.Contains(go)) // Исключаем уже найденные активные
+            .ToList();
+
+        ratObjects.AddRange(inactiveRatObjects);
+
+        // Логирование для отладки
+        if (ratObjects.Count == 0)
+        {
+            Debug.LogWarning("Объекты с тегом 'Rat' не найдены в сцене.");
+        }
+        else
+        {
+            Debug.Log($"Найдено {ratObjects.Count} объектов с тегом 'Rat': {string.Join(", ", ratObjects.Select(o => o.name))}");
+        }
+
+        return ratObjects;
+    }
 
     private void Update()
     {
@@ -31,6 +77,36 @@ public class InventoryLogicEnd : MonoBehaviour
         {
             _currentPickupsOfType = newPickups;
         }
+
+        var ratObjs = FindAllRatObjects();
+        if (AllPanelsOpened())
+        {
+            if (_ratObject != null)
+            {
+                _ratObject.SetActive(true);
+            }
+            else
+            {
+                _ratObject = GameObject.FindWithTag("Rat");
+                if (_ratObject == null) _ratObject = ratObjs[0];
+            }
+        }
+    }
+
+    private bool AllPanelsOpened()
+    {
+        bool result = false;
+        bool isAllChecked = true;
+        foreach (var pannel in pickupPanels)
+        {
+            if (pannel != null)
+            {
+                bool imageCheck = pannel.transform.Find("Image").gameObject.activeSelf;
+                isAllChecked = isAllChecked && imageCheck;
+            }
+        }
+        result = isAllChecked || result;
+        return result;
     }
 
     private void UpdatePanelsVisibility()
@@ -59,11 +135,7 @@ public class InventoryLogicEnd : MonoBehaviour
     {
         if (_buttonObject == null) return;
 
-        // Находим первый неотрендеренный пикап
-        //var nonRenderedPickup = FindFirstNonRenderedPickup(_pickupType);
-
-        // Если все пикапы отрендерены и есть что показывать
-        bool allDisplayed = /*nonRenderedPickup == null && */_displayedImagesCount >= 3;
+        bool allDisplayed = _displayedImagesCount >= 3;
         _buttonObject.SetActive(allDisplayed);
     }
 
