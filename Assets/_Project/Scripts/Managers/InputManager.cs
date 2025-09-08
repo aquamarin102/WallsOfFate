@@ -15,6 +15,9 @@ public class InputManager : MonoBehaviour
 
     private void OnEnable()
     {
+        if(inputs == null) {
+            inputs = new Controls();
+        }
         inputs.Enable();
     }
 

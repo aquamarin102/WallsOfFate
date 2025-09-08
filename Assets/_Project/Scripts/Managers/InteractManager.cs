@@ -137,8 +137,8 @@ public class InteractManager : MonoBehaviour
         // 1) Можно ли триггер вызывать многократно?
         //    В пример добавлены «Dialogue» и «Box»
         bool repeatable =
-            trigger is Box ||
-            (trigger as MonoBehaviour)?.CompareTag("Dialogue") == true;
+            trigger is Box;
+            //|| (trigger as MonoBehaviour)?.CompareTag("Dialogue") == true;
 
         // 2) Проверяем активирован ли раньше
         if (!triggeredSet.Contains(trigger) || repeatable)
