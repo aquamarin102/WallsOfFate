@@ -40,6 +40,10 @@ PrefabInstance:
       propertyPath: _dependFromQuests
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4354154999703999869, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}
+      propertyPath: _dependFromQuests
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5050328978687382349, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}
       propertyPath: m_LocalPosition.x
       value: -28.24
@@ -91,7 +95,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5574770098997398007, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}
-      insertIndex: -1
+      insertIndex: 3
       addedObject: {fileID: 5604065552341705902}
   m_SourcePrefab: {fileID: 100100000, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}
 --- !u!1 &2285976007219643327 stripped
