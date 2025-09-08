@@ -102,21 +102,23 @@ public class MinigameStarter : MonoBehaviour
         AudioManager.GetInstance().StopMiniGameMusic();
         // Показываем результат
         GameObject resultPanel = winnerName == "Player" ? _winPanel : _losePanel;
-        if (resultPanel != null)
-        {
-            resultPanel.SetActive(true);
-            yield return new WaitForSeconds(2f);
-            resultPanel.SetActive(false);
-        }
-        if(winnerName != "Player" && DialogueManager.GetInstance().PowerCheckPrefab == _bossPrefab)
+        if(winnerName != "Player" && DialogueManager.GetInstance().PowerCheckPrefab.name == _bossPrefab.name)
         {
             GameResources.GameResources.ChangePeopleSatisfaction(-1000); // Уменьшаем PeopleSatisfaction
-            Destroy(_bossPrefab);   
+            GameObject objectToDestroy = GameObject.Find("Atash(clone)");
+            if (objectToDestroy != null) {
+                Destroy(objectToDestroy);
+            }
         }
-        else if(winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab == _bossPrefab)
+        
+        //else if (winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab.name.Contains("Atash"))
+        else if (winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab.name == _bossPrefab.name)
         {
             GameResources.GameResources.ChangePeopleSatisfaction(1000); // Уменьшаем PeopleSatisfaction
-            Destroy(_bossPrefab);
+            GameObject objectToDestroy = GameObject.Find("Atash(clone)");
+            if (objectToDestroy != null) {
+                Destroy(objectToDestroy);
+            }
         }
         if (winnerName == "Player" && DialogueManager.GetInstance().PowerCheckPrefab != _trainingPrefab)
         {
@@ -124,7 +126,13 @@ public class MinigameStarter : MonoBehaviour
         }
         else if(winnerName != "Player" && DialogueManager.GetInstance().PowerCheckPrefab != _trainingPrefab)
         {
-            GameResources.GameResources.ChangePeopleSatisfaction(-1); // Уменьшаем PeopleSatisfaction
+            GameResources.GameResources.ChangeCastleStrength(-1); // Уменьшаем PeopleSatisfaction
+        }
+        if (resultPanel != null)
+        {
+            resultPanel.SetActive(true);
+            yield return new WaitForSeconds(2f);
+            resultPanel.SetActive(false);
         }
 
         
