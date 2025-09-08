@@ -12,6 +12,8 @@ public class PlayChestAnimation : MonoBehaviour, ITriggerable   // ключев�
     // вызывается InteractManager-ом через TryTrigger(...)
     public void Triggered() {
         CompositeTrigger compositeTrigger = this.gameObject.GetComponent<CompositeTrigger>();
+
+
         if (_opened) return;
         else {
             if (_dependFromQuests) {

@@ -51819,10 +51819,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Mushroom5
       objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: 42f444b29b33b59438c6975013d78d82, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 42f444b29b33b59438c6975013d78d82, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.53154
