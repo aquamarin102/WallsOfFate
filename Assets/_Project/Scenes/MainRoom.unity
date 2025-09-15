@@ -2691,6 +2691,7 @@ MonoBehaviour:
   SceneName: Forge
   SpawnPosition: {x: 11.5, y: 0, z: -2.5}
   SpawnEulerAngles: {x: 0, y: -20, z: 0}
+  dayNumber: -1
 --- !u!65 &218478200
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9672,8 +9673,8 @@ GameObject:
   m_Component:
   - component: {fileID: 370577505}
   - component: {fileID: 370577507}
-  - component: {fileID: 370577506}
   - component: {fileID: 370577508}
+  - component: {fileID: 370577506}
   - component: {fileID: 370577509}
   - component: {fileID: 370577510}
   m_Layer: 0
@@ -9714,6 +9715,7 @@ MonoBehaviour:
   SceneName: Storage
   SpawnPosition: {x: -28, y: 0, z: -5}
   SpawnEulerAngles: {x: 0, y: 0, z: 0}
+  dayNumber: 1
 --- !u!65 &370577507
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -43553,7 +43555,7 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5574770098997398007, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}
-      insertIndex: -1
+      insertIndex: 3
       addedObject: {fileID: 1871881934}
   m_SourcePrefab: {fileID: 100100000, guid: 0221545a9b79d584ea003d69fb4f1427, type: 3}
 --- !u!1 &1871881933 stripped

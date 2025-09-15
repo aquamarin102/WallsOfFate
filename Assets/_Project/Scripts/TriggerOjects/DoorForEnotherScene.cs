@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Quest;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.TriggerOjects
@@ -11,17 +12,28 @@ namespace Assets.Scripts.TriggerOjects
 
         // Скрытое поле для Quaternion, вычисляемое на основе SpawnEulerAngles
         private Quaternion SpawnRotation => Quaternion.Euler(SpawnEulerAngles);
+        public int dayNumber = -1;
         public event Action<string> OnActivated;
         public void Triggered()
         {
-            Debug.Log("Переход на новую локу!");
+            if (ShouldTrigger()) {
+                Debug.Log("Переход на новую локу!");
 
-            // Сохраняем данные о точке спавна
-            PlayerSpawnData.SpawnPosition = SpawnPosition;
-            PlayerSpawnData.SpawnRotation = SpawnRotation;
+                // Сохраняем данные о точке спавна
+                PlayerSpawnData.SpawnPosition = SpawnPosition;
+                PlayerSpawnData.SpawnRotation = SpawnRotation;
 
-            // Вызываем событие для загрузки сцены
-            LoadingScreenManager.Instance.LoadScene(SceneName);
+                // Вызываем событие для загрузки сцены
+                LoadingScreenManager.Instance.LoadScene(SceneName);
+            }
+        }
+
+
+        public bool ShouldTrigger() {
+            
+            if (dayNumber == -1) return true;
+            else if (dayNumber != -1 && dayNumber == QuestCollection.CurrentDayNumber) return true;
+            else return false;
         }
     }
 }
