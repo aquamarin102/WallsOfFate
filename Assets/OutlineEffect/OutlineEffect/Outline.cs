@@ -36,8 +36,10 @@ namespace cakeslice
 		public SpriteRenderer SpriteRenderer { get; private set; }
 		public SkinnedMeshRenderer SkinnedMeshRenderer { get; private set; }
 		public MeshFilter MeshFilter { get; private set; }
+        
+		//[SerializeField] private GameObject triggerObj;
 
-		public int color;
+        public int color;
 		public bool eraseRenderer;
 
 		private void Awake()
@@ -63,7 +65,7 @@ namespace cakeslice
 		{
 			get
 			{
-				if (_SharedMaterials == null)
+				if (_SharedMaterials == null/* && triggerObj != null && triggerObj*/)
 					_SharedMaterials = Renderer.sharedMaterials;
 
 				return _SharedMaterials;
