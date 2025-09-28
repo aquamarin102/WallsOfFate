@@ -92,6 +92,9 @@ public class MiniGamePlayer : MonoBehaviour
     private void OnEnable()
     {
         ResetHealth();
+        speedModifier += GamePlayerStats.PlayerStats.Dex;
+        damage += Convert.ToUInt32(GamePlayerStats.PlayerStats.Strength);
+        minDamage += Convert.ToUInt32(GamePlayerStats.PlayerStats.Strength);
     }
 
     public void TakeDamage(uint dmg)

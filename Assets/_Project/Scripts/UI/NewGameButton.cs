@@ -4,6 +4,7 @@ using Quest;
 public class NewGameButton : MonoBehaviour
 {
     [SerializeField] private GameObject newGamePanel;
+    [SerializeField] private string firstScene;
 
     public static event System.Action NewGameStarted;
 
@@ -18,7 +19,7 @@ public class NewGameButton : MonoBehaviour
     }
     void Update()
     {
-        if (newGamePanel.activeSelf && Input.GetKeyDown(KeyCode.Escape))
+        if (newGamePanel != null && newGamePanel.activeSelf && Input.GetKeyDown(KeyCode.Escape))
         {
             HideNewGamePanel();
         }
@@ -54,7 +55,8 @@ public class NewGameButton : MonoBehaviour
         NewGameStarted?.Invoke();
         LoadingScreenManager.Instance.panelGameOver.SetActive(false);
         LoadingScreenManager.Instance.panelVictory.SetActive(false);
-        LoadingScreenManager.Instance.OnConfirmEndOfDay();
+        if (firstScene == "StartDay") LoadingScreenManager.Instance.OnConfirmEndOfDay();
+        else LoadingScreenManager.Instance.LoadScene(firstScene);
     }
 
     public void BackToMenuGame()

@@ -3420,7 +3420,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37447fe3f1772ff4381a8128f2837c99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstGameplayScene: StartDay
+  StartNewGame: 0
   spawnPoint: {fileID: 0}
 --- !u!4 &635231542
 Transform:
@@ -3450,6 +3450,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newGamePanel: {fileID: 939273030}
+  firstScene: CreateCharacter
 --- !u!1 &669280644
 GameObject:
   m_ObjectHideFlags: 0
@@ -11810,6 +11811,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   newGamePanel: {fileID: 107570652}
+  firstScene: 
 --- !u!1 &1789781899
 GameObject:
   m_ObjectHideFlags: 0
