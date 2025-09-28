@@ -17,9 +17,7 @@ public sealed class SaveLoadManager : MonoBehaviour
     private ISaveLoader[] requiredSaveLoaders;
 
     // Флаг для определения начала новой игры
-    private bool _startNewGame = false;
-
-    [SerializeField] private string firstGameplayScene = "StartDay";
+    public bool StartNewGame = false;
 
     // Задаем стартовую точку через инспектор
     [SerializeField] private Transform spawnPoint;
@@ -51,13 +49,6 @@ public sealed class SaveLoadManager : MonoBehaviour
             new InteractableItemSaveLoader(),
             new QuestSaveLoader(),
         };
-
-        // Если это не новая игра, загружаем необходимые данные.
-        // (При новой игре ClearSavs() вызовет _startNewGame = true, и позиция не будет перезаписана)
-        if (!_startNewGame)
-        {
-            LoadRequiredData();
-        }
     }
 
     private void Start()
@@ -103,7 +94,7 @@ public sealed class SaveLoadManager : MonoBehaviour
     /// </summary>
     public void SaveRequiredData()
     {
-        if (!_startNewGame)
+        if (!StartNewGame)
         {
             foreach (var saveLoader in requiredSaveLoaders)
             {
@@ -111,7 +102,7 @@ public sealed class SaveLoadManager : MonoBehaviour
                     saveLoader.SaveData();
             }
             Repository.SaveState();
-            _startNewGame = false;
+            StartNewGame = false;
         }
     }
 
@@ -147,7 +138,7 @@ public sealed class SaveLoadManager : MonoBehaviour
         AssembledPickups.Clear();
         Repository.ClearSaveData();
         PlayerSpawnData.ClearData();
-        _startNewGame = true;
+        StartNewGame = true;
     }
 
     private void OnEnable()
@@ -171,7 +162,7 @@ public sealed class SaveLoadManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         // Если начинается новая игра, позиция игрока сбрасывается в spawnPoint.
-        if (_startNewGame)
+        if (StartNewGame)
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player != null && spawnPoint != null)
@@ -182,19 +173,12 @@ public sealed class SaveLoadManager : MonoBehaviour
             }
             // Затем загружаем обязательные данные (без позиции игрока)
             LoadRequiredData();
-            _startNewGame = false; // сбросить флаг, чтобы в дальнейшем обычная загрузка продолжала работать
+            StartNewGame = false; // сбросить флаг, чтобы в дальнейшем обычная загрузка продолжала работать
         }
         else
         {
             LoadRequiredData();
         }
-    }
-
-    public void OnNewGameButton()
-    {
-        ClearSavs();                            // очистили всё
-        _startNewGame = true;                   // сообщаем OnSceneLoaded
-        LoadingScreenManager.Instance.BeginLoadWithStartOfDay(firstGameplayScene);
     }
 
     /*-------------------------------------------------*/
@@ -205,7 +189,7 @@ public sealed class SaveLoadManager : MonoBehaviour
         // safety-check: ничего не делать, если сохранений нет
         if (!CanLoad()) return;
 
-        _startNewGame = false;                  // чтобы не перезаписать позицию
+        StartNewGame = false;                  // чтобы не перезаписать позицию
         LoadGame();                             // подгрузили данные
     }
 
