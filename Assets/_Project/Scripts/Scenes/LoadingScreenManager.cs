@@ -286,6 +286,8 @@ public class LoadingScreenManager : MonoBehaviour
     private IEnumerator LoadSceneAsync(string sceneName, bool showStartDay)
     {
         var op = SceneManager.LoadSceneAsync(sceneName);
+        op.allowSceneActivation = false;
+
         while (!op.isDone)
         {
             if (op.progress >= 0.9f)
@@ -300,7 +302,7 @@ public class LoadingScreenManager : MonoBehaviour
                 StartTextFade();
                 waitingForInput = true;
 
-                yield return StartCoroutine(WaitForUserInput(showStartDay));
+                yield return StartCoroutine(WaitForUserInput(showStartDay, op));
                 yield break;
             }
             yield return null;
@@ -308,7 +310,7 @@ public class LoadingScreenManager : MonoBehaviour
     }
 
 
-    private IEnumerator WaitForUserInput(bool showStartDay)
+    private IEnumerator WaitForUserInput(bool showStartDay, AsyncOperation op)
     {
         // Ждём нажатия
         while (!Input.anyKeyDown) yield return null;
@@ -329,10 +331,17 @@ public class LoadingScreenManager : MonoBehaviour
         // Показ экрана начала дня как часть загрузки
         if (showStartDay && panelStartOfDay != null)
         {
+            //loadingScreen.SetActive(false);
             panelStartOfDay.SetActive(true);
             // Здесь loadingScreen остаётся активным, чтобы считалось «время загрузки»
             yield return new WaitForSeconds(startDayDuration);
+            op.allowSceneActivation = true;
+            yield return new WaitUntil(() => op.isDone);
             panelStartOfDay.SetActive(false);
+        }
+        else {
+            op.allowSceneActivation = true;
+            yield return new WaitUntil(() => op.isDone);
         }
 
         // Только после этого закрываем сам loadingScreen
@@ -340,6 +349,7 @@ public class LoadingScreenManager : MonoBehaviour
 
         // И лишь теперь — считаем загрузку завершённой
         IsLoading = false;
+
         LoadingFinished?.Invoke();
     }
 

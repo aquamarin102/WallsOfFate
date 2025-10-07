@@ -24,15 +24,12 @@ public class MultiTextChanger : MonoBehaviour
     {
         try
         {
-            // Берём все квесты текущего дня
             var allGroups = QuestCollection.GetAllQuestGroups();
-
 
             int idx = 0;
             foreach (var group in allGroups
                                   .Where(q => q.InProgress && !q.Complite)
-                                  .OrderByDescending(q => q.Prime))
-            {
+                                  .OrderByDescending(q => q.Prime)) {
                 if (idx >= _textMeshProLinks.Count) break;
                 _textMeshProLinks[idx++].text = group.GetCurrentTask().TaskInfo;
             }

@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: NPC2
   m_EditorClassIdentifier: 
   npcName: NPC2
-  prefab: {fileID: 8400021922369283782, guid: d7dd34d069d047d4a9a1a371c0721635, type: 3}
+  prefab: {fileID: 6487916388078063443, guid: f834f9e4ba6294b478ba12467b48b65e, type: 3}
