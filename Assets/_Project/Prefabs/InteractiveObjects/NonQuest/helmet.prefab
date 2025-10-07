@@ -66,6 +66,8 @@ MeshRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -87,6 +89,7 @@ MeshRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
@@ -140,7 +143,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.5, y: 1.5, z: 1.5}
+  m_Size: {x: 0.015, y: 0.015, z: 0.015}
   m_Center: {x: -0.000002292858, y: -0.000043493805, z: -0.0020822466}
 --- !u!114 &2044997955263741088
 MonoBehaviour:
@@ -154,6 +157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65393348ff72ffd4381fa218907a33d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dependFromQuests: 0
   resourceType: 3
   amount: 20
   message: "\u041F\u0440\u0438\u043A\u043E\u043B\u044C\u043D\u043E, \u0448\u043B\u0435\u043C!"
